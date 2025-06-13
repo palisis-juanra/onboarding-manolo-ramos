@@ -1,37 +1,65 @@
 <?php
 namespace Services;
+
+require_once __DIR__ . '/../../config/env_config.php';
+
 use TourCMS\Utils\TourCMS as TourCMS;
 
 class TourCMSClientService
 {
 	private static $instance = null;
-	private $marketplaceID = 0;
-	private $channelID = 0;
-	private $privateAPIKey = "";
-	private $resultType = 'simplexml';
-	private $timeout = 0;
-	private $baseURL = "";
+	private $tourCMS = null;
 
-	private function __construct($marketplaceID, $privateAPIKey, $resultType) {
-		$this->marketplaceID = $marketplaceID;
-		$this->privateAPIKey = $privateAPIKey;
-		$this->resultType = $resultType;
+	/**
+	 * TourCMSClientService constructor.
+	 *
+	 * Initializes the TourCMS client with environment variables.
+	 * This constructor is private to enforce the singleton pattern.
+	 */
+	private function __construct() {
+		$this->initTourCMSClient();
+	}
+	
+	/**
+	 * Initializes the TourCMS client with environment variables.
+	 *
+	 * This method sets up the TourCMS client using the environment variables defined in the .env file.
+	 * It retrieves the necessary parameters such as marketplace ID, API key, result type, and timeout
+	 * to create an instance of the TourCMS client.
+	 */
+	private function initTourCMSClient() {
+		$this->tourCMS = new TourCMS(
+			$env_tcms_marketplace_id,
+			$env_tcms_api_key,
+			$env_tcms_result_type,
+			$env_tcms_timeout
+		);
+
+		$this->tourCMS->set_base_url($env_tcms_api_url);
 	}
 
-	public static function getInstance($marketplaceID = 0, $privateAPIKey = "", $resultType = 'simplexml') {
+	/**
+	 * Returns the singleton instance of the TourCMSClientService.
+	 *
+	 * This method ensures that only one instance of the TourCMSClientService is created
+	 * and returns that instance. If the instance does not exist, it creates a new one.
+	 *
+	 * @return TourCMSClientService The singleton instance of the TourCMSClientService.
+	 */
+	public static function getInstance() {
 		if (self::$instance === null) {
-			self::$instance = new TourCMS($marketplaceID, $privateAPIKey, $resultType);
+			self::$instance = new TourCMS();
 		}
 		
 		return self::$instance;
 	}
 
-	public function set_base_url($url) {
-		$this->baseURL = $url;
-	}
-
-	
-	public function get_base_url() {
-		return $this->baseURL;
+	/**
+	 * Returns the instance of the TourCMS client.
+	 * 
+	 * @return TourCMS The TourCMS client instance.
+	 */
+	public function getTourCMSClient() {
+		return $this->tourCMS;
 	}
 }
