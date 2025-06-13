@@ -1,6 +1,8 @@
 <?php
 namespace Helpers;
 
+require_once __DIR__ . '/../../config/config.php';
+
 class TourRenderHelper 
 {
 	private $tourCMS;

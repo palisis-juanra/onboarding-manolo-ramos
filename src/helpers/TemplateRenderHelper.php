@@ -1,7 +1,7 @@
 <?php
 namespace Helpers;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../config/config.php';
 
 use Mustache_Engine;
 use Mustache_Loader_FilesystemLoader;
@@ -39,7 +39,11 @@ class TemplateRenderHelper
 	 */
 	public function renderTemplate($templateName, $data) 
 	{
-		echo $this->mustache->render($templateName, $data);
+		try {
+			echo $this->mustache->render($templateName, $data);
+		} catch (Mustache_Exception_UnknownTemplateException $e) {
+			echo $this->mustache->render('common/404', $data);
+		}
 	}
 
 	/**
