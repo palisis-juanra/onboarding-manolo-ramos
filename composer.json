@@ -1,0 +1,26 @@
+{
+    "name": "mramos/onboarding",
+    "description": "Onboarding project for Manolo Ramos",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "tourcms/tourcms-php": "4",
+        "vlucas/phpdotenv": "^5.6",
+        "mustache/mustache": "^2.14",
+        "predis/predis": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Controllers\\": "src/controllers/",
+            "Core\\": "src/core/",
+            "Helpers\\": "src/helpers/",
+            "Services\\": "src/services/",
+            "Templates\\": "templates/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Manolo Ramos"
+        }
+    ]
+}
