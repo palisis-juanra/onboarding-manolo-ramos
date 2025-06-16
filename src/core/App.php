@@ -2,7 +2,8 @@
 namespace Core;
 
 class App {
-	public function run() {
+	public function run() 
+	{
 		echo "<p>Application is running!</p>";
 	}
 }
