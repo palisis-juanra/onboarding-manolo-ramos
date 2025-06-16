@@ -7,8 +7,8 @@ class TourRenderHelper
 {
 	private $tourCMS;
 	private $channelID;
-	private $tours_per_page;
-	private $current_page;
+	private $toursPerPage;
+	private $currentPage;
 	private $searchToursResult;
 
 	/**
@@ -16,14 +16,14 @@ class TourRenderHelper
 	 *
 	 * @param object $tourCMS An instance of the TourCMS class.
 	 * @param int $channelID The ID of the channel.
-	 * @param int $tours_per_page The number of tours to display per page.
+	 * @param int $toursPerPage The number of tours to display per page.
 	 */
-	public function __construct($tourCMS, $channelID, $tours_per_page ) 
+	public function __construct($tourCMS, $channelID, $toursPerPage ) 
 	{
 		$this->tourCMS = $tourCMS;
 		$this->channelID = $channelID;
-		$this->tours_per_page = $tours_per_page;
-		$this->current_page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 1;
+		$this->toursPerPage = $toursPerPage;
+		$this->currentPage = isset( $_GET['page'] ) ? (int) $_GET['page'] : 1;
 		$this->searchToursResult = null;
 	}
 
@@ -37,17 +37,17 @@ class TourRenderHelper
 	 */
 	private function buildQuery() 
 	{
-		// Set a querystring for the search
-		$query_parameters = array(
-			"per_page" => $this->tours_per_page,
-			"page" => $this->current_page,
+		// Set a queryString for the search
+		$queryParameters = array(
+			"per_page" => $this->toursPerPage,
+			"page" => $this->currentPage,
 			"product_type" => 4,
 			"country" => 'ES'
 		);
 
-		$querystring = http_build_query($query_parameters);
+		$queryString = http_build_query($queryParameters);
 
-		return $querystring;
+		return $queryString;
 	}
 
 	/**
@@ -62,10 +62,10 @@ class TourRenderHelper
 	 */
 	private function getTotalPages() 
 	{
-		$total_tours 	= $this->searchToursResult->total_tour_count;
-		$total_pages 	= ceil( $total_tours / $this->tours_per_page );
+		$totalTours 	= $this->searchToursResult->total_tour_count;
+		$totalPages 	= ceil( $totalTours / $this->toursPerPage );
 
-		return $total_pages;
+		return $totalPages;
 	}
 
 	/**
@@ -78,9 +78,9 @@ class TourRenderHelper
 	 */
 	public function searchTours() 
 	{
-		$querystring = $this->buildQuery();
+		$queryString = $this->buildQuery();
 		// Call the TourCMS API method to search for Tours/Hotels
-		$searchToursResult = $this->tourCMS->search_tours( $querystring, $this->channelID );
+		$searchToursResult = $this->tourCMS->search_tours( $queryString, $this->channelID );
 
 		return $searchToursResult;
 	}
@@ -103,21 +103,21 @@ class TourRenderHelper
 	/**
 	 * Generates and outputs the HTML for displaying the current page and total number of pages.
 	 *
-	 * @param int $current_page The current page number.
-	 * @param int $total_pages The total number of pages.
+	 * @param int $currentPage The current page number.
+	 * @param int $totalPages The total number of pages.
 	 * @return void
 	 */
 	public function renderCurrentPageInfo()
 	{
-		$total_pages = $this->getTotalPages();
-		echo '<p class="page_info">Page <strong>' . $this->current_page . '</strong> of <strong>' . $total_pages .'</strong></p>';
+		$totalPages = $this->getTotalPages();
+		echo '<p class="page_info">Page <strong>' . $this->currentPage . '</strong> of <strong>' . $totalPages .'</strong></p>';
 	}
 
 	/**
 	 * Renders pagination links for navigating between pages.
 	 *
-	 * @param int $current_page The current page number.
-	 * @param int $total_pages The total number of pages.
+	 * @param int $currentPage The current page number.
+	 * @param int $totalPages The total number of pages.
 	 * @return void
 	 *
 	 * This function outputs HTML for pagination links. It includes links to the first page,
@@ -127,21 +127,21 @@ class TourRenderHelper
 	 */
 	public function renderPagination() 
 	{
-		$total_pages = $this->getTotalPages();
+		$totalPages = $this->getTotalPages();
 		echo '<div class="pagination">';
 
-			if ( $this->current_page > 1 ) {
+			if ( $this->currentPage > 1 ) {
 				// Go to the first page
 				echo '<a href="?page=1">&lt;&lt; First page</a>';
 				// Go to the previous page
-				echo '<div class="pagination_central"><a href="?page=' . ( $this->current_page - 1 ) . '">&lt; Previous page</a>';
+				echo '<div class="pagination_central"><a href="?page=' . ( $this->currentPage - 1 ) . '">&lt; Previous page</a>';
 			}
 
-			if ( $this->current_page < $total_pages ) {
+			if ( $this->currentPage < $totalPages ) {
 				// Next page
-				echo '<a href="?page=' . ( $this->current_page + 1 ) . '">Next page &gt;</a></div>';
+				echo '<a href="?page=' . ( $this->currentPage + 1 ) . '">Next page &gt;</a></div>';
 				// Last page
-				echo '<a href="?page=' . $total_pages . '">Last page &gt;&gt;</a>';
+				echo '<a href="?page=' . $totalPages . '">Last page &gt;&gt;</a>';
 			}
 
 		echo '</div>';

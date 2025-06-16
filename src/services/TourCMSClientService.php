@@ -16,7 +16,8 @@ class TourCMSClientService
 	 * Initializes the TourCMS client with environment variables.
 	 * This constructor is private to enforce the singleton pattern.
 	 */
-	private function __construct() {
+	private function __construct()
+	{
 		$this->initTourCMSClient();
 	}
 	
@@ -27,15 +28,16 @@ class TourCMSClientService
 	 * It retrieves the necessary parameters such as marketplace ID, API key, result type, and timeout
 	 * to create an instance of the TourCMS client.
 	 */
-	private function initTourCMSClient() {
+	private function initTourCMSClient()
+	{
 		$this->tourCMS = new TourCMS(
-			$env_tcms_marketplace_id,
-			$env_tcms_api_key,
-			$env_tcms_result_type,
-			$env_tcms_timeout
+			$envTCMSmarketplaceID,
+			$envTCMSapiKey,
+			$envTCMSresultType,
+			$envTCMStimeout
 		);
 
-		$this->tourCMS->set_base_url($env_tcms_api_url);
+		$this->tourCMS->set_base_url($envTCMSapiUrl);
 	}
 
 	/**
@@ -46,7 +48,8 @@ class TourCMSClientService
 	 *
 	 * @return TourCMSClientService The singleton instance of the TourCMSClientService.
 	 */
-	public static function getInstance() {
+	public static function getInstance()
+	{
 		if (self::$instance === null) {
 			self::$instance = new TourCMS();
 		}
@@ -59,7 +62,8 @@ class TourCMSClientService
 	 * 
 	 * @return TourCMS The TourCMS client instance.
 	 */
-	public function getTourCMSClient() {
+	public function getTourCMSClient()
+	{
 		return $this->tourCMS;
 	}
 }
