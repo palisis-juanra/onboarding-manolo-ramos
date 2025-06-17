@@ -2,19 +2,25 @@
 
 namespace Core;
 
-use Services\TemplateRenderService;
+use Services\TemplateRendererService;
 use Controllers\SessionController;
 use Routes\Routes;
 class Router
 {
-	private $templateRender;
+	private $templateRenderer;
 	private $routes;
+	private $redisConfig;
+	private $tourcmsConfig;
 	
-	// Initialize the template rendering service 
-	public function __construct()
+	// Initialize the template rendering service and route collection.
+	public function __construct(array $envConfig)
 	{
+		// Retrieve config parameters for controllers
+		$this->redisConfig = $envConfig['redis'];
+		$this->tourcmsConfig = $envConfig['tourcms'];
+
 		$this->routes = Routes::getRoutes();
-		$this->templateRender = new TemplateRenderService();
+		$this->templateRenderer = new TemplateRendererService();
 	}
 
 	/**
@@ -63,7 +69,7 @@ class Router
 	 * @return void 
 	 */
 	private function handle404() {
-		$this->templateRender->renderTemplate('_common/error/404', []);
+		$this->templateRenderer->renderTemplate('_common/error/404', []);
 
 		http_response_code(404);
 		return;
@@ -76,7 +82,7 @@ class Router
 	 */
 	private function handleSessionController($route)
 	{
-		$sessionController = new SessionController();
+		$sessionController = new SessionController($this->redisConfig);
 
 		if ($route === 'login') {
 			$sessionController->logIn();
@@ -85,5 +91,16 @@ class Router
 		} else {
 			self::handle404();
 		}
+	}
+
+	/**
+	 * 
+	 * Redis integrations
+	 * 
+	 */
+	private function isLoggedIn(): bool
+	{
+		// Check redis
+		return true;
 	}
 }
