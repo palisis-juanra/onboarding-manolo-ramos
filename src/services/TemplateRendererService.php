@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../config/config.php';
 use Mustache_Engine;
 use Mustache_Loader_FilesystemLoader;
 
-class TemplateRenderService 
+class TemplateRendererService 
 {
 	private $mustache;
 
