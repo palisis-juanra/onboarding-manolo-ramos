@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> _partials/_header }}
+<body class="h-screen w-screen flex justify-center items-center">
+	<main>
+		<div id="logoutMessage" class="text-gray-700 text-2xl font-bold">Logging you out</div>
+
+		<script>
+			function logOut() {
+				const logoutMessage = document.getElementById('logoutMessage');
+				let dotCount = 0;
+
+				const interval = setInterval(() => {
+					logoutMessage.textContent += '.';
+					dotCount++;
+
+					if (dotCount === 3) {
+						clearInterval(interval);
+						logoutMessage.textContent += '\n';
+					}
+				}, 500);
+
+				setTimeout(function() {
+					window.location.href = "http://localhost/onboarding-manolo-ramos/login";
+				}, 2000);
+				
+			}
+
+			logOut();
+		</script>
+	</main>
+	{{> _partials/_footer }}
+</body>
+</html>
