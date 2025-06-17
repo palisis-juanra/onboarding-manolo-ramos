@@ -4,29 +4,16 @@ namespace Core;
 
 use Services\TemplateRenderService;
 use Controllers\SessionController;
+use Routes\Routes;
 class Router
 {
 	private $templateRender;
-	private $routes = [
-		'login' => [
-			'details' => [
-				'controller' => 'handleSessionController',
-				'method' => 'POST',
-				'action' => 'login',
-			],
-		],
-		'logout' => [
-			'details' => [
-				'controller' => 'handleSessionController',
-				'method' => 'GET',
-				'action' => 'logout',
-			],
-		]
-	];
+	private $routes;
 	
 	// Initialize the template rendering service 
 	public function __construct()
 	{
+		$this->routes = Routes::getRoutes();
 		$this->templateRender = new TemplateRenderService();
 	}
 
@@ -53,7 +40,7 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		self::renderErrorPage();
+		self::handle404();
 	}
 
 	/**
@@ -75,7 +62,7 @@ class Router
 	 *
 	 * @return void 
 	 */
-	private function renderErrorPage() {
+	private function handle404() {
 		$this->templateRender->renderTemplate('_common/error/404', []);
 
 		http_response_code(404);
@@ -96,7 +83,7 @@ class Router
 		} else if ($route === 'logout') {
 			$sessionController->logOut();
 		} else {
-			self::renderErrorPage();
+			self::handle404();
 		}
 	}
 }
