@@ -1,8 +1,6 @@
 <?php
 namespace Services;
 
-require_once __DIR__ . '/../../config/env_config.php';
-
 use TourCMS\Utils\TourCMS as TourCMS;
 
 class TourCMSClientService
@@ -30,6 +28,7 @@ class TourCMSClientService
 	 */
 	private function initTourCMSClient()
 	{
+		// Update env variables from array config variable
 		$this->tourCMS = new TourCMS(
 			$envTCMSmarketplaceID,
 			$envTCMSapiKey,
