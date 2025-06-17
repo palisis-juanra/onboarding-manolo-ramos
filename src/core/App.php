@@ -2,42 +2,19 @@
 
 namespace Core;
 
-use Services\TemplateRenderService;
-
+use Core\Router;
 class App
 {
-	private $routes = [
-		'/login' => [
-			[
-				'controller' => 'LoginController',
-				'method' => 'POST',
-				'action' => 'login',
-			],
-			[
-				'controller' => 'LoginController',
-				'method' => 'GET',
-				'action' => 'loginPage',
-			],
-		],
-		'/logout' => [
-			[
-				'controller' => 'LoginController',
-				'method' => 'GET',
-				'action' => 'logout',
-			],
-		]
-	];
+	private $router;
 
 	public function __construct()
 	{
-		// Initialize any necessary components or services here
+		$this->router = new Router();
 	}
 
 	public function run()
 	{
-		// Call the controller -> use the template service
-		$templateRender = new TemplateRenderService();
-		$templateRender->renderTemplate('login/loginPage', []);
+		$this->router->dispatch();
 	}
 
 	private function isLoggedIn(): bool
