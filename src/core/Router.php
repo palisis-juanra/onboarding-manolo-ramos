@@ -100,7 +100,7 @@ class Router
 	 */
 	private function isLoggedIn(): bool
 	{
-		// Check redis
+		// The session controller must return a Redis flag to indicate if there's a session or not 
 		return true;
 	}
 }
