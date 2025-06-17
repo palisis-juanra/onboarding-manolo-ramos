@@ -16,3 +16,25 @@ $envTCMSchannelID = $_ENV['TCMS_CHANNEL_ID'];
 $envTCMSvendorID = $_ENV['TCMS_VENDOR_ID'];
 $envTCMStimeout = $_ENV['TCMS_TIMEOUT'];
 $envTCMSresultType = $_ENV['TCMS_RESULT_TYPE'];
+
+// Redis Client 
+$redisHost = $_ENV['REDIS_HOST'];
+$redisPort = $_ENV['REDIS_PORT'];
+$redisPassword = $_ENV['REDIS_PASSWORD'];
+
+return [
+	'tourcms' => [
+		'TCMS_API_URL' => $envTCMSapiUrl,
+		'TCMS_API_KEY' => $envTCMSapiKey,
+		'TCMS_MARKETPLACE_ID' => $envTCMSmarketplaceID,
+		'TCMS_CHANNEL_ID' => $envTCMSchannelID,
+		'TCMS_VENDOR_ID' => $envTCMSvendorID,
+		'TCMS_TIMEOUT' => $envTCMStimeout,
+		'TCMS_RESULT_TYPE' => $envTCMSresultType,
+	],
+	'redis' => [
+		'REDIS_HOST' => $redisHost,
+		'REDIS_PORT' => $redisPort,
+		'REDIS_PASSWORD' => $redisPassword
+	]
+];
