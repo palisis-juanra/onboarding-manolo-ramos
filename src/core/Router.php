@@ -36,31 +36,48 @@ class Router
 	{
 		// Extract the last part of the current URL
 		$currentURL = $this->parseURL($_SERVER['REQUEST_URI']);
+		// Get the HTTP method of the request (GET, POST, etc.)
+		$requestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
 		foreach ($this->routes as $route => $routeDetails) {
 			if (preg_match('#^' . $route . '$#', $currentURL, $action)) {
-				$controllerMethod = $routeDetails['details']['controller'];
-				$this->$controllerMethod($route);
+				$controllerFunction = $routeDetails['details']['controller'];
+				$routeMethod = $routeDetails['details']['method'];
+				$this->$controllerFunction(
+					$route, 
+					$routeMethod,
+					$requestMethodUsed
+				);
+
 				return;
 			}
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		self::handle404();
+		self::handleNotFound();
 	}
 
 	/**
-	 * Parses the URL to determine the last part of the path.
+	 * Parses the URL to determine the complete request path.
 	 *
 	 * @param string $url The URL to parse.
-	 * @return string The last part of the URL path.
+	 * @return string The complete endpoint path.
 	 */
 	private function parseURL($currentURL)
 	{
-		$urlParts = explode('/', $currentURL);
-		$lastURLpart = end($urlParts);
+		// Full URL
+		$urlParts = parse_url($currentURL);
+		// Divide the path into segments
+		$pathSegments = explode('/', $urlParts['path']);
+		// Filter for empty segments
+		$pathSegments = array_filter($pathSegments);
+		// Remove the first segment (localhost or domain)
+		$pathSegments = array_slice($pathSegments, 1);
 
-		return $lastURLpart;
+		// Build the path before returning it
+		$requestPath = '/' . implode('/', $pathSegments);
+
+		return $requestPath;
 	}
 
 	/**
@@ -68,7 +85,7 @@ class Router
 	 *
 	 * @return void 
 	 */
-	private function handle404() {
+	private function handleNotFound() {
 		$this->templateRenderer->renderTemplate('_common/error/404', []);
 
 		http_response_code(404);
@@ -80,16 +97,28 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionController($route)
+	private function handleSessionController($route, $method)
 	{
 		$sessionController = new SessionController($this->redisConfig);
 
-		if ($route === 'login') {
-			$sessionController->logIn();
-		} else if ($route === 'logout') {
-			$sessionController->logOut();
-		} else {
-			self::handle404();
+		switch ($route) {
+			case '/':
+				// TODO: Implement redirection to login if not logged in, redirection to dashboard if logged in, 
+				echo 'Implement session and redirection login here.';
+				break;
+			case '/login':
+				if ($method === 'POST') {
+					$sessionController->logIn();
+				} else if ($method === 'GET') {
+					self::handleNotFound();
+				}
+				break;
+			case '/logout':
+				$sessionController->logOut();
+				break;
+			default:
+				self::handleNotFound();
+				break;
 		}
 	}
 
