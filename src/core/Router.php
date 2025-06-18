@@ -116,7 +116,6 @@ class Router
 	 */
 	private function handleNotFound() {
 		$this->templateRenderer->renderTemplate('_common/error/404', []);
-
 		http_response_code(404);
 		return;
 	}
@@ -126,37 +125,45 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionController($route, $definedMethod, $httpRequestMethodUsed)
+	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed)
 	{
 		$this->sessionController = new SessionController($this->redisConfig);
 
-		// TODO: evaluate if moving the logic inside each case to individual functions is suitable. 
-		switch ($route) {
-			case '/':
-				// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
-				echo 'Implement session and redirection logic here.';
-				break;
-			case '/login':
-				// TODO: If the user is logged in, redirect to the dashboard
-				if ($definedMethod === 'GET') {
-					$this->sessionController->logIn();
-				} else if ($definedMethod === 'POST') {
+		if ($this->sessionController->checkActiveRedisSession()){
+			// TODO: evaluate if moving the logic inside each case to individual functions is suitable. 
+			switch ($route) {
+				case '/':
+					// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
+					echo 'Implement session and redirection logic here.';
+					header('Location: login/');
+					break;
+				case '/login':
+					// TODO: If the user is logged in, redirect to the dashboard
+					if ($routeMethod === 'GET') {
+						$this->sessionController->renderLoginPage();
+					} else {
+						$this->handleNotFound();
+					}
+					break;
+				case '/login/loginAction':
+					if ($routeMethod === 'POST') {
+						$this->sessionController->handlelogIn();
+					} else {
+						$this->handleNotFound();
+					}
+					break;
+				case '/logout':
+					$this->sessionController->handlelogOut();
+					break;
+				default:
 					$this->handleNotFound();
-				}
-				break;
-			case '/login/loginAction':
-				if ($definedMethod === 'POST') {
-					echo 'entra al post';
-				} else {
-					echo 'no entra';
-				}
-				break;
-			case '/logout':
-				$this->sessionController->logOut();
-				break;
-			default:
-				$this->handleNotFound();
-				break;
+					break;
+			}
+		} else {
+			// If the session is not active, redirect to the login page
+			// TODO: fix incorrect redirection with headers
+			header('Location: login/');
+			exit;
 		}
 	}
 
@@ -174,16 +181,5 @@ class Router
 		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
 
 		return $routeDefinedMethod === $httpRequestMethodUsed;
-	}
-
-	/**
-	 * 
-	 * Redis integrations
-	 * 
-	 */
-	private function isLoggedIn(): bool
-	{
-		// The session controller must return a Redis flag to indicate if there's a session or not 
-		return true;
 	}
 }
