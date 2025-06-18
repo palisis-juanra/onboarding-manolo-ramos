@@ -37,16 +37,40 @@ class Router
 		// Extract the last part of the current URL
 		$currentURL = $this->parseURL($_SERVER['REQUEST_URI']);
 		// Get the HTTP method of the request (GET, POST, etc.)
-		$requestMethodUsed = $_SERVER['REQUEST_METHOD'];
+		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
-		foreach ($this->routes as $route => $routeDetails) {
+		foreach ($this->routes as $route => $routeMethod) {
+			// Check if the current URL matches the saved route pattern
 			if (preg_match('#^' . $route . '$#', $currentURL, $action)) {
-				$controllerFunction = $routeDetails['details']['controller'];
-				$routeMethod = $routeDetails['details']['method'];
+				// If the HTTP method used is not defined for this route, skip to the next route
+				if (isset($httpRequestMethodUsed) && !isset($routeMethod[$httpRequestMethodUsed])) {
+					continue;
+				}
+				
+				$controllerFunction = null;
+				$routeDefinedMethod = null;
+
+				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
+				foreach ($routeMethod as $method => $routeDetails) {
+					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
+					if ($this->compareRouteHttpMethodUsed($method, $httpRequestMethodUsed)) {
+						$controllerFunction = $routeDetails['controller'];
+						$routeDefinedMethod = $routeDetails['method'];
+						break;
+					}
+				}
+
+				// If no controller function or method is defined for the route, handle not found
+				if ($controllerFunction === null || $routeDefinedMethod === null) {
+					$this->handleNotFound();
+					return;
+				}
+
+				// Call the controller function with the route, saved method, and the current HTTP request method used
 				$this->$controllerFunction(
 					$route, 
-					$routeMethod,
-					$requestMethodUsed
+					$routeDefinedMethod,
+					$httpRequestMethodUsed
 				);
 
 				return;
@@ -54,7 +78,7 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		self::handleNotFound();
+		$this->handleNotFound();
 	}
 
 	/**
@@ -97,29 +121,54 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionController($route, $method)
+	private function handleSessionController($route, $definedMethod, $httpRequestMethodUsed)
 	{
 		$sessionController = new SessionController($this->redisConfig);
 
 		switch ($route) {
 			case '/':
-				// TODO: Implement redirection to login if not logged in, redirection to dashboard if logged in, 
-				echo 'Implement session and redirection login here.';
+				// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
+				echo 'Implement session and redirection logic here.';
 				break;
 			case '/login':
-				if ($method === 'POST') {
+				// TODO: If the user is logged in, redirect to the dashboard
+				if ($definedMethod === 'POST') {
 					$sessionController->logIn();
-				} else if ($method === 'GET') {
-					self::handleNotFound();
+				} else if ($definedMethod === 'GET') {
+					$this->handleNotFound();
+				}
+
+				break;
+			case '/login/loginAction':
+				if ($definedMethod === 'POST') {
+					echo 'entra al post';
+				} else {
+					echo 'no entra';
 				}
 				break;
 			case '/logout':
 				$sessionController->logOut();
 				break;
 			default:
-				self::handleNotFound();
+				$this->handleNotFound();
 				break;
 		}
+	}
+
+	/**
+	 * Compares the HTTP method used in the request with the method defined in the route.
+	 *
+	 * @param string $routeDefinedMethod The HTTP method defined for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method used in the request.
+	 * @return bool True if they match, false otherwise.
+	 */
+	private function compareRouteHttpMethodUsed($routeDefinedMethod, $httpRequestMethodUsed): bool
+	{
+		// Convert to uppecase
+		$routeDefinedMethod = strtoupper($routeDefinedMethod);
+		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
+
+		return $routeDefinedMethod === $httpRequestMethodUsed;
 	}
 
 	/**
