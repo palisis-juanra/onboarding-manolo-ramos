@@ -6,7 +6,7 @@ class Routes
 {
 	protected static $routes = [
 		'/' => [
-			'POST' => [
+			'GET' => [
 				'controller' => 'handleSessionController',
 				'method' => 'GET',
 				'action' => 'login',
