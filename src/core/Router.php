@@ -7,7 +7,12 @@ use Controllers\SessionController;
 use Routes\Routes;
 class Router
 {
+	// Instances
 	private $templateRenderer;
+	
+	// Controller instances
+	private $sessionController;
+
 	private $routes;
 	private $redisConfig;
 	private $tourcmsConfig;
@@ -105,7 +110,7 @@ class Router
 	}
 
 	/**
-	 * Renders the 404 error template.
+	 * Renders the 404 error template and also throws the error code.
 	 *
 	 * @return void 
 	 */
@@ -123,8 +128,9 @@ class Router
 	 */
 	private function handleSessionController($route, $definedMethod, $httpRequestMethodUsed)
 	{
-		$sessionController = new SessionController($this->redisConfig);
+		$this->sessionController = new SessionController($this->redisConfig);
 
+		// TODO: evaluate if moving the logic inside each case to individual functions is suitable. 
 		switch ($route) {
 			case '/':
 				// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
@@ -132,12 +138,11 @@ class Router
 				break;
 			case '/login':
 				// TODO: If the user is logged in, redirect to the dashboard
-				if ($definedMethod === 'POST') {
-					$sessionController->logIn();
-				} else if ($definedMethod === 'GET') {
+				if ($definedMethod === 'GET') {
+					$this->sessionController->logIn();
+				} else if ($definedMethod === 'POST') {
 					$this->handleNotFound();
 				}
-
 				break;
 			case '/login/loginAction':
 				if ($definedMethod === 'POST') {
@@ -147,7 +152,7 @@ class Router
 				}
 				break;
 			case '/logout':
-				$sessionController->logOut();
+				$this->sessionController->logOut();
 				break;
 			default:
 				$this->handleNotFound();
