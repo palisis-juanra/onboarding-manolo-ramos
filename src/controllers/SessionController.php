@@ -9,6 +9,7 @@ use Helpers\RedisInstanceHelper;
 
 class SessionController
 {
+	// Instances
 	private $templateRenderer;
 
 	protected $redisClient;
@@ -23,30 +24,9 @@ class SessionController
 			$redisConfig['REDIS_PASSWORD']
 		);
 
-		// Start the session or create a new one if it doesn't exist
-		self::createSession();
-
 		$this->templateRenderer = new TemplateRendererService();
 	}
-	
-	private function createSession() {
-		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
-			// If session key exists, check if the session is still valid
-			if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < self::SESSION_TTL) {
-				// Session is valid, continue
-				session_start();
-				return;
-			} else {
-				// Session expired, clear the session key
-				$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
-			}
-		}
 
-		// Store an unique session key in Redis
-		$this->redisClient->storeItemInRedis('session_key', bin2hex(random_bytes(16)), RedisInstanceHelper::REDIS_TYPE_STRING);
-	}
-
-	// TODO: redis, redir if logged, handle submit
 	/**
 	 * Handles the login request.
 	 *
@@ -55,7 +35,47 @@ class SessionController
 	 *
 	 * @return void
 	 */
-	public function logIn()
+	public function handlelogIn()
+	{
+		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
+			// If a session key exists, redirect to the home page or dashboard
+			header('Location: /onboarding-manolo-ramos');
+			exit;
+		} else {
+			$this->createSession();
+		}
+	}
+	
+	/**
+	 * Creates a new session if the current session is invalid or expired.
+	 *
+	 * This method checks if the session is still valid based on the time-to-live (TTL)
+	 * and creates a new session if necessary.
+	 *
+	 * @return void
+	 */
+	private function createSession() {
+		// Check if the session is still valid
+		if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < self::SESSION_TTL) {
+			return; // Session is still valid, no need to create a new one
+		} else {
+			// Session expired, clear the session key
+			$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
+		}
+
+		// Store a unique session key in Redis
+		$session_id = session_id();
+		$this->redisClient->storeItemInRedis('session_key', $session_id, RedisInstanceHelper::REDIS_TYPE_STRING);
+	}
+
+	/**
+	 * Renders the login page.
+	 *
+	 * This method renders the login page template.
+	 *
+	 * @return void
+	 */
+	public function renderLoginPage()
 	{
 		$this->templateRenderer->renderTemplate('login/loginPage', []);
 	}
@@ -68,10 +88,22 @@ class SessionController
 	 *
 	 * @return void
 	 */
-	public function logOut()
+	public function handlelogOut()
 	{
-		//TODO: Implement the logout logic here
+		// Clear the session key from Redis
+		session_destroy();
+		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
+
+		// Redirect to the login page
+		header('Location: login/');
+		
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
+	}
+
+	public function checkActiveRedisSession(): bool
+	{
+		// TODO: The session controller must return a Redis flag to indicate if there's a session or not 
+		return true;
 	}
 
 	/**
@@ -84,7 +116,7 @@ class SessionController
 	 */
 	private function redirectLogin()
 	{
-		header('Location: /login');
+		header('Location: login/');
 		exit;
 	}
 
