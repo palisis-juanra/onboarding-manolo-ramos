@@ -17,14 +17,7 @@ class Routes
 				'controller' => 'handleSessionController',
 				'method' => 'GET',
 				'action' => 'login',
-			],
-			'POST' => [
-				'details' => [
-					'controller' => 'handleSessionController',
-					'method' => 'POST',
-					'action' => 'login',
-				],
-			],
+			]
 		],
 		'/login/loginAction' => [
 			'POST' => [
