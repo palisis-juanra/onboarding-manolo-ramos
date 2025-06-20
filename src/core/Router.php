@@ -129,8 +129,9 @@ class Router
 	{
 		$this->sessionController = new SessionController($this->redisConfig);
 
-		if ($this->sessionController->checkActiveRedisSession()){
-			// TODO: evaluate if moving the logic inside each case to individual functions is suitable. 
+		// TODO: temporal flag to check if the redis session is active before loading the controller
+		if ($this->sessionController->checkActiveRedisSession()) {
+			// TODO: evaluate if moving the logic of each case into individual functions is suitable. 
 			switch ($route) {
 				case '/':
 					// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
@@ -176,7 +177,7 @@ class Router
 	 */
 	private function compareRouteHttpMethodUsed($routeDefinedMethod, $httpRequestMethodUsed): bool
 	{
-		// Convert to uppecase
+		// Convert to uppercase
 		$routeDefinedMethod = strtoupper($routeDefinedMethod);
 		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
 
