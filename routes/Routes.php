@@ -32,7 +32,19 @@ class Routes
 				'method' => 'GET',
 				'action' => 'logout',
 			],
-		]
+		],
+		'/dashboard' => [
+			'GET' => [
+				'controller' => 'handleChannelListController',
+				'method' => 'GET',
+				'action' => 'showChannelList',
+			],
+			'POST' => [
+				'controller' => 'handleChannelListController',
+				'method' => 'POST',
+				'action' => 'selectChannel',
+			]
+		],
 	];
 
 	public static function getRoutes() {

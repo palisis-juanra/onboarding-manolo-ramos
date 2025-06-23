@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> _partials/_header }}
+<body class="h-screen w-screen flex justify-center items-center">
+	<main>
+		<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+			<form action="/onboarding-manolo-ramos/dashboard/pickChannel" method="post">
+				<div class="mb-4">
+					<label class="block text-gray-700 font-bold mb-2" for="channelList">
+						Channel list
+					</label>
+					<select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="channelList" required>
+						<option value="">Select a channel</option>
+						<option value="channel1">Channel 1</option>
+						<option value="channel2">Channel 2</option>
+						<option value="channel3">Channel 3</option>
+					</select>
+				</div>
+				<div class="flex items-center justify-center">
+					<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+					Select channel
+					</button>
+				</div>
+			</form>
+		</div>
+	</main>
+	{{> _partials/_footer }}
+</body>
+</html>
