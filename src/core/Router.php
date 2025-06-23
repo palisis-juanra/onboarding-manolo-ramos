@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Controllers\RedisSessionHandler;
 use Services\TemplateRendererService;
 use Controllers\SessionController;
 use Routes\Routes;
@@ -12,6 +13,7 @@ class Router
 	
 	// Controller instances
 	private $sessionController;
+	private $redisSessionHandler;
 
 	private $routes;
 	private $redisConfig;
@@ -127,10 +129,15 @@ class Router
 	 */
 	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed)
 	{
-		$this->sessionController = new SessionController($this->redisConfig);
+		// TODO: work in progress, this is a temporary solution to handle the session controller
+		$this->redisSessionHandler = new RedisSessionHandler(
+			$this->redisConfig,
+		);
+
+		$this->sessionController = new SessionController($this->redisSessionHandler);
 
 		// TODO: temporal flag to check if the redis session is active before loading the controller
-		if ($this->sessionController->checkActiveRedisSession()) {
+		if ($this->sessionController->checkIfSessionIsActive()) {
 			// TODO: evaluate if moving the logic of each case into individual functions is suitable. 
 			switch ($route) {
 				case '/':
@@ -148,13 +155,13 @@ class Router
 					break;
 				case '/login/loginAction':
 					if ($routeMethod === 'POST') {
-						$this->sessionController->handlelogIn();
+						$this->sessionController->handleLogIn();
 					} else {
 						$this->handleNotFound();
 					}
 					break;
 				case '/logout':
-					$this->sessionController->handlelogOut();
+					$this->sessionController->handleLogOut();
 					break;
 				default:
 					$this->handleNotFound();
