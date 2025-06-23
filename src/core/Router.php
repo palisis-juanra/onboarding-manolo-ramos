@@ -2,7 +2,6 @@
 
 namespace Core;
 
-use Controllers\RedisSessionHandler;
 use Services\TemplateRendererService;
 use Controllers\SessionController;
 use Routes\Routes;
@@ -13,7 +12,6 @@ class Router
 	
 	// Controller instances
 	private $sessionController;
-	private $redisSessionHandler;
 
 	private $routes;
 	private $redisConfig;
@@ -132,12 +130,8 @@ class Router
 		// Get the route names for easy reference
 		$routeNames = $this->getRouteNames();
 
-		// TODO: work in progress, this is a temporary solution to handle the session controller
-		$this->redisSessionHandler = new RedisSessionHandler(
-			$this->redisConfig,
-		);
-
-		$this->sessionController = new SessionController($this->redisSessionHandler);
+		// Initialize the Redis session handler
+		$this->sessionController = new SessionController($this->redisConfig);
 
 		// TODO: temporal flag to check if the redis session is active before loading the controller
 		if ($this->sessionController->checkIfSessionIsActive()) {
@@ -205,7 +199,7 @@ class Router
 	private function getRouteNames()
 	{
 		$routeNameList = [];
-		foreach ($this->routes as $route) {
+		foreach ($this->routes as $route => $routeMethod) {
 			$routeNameList[$route] = $route;
 		}
 
