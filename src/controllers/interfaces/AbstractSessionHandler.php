@@ -1,7 +1,11 @@
 <?php
 
-interface SessionHandlerInterface
+namespace Controllers\interfaces;
+
+abstract class AbstractSessionHandler
 {
+	protected const SESSION_TTL = 0;
+
 	/**
 	 * Handles the login request.
 	 *
@@ -10,7 +14,7 @@ interface SessionHandlerInterface
 	 *
 	 * @return void
 	 */
-	public function handleLogIn();
+	public function handleLogIn(): void {}
 
 	/**
 	 * Handles the logout request.
@@ -20,7 +24,7 @@ interface SessionHandlerInterface
 	 *
 	 * @return void
 	 */
-	public function handleLogout();
+	public function handleLogOut(): void {}
 
 	/**
 	 * Creates a new session if the current session is invalid or expired.
@@ -30,12 +34,12 @@ interface SessionHandlerInterface
 	 *
 	 * @return void
 	 */
-	public function createSession();
+	private function createSession(): void {}
 
 	/**
 	 * Checks if the current session is active
 	 */
-	public function checkIfSessionIsActive();
+	public function checkIfSessionIsActive(): bool {}
 
 	/**
 	 * Renders the login page.
@@ -44,5 +48,5 @@ interface SessionHandlerInterface
 	 *
 	 * @return void
 	 */
-	public function renderLoginPage();
+	public function renderLoginPage(): void {}
 }
