@@ -129,6 +129,9 @@ class Router
 	 */
 	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed)
 	{
+		// Get the route names for easy reference
+		$routeNames = $this->getRouteNames();
+
 		// TODO: work in progress, this is a temporary solution to handle the session controller
 		$this->redisSessionHandler = new RedisSessionHandler(
 			$this->redisConfig,
@@ -140,12 +143,12 @@ class Router
 		if ($this->sessionController->checkIfSessionIsActive()) {
 			// TODO: evaluate if moving the logic of each case into individual functions is suitable. 
 			switch ($route) {
-				case '/':
+				case $routeNames['/']:
 					// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
 					echo 'Implement session and redirection logic here.';
 					header('Location: login/');
 					break;
-				case '/login':
+				case $routeNames['/login']:
 					// TODO: If the user is logged in, redirect to the dashboard
 					if ($routeMethod === 'GET') {
 						$this->sessionController->renderLoginPage();
@@ -153,14 +156,14 @@ class Router
 						$this->handleNotFound();
 					}
 					break;
-				case '/login/loginAction':
+				case $routeNames['/login/loginAction']:
 					if ($routeMethod === 'POST') {
 						$this->sessionController->handleLogIn();
 					} else {
 						$this->handleNotFound();
 					}
 					break;
-				case '/logout':
+				case $routeNames['/logout']:
 					$this->sessionController->handleLogOut();
 					break;
 				default:
@@ -189,5 +192,23 @@ class Router
 		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
 
 		return $routeDefinedMethod === $httpRequestMethodUsed;
+	}
+
+	/**
+	 * Returns a list of route names.
+	 *
+	 * This method iterates through the defined routes and returns an associative array
+	 * where the keys and values are the route names.
+	 *
+	 * @return array An associative array of route names.
+	 */
+	private function getRouteNames()
+	{
+		$routeNameList = [];
+		foreach ($this->routes as $route) {
+			$routeNameList[$route] = $route;
+		}
+
+		return $routeNameList;
 	}
 }
