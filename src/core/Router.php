@@ -130,36 +130,66 @@ class Router
 		// Get the route names for easy reference
 		$routeNames = $this->getRouteNames();
 
+		// Routes that don't require session verification
+		$routesWithoutSessionCheck = [
+			$routeNames['/'],
+			$routeNames['/login'],
+			$routeNames['/login/loginAction'],
+		];
+
 		// Initialize the Redis session handler
 		$this->sessionController = new SessionController($this->redisConfig);
 
-		// TODO: temporal flag to check if the redis session is active before loading the controller
-		if ($this->sessionController->checkIfSessionIsActive()) {
-			// TODO: evaluate if moving the logic of each case into individual functions is suitable. 
+		// Check if the route is in the list of excluded routes or if the session is active
+		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $routeNames['/']:
-					// TODO: Implement redirection to login page if not logged in, redirection to dashboard if logged in.
-					echo 'Implement session and redirection logic here.';
-					header('Location: login/');
+					// Check if the user is logged in
+					if ($this->sessionController->checkIfSessionIsActive()) {
+						// Redirect to the dashboard
+						header('Location: dashboard/');
+						exit;
+					} else {
+						// Redirect to the login page
+						header('Location: login/');
+						exit;
+					}
+
 					break;
+
 				case $routeNames['/login']:
-					// TODO: If the user is logged in, redirect to the dashboard
-					if ($routeMethod === 'GET') {
+					if ($this->sessionController->checkIfSessionIsActive()) {
+						// Redirect to the dashboard
+						header('Location: dashboard/');
+						exit;
+					} else if ($routeMethod === 'GET') {
 						$this->sessionController->renderLoginPage();
 					} else {
 						$this->handleNotFound();
 					}
+
 					break;
+
 				case $routeNames['/login/loginAction']:
 					if ($routeMethod === 'POST') {
 						$this->sessionController->handleLogIn();
 					} else {
 						$this->handleNotFound();
 					}
+
 					break;
+
 				case $routeNames['/logout']:
-					$this->sessionController->handleLogOut();
+					if ($this->sessionController->checkIfSessionIsActive()) {
+						$this->sessionController->handleLogOut();
+					} else {
+						// If the session is not active, redirect to the login page
+						header('Location: login/');
+						exit;
+					}
+					
 					break;
+
 				default:
 					$this->handleNotFound();
 					break;
