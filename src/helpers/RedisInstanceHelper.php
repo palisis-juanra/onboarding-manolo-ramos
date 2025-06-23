@@ -6,8 +6,8 @@ use Services\RedisService;
 
 class RedisInstanceHelper extends RedisService
 {
-	private static $instance = null;
 	protected $redis;
+	private static $instance = null;
 
 	private function __construct($host, $port, $password) 
 	{
