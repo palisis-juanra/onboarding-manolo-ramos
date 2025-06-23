@@ -8,6 +8,7 @@ use Services\SessionHandlerService;
 
 class SessionController
 {
+	// Service instances
 	protected $sessionHandlerService;
 
 	public function __construct(array $redisConfig)

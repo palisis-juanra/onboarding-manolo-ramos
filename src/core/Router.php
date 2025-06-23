@@ -2,18 +2,22 @@
 
 namespace Core;
 
-use Services\TemplateRendererService;
 use Controllers\SessionController;
+use Controllers\ChannelListController;
+use Services\TemplateRendererService;
 use Routes\Routes;
 class Router
 {
-	// Instances
-	private $templateRenderer;
-	
 	// Controller instances
 	private $sessionController;
+	private $channelListController;
 
+	// Service Instances
+	private $templateRenderer;
+	
+	// Member variables
 	private $routes;
+	private $routeNames;
 	private $redisConfig;
 	private $tourcmsConfig;
 	
@@ -24,7 +28,10 @@ class Router
 		$this->redisConfig = $envConfig['redis'];
 		$this->tourcmsConfig = $envConfig['tourcms'];
 
+		// Get the route names for easy reference
 		$this->routes = Routes::getRoutes();
+		$this->routeNames = $this->getRouteNames($this->routes);
+
 		$this->templateRenderer = new TemplateRendererService();
 	}
 
@@ -127,14 +134,11 @@ class Router
 	 */
 	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed)
 	{
-		// Get the route names for easy reference
-		$routeNames = $this->getRouteNames();
-
 		// Routes that don't require session verification
 		$routesWithoutSessionCheck = [
-			$routeNames['/'],
-			$routeNames['/login'],
-			$routeNames['/login/loginAction'],
+			$this->routeNames['/'],
+			$this->routeNames['/login'],
+			$this->routeNames['/login/loginAction'],
 		];
 
 		// Initialize the Redis session handler
@@ -143,7 +147,7 @@ class Router
 		// Check if the route is in the list of excluded routes or if the session is active
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionController->checkIfSessionIsActive()) {
 			switch ($route) {
-				case $routeNames['/']:
+				case $this->routeNames['/']:
 					// Check if the user is logged in
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
@@ -157,7 +161,7 @@ class Router
 
 					break;
 
-				case $routeNames['/login']:
+				case $this->routeNames['/login']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						header('Location: dashboard/');
@@ -170,7 +174,7 @@ class Router
 
 					break;
 
-				case $routeNames['/login/loginAction']:
+				case $this->routeNames['/login/loginAction']:
 					if ($routeMethod === 'POST') {
 						$this->sessionController->handleLogIn();
 					} else {
@@ -179,7 +183,7 @@ class Router
 
 					break;
 
-				case $routeNames['/logout']:
+				case $this->routeNames['/logout']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						$this->sessionController->handleLogOut();
 					} else {
@@ -197,6 +201,40 @@ class Router
 		} else {
 			// If the session is not active, redirect to the login page
 			// TODO: fix incorrect redirection with headers
+			header('Location: login/');
+			exit;
+		}
+	}
+
+	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed)
+	{	
+		// Initialize the Channel List Controller
+		$this->channelListController = new ChannelListController();
+
+		// Check if the route is in the list of excluded routes or if the session is active
+		if ($this->sessionController->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/dashboard']:
+					if ($this->sessionController->checkIfSessionIsActive()) {
+						if ($routeMethod === 'GET') {
+							$this->channelListController->renderChannelListPage();
+						} else {
+							$this->handleNotFound();
+						}
+					} else {
+						// Redirect to the login page
+						header('Location: login/');
+						exit;
+					}
+
+					break;
+
+				default:
+					$this->handleNotFound();
+					break;
+			}
+		} else {
+			// If the session is not active, redirect to the login page
 			header('Location: login/');
 			exit;
 		}
@@ -226,10 +264,10 @@ class Router
 	 *
 	 * @return array An associative array of route names.
 	 */
-	private function getRouteNames()
+	private function getRouteNames($routes)
 	{
 		$routeNameList = [];
-		foreach ($this->routes as $route => $routeMethod) {
+		foreach ($routes as $route => $routeMethod) {
 			$routeNameList[$route] = $route;
 		}
 
