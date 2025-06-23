@@ -11,11 +11,11 @@ use Controllers\interfaces\AbstractSessionHandler;
 
 class RedisSessionHandler extends AbstractSessionHandler
 {
+	protected const SESSION_TTL = 1800; // 30 minutes
+
 	// Instances
 	private $templateRenderer;
-
 	protected $redisClient;
-	protected const SESSION_TTL = 1800; // 30 minutes
 
 	public function __construct(array $redisConfig)
 	{
