@@ -6,6 +6,9 @@ use Controllers\SessionController;
 use Controllers\ChannelListController;
 
 use Routes\Routes;
+use Services\TemplateRendererService;
+use Services\TourCMSClientService;
+
 class Router
 {
 	// Controller instances
@@ -14,27 +17,28 @@ class Router
 
 	// Service Instances
 	private $templateRenderer;
-	private $tourCMSclient;
-
-	// Config
-	private $redisConfig;
 	
 	// Member variables
 	private $routes;
 	private $routeNames;
 	
 	// Initialize the template rendering service and route collection.
-	public function __construct($tourCMSclient, $templateRenderer, $redisConfig)
+	public function __construct(
+		SessionController $sessionController,
+		ChannelListController $channelListController,
+		TemplateRendererService $templateRenderer
+	)
 	{
-		// Instances using dependency injection
-		$this->tourCMSclient = $tourCMSclient;
-		$this->templateRenderer = $templateRenderer;
-
-		$this->redisConfig = $redisConfig;
-
 		// Get the route names for easy reference
 		$this->routes = Routes::getRoutes();
 		$this->routeNames = $this->getRouteNames($this->routes);
+		
+		// Controller instances
+		$this->sessionController = $sessionController;
+		$this->channelListController = $channelListController;
+		// Service instances
+		$this->templateRenderer = $templateRenderer;
+
 	}
 
 	/**
@@ -143,12 +147,6 @@ class Router
 			$this->routeNames['/login/loginAction'],
 		];
 
-		// Initialize the Redis session handler
-		$this->sessionController = new SessionController(
-			$this->redisConfig,
-			$this->templateRenderer
-		);
-
 		// Check if the route is in the list of excluded routes or if the session is active
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionController->checkIfSessionIsActive()) {
 			switch ($route) {
@@ -156,11 +154,11 @@ class Router
 					// Check if the user is logged in
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
-						header('Location: dashboard/');
+						header('Location: /onboarding-manolo-ramos/dashboard/');
 						exit;
 					} else {
 						// Redirect to the login page
-						header('Location: login/');
+						header('Location: /onboarding-manolo-ramos/login/');
 						exit;
 					}
 
@@ -169,7 +167,7 @@ class Router
 				case $this->routeNames['/login']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
-						header('Location: dashboard/');
+						header('Location: /onboarding-manolo-ramos/dashboard/');
 						exit;
 					} else if ($routeMethod === 'GET') {
 						$this->sessionController->renderLoginPage();
@@ -193,7 +191,7 @@ class Router
 						$this->sessionController->handleLogOut();
 					} else {
 						// If the session is not active, redirect to the login page
-						header('Location: login/');
+						header('Location: /onboarding-manolo-ramos/login/');
 						exit;
 					}
 					
@@ -206,29 +204,27 @@ class Router
 		} else {
 			// If the session is not active, redirect to the login page
 			// TODO: fix incorrect redirection with headers
-			header('Location: login/');
+			header('Location: /onboarding-manolo-ramos/login/');
 			exit;
 		}
 	}
 
 	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed)
 	{	
-		// Initialize the Channel List Controller
-		$this->channelListController = new ChannelListController($this->tourCMSclient, $this->templateRenderer);
-
 		// Check if the route is in the list of excluded routes or if the session is active
 		if ($this->sessionController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						if ($routeMethod === 'GET') {
-							$this->channelListController->renderChannelListPage();
+							$this->channelListController->showChannelList();
+							//$this->channelListController->renderChannelListPage();
 						} else {
 							$this->handleNotFound();
 						}
 					} else {
 						// Redirect to the login page
-						header('Location: login/');
+						header('Location: /onboarding-manolo-ramos/login/');
 						exit;
 					}
 
@@ -240,7 +236,7 @@ class Router
 			}
 		} else {
 			// If the session is not active, redirect to the login page
-			header('Location: login/');
+			header('Location: /onboarding-manolo-ramos/login/');
 			exit;
 		}
 	}
