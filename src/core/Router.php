@@ -7,7 +7,6 @@ use Controllers\ChannelListController;
 
 use Routes\Routes;
 use Services\TemplateRendererService;
-use Services\TourCMSClientService;
 
 class Router
 {
@@ -219,6 +218,20 @@ class Router
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						if ($routeMethod === 'GET') {
 							$this->channelListController->renderChannelListPage();
+						} else {
+							$this->handleNotFound();
+						}
+					} else {
+						// Redirect to the login page
+						header('Location: /onboarding-manolo-ramos/login/');
+						exit;
+					}
+
+					break;
+				case $this->routeNames['/dashboard/pickChannel']:
+					if ($this->sessionController->checkIfSessionIsActive()) {
+						if ($routeMethod === 'POST') {
+							$this->channelListController->submitChannelPick();
 						} else {
 							$this->handleNotFound();
 						}
