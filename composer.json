@@ -15,6 +15,7 @@
             "Core\\": "src/core/",
             "Helpers\\": "src/helpers/",
             "Services\\": "src/services/",
+            "Utils\\": "src/utils/",
             "Routes\\": "routes/",
             "Templates\\": "templates/"
         }

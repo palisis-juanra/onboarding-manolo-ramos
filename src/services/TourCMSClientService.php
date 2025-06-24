@@ -1,12 +1,13 @@
 <?php
+
 namespace Services;
 
 use TourCMS\Utils\TourCMS as TourCMS;
 
 class TourCMSClientService
 {
-	private static $instance = null;
-	private $tourCMS = null;
+	private static $instance;
+	private $tourCMS;
 
 	/**
 	 * TourCMSClientService constructor.
@@ -14,29 +15,16 @@ class TourCMSClientService
 	 * Initializes the TourCMS client with environment variables.
 	 * This constructor is private to enforce the singleton pattern.
 	 */
-	private function __construct()
+	private function __construct($tourCMSconfig)
 	{
-		$this->initTourCMSClient();
-	}
-	
-	/**
-	 * Initializes the TourCMS client with environment variables.
-	 *
-	 * This method sets up the TourCMS client using the environment variables defined in the .env file.
-	 * It retrieves the necessary parameters such as marketplace ID, API key, result type, and timeout
-	 * to create an instance of the TourCMS client.
-	 */
-	private function initTourCMSClient()
-	{
-		// Update env variables from array config variable
 		$this->tourCMS = new TourCMS(
-			$envTCMSmarketplaceID,
-			$envTCMSapiKey,
-			$envTCMSresultType,
-			$envTCMStimeout
+			$tourCMSconfig['TCMS_MARKETPLACE_ID'],
+			$tourCMSconfig['TCMS_API_KEY'],
+			$tourCMSconfig['TCMS_RESULT_TYPE'],
+			$tourCMSconfig['TCMS_TIMEOUT'],
 		);
 
-		$this->tourCMS->set_base_url($envTCMSapiUrl);
+		$this->tourCMS->set_base_url($tourCMSconfig['TCMS_API_URL']);
 	}
 
 	/**
@@ -47,22 +35,14 @@ class TourCMSClientService
 	 *
 	 * @return TourCMSClientService The singleton instance of the TourCMSClientService.
 	 */
-	public static function getInstance()
+	public static function getInstance($tourCMSconfig)
 	{
 		if (self::$instance === null) {
-			self::$instance = new TourCMS();
+			self::$instance = new self(
+				$tourCMSconfig
+			);
 		}
 		
 		return self::$instance;
-	}
-
-	/**
-	 * Returns the instance of the TourCMS client.
-	 * 
-	 * @return TourCMS The TourCMS client instance.
-	 */
-	public function getTourCMSClient()
-	{
-		return $this->tourCMS;
 	}
 }
