@@ -38,11 +38,13 @@ class Routes
 				'controller' => 'handleChannelListController',
 				'method' => 'GET',
 				'action' => 'showChannelList',
-			],
+			]
+		],
+		'/dashboard/pickChannel' => [
 			'POST' => [
 				'controller' => 'handleChannelListController',
 				'method' => 'POST',
-				'action' => 'selectChannel',
+				'action' => 'pickChannel',
 			]
 		],
 	];
