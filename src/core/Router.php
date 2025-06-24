@@ -4,7 +4,7 @@ namespace Core;
 
 use Controllers\SessionController;
 use Controllers\ChannelListController;
-use Services\TemplateRendererService;
+
 use Routes\Routes;
 class Router
 {
@@ -14,25 +14,27 @@ class Router
 
 	// Service Instances
 	private $templateRenderer;
+	private $tourCMSclient;
+
+	// Config
+	private $redisConfig;
 	
 	// Member variables
 	private $routes;
 	private $routeNames;
-	private $redisConfig;
-	private $tourcmsConfig;
 	
 	// Initialize the template rendering service and route collection.
-	public function __construct(array $envConfig)
+	public function __construct($tourCMSclient, $templateRenderer, $redisConfig)
 	{
-		// Retrieve config parameters for controllers
-		$this->redisConfig = $envConfig['redis'];
-		$this->tourcmsConfig = $envConfig['tourcms'];
+		// Instances using dependency injection
+		$this->tourCMSclient = $tourCMSclient;
+		$this->templateRenderer = $templateRenderer;
+
+		$this->redisConfig = $redisConfig;
 
 		// Get the route names for easy reference
 		$this->routes = Routes::getRoutes();
 		$this->routeNames = $this->getRouteNames($this->routes);
-
-		$this->templateRenderer = new TemplateRendererService();
 	}
 
 	/**
