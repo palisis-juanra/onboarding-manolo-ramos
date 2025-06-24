@@ -11,16 +11,9 @@ class SessionHandlerService
 
 	private $templateRenderer;
 
-	public function __construct(array $redisConfig, $templateRenderer)
+	public function __construct($redisClient, $templateRenderer)
 	{
-
-		// Redis client initialization
-		$this->redisClient = RedisInstanceHelper::getInstance(
-			$redisConfig['REDIS_HOST'],
-			$redisConfig['REDIS_PORT'],
-			$redisConfig['REDIS_PASSWORD']
-		);
-
+		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;
 	}
 

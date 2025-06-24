@@ -9,10 +9,11 @@ class ChannelListController
 	// Service instances
 	protected $channelListHandler;
 
-	public function __construct($tourCMSclient, $templateRenderer)
+	public function __construct($tourCMSclient,$redisClient, $templateRenderer)
 	{
 		$this->channelListHandler = new ChannelListHandlerService(
 			$tourCMSclient,
+			$redisClient,
 			$templateRenderer
 		);
 	}
