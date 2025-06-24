@@ -144,7 +144,10 @@ class Router
 		];
 
 		// Initialize the Redis session handler
-		$this->sessionController = new SessionController($this->redisConfig);
+		$this->sessionController = new SessionController(
+			$this->redisConfig,
+			$this->templateRenderer
+		);
 
 		// Check if the route is in the list of excluded routes or if the session is active
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionController->checkIfSessionIsActive()) {
@@ -211,7 +214,7 @@ class Router
 	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed)
 	{	
 		// Initialize the Channel List Controller
-		$this->channelListController = new ChannelListController();
+		$this->channelListController = new ChannelListController($this->tourCMSclient, $this->templateRenderer);
 
 		// Check if the route is in the list of excluded routes or if the session is active
 		if ($this->sessionController->checkIfSessionIsActive()) {

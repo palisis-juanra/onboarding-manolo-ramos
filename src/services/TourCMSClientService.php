@@ -28,7 +28,7 @@ class TourCMSClientService
 	}
 
 	/**
-	 * Returns the singleton instance of the TourCMSClientService.
+	 * Returns the singleton instance of the TourCMSClient Service.
 	 *
 	 * This method ensures that only one instance of the TourCMSClientService is created
 	 * and returns that instance. If the instance does not exist, it creates a new one.

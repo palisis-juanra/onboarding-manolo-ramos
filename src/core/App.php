@@ -15,7 +15,7 @@ class App
 	{
 		// Init core Service instances
 		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms']);
-		$this->templateRenderer = new TemplateRendererService();
+		$this->templateRenderer = TemplateRendererService::getInstance();
 
 		$this->router = new Router(
 			$this->tourCMSclient,

@@ -7,11 +7,14 @@ use Services\ChannelListHandlerService;
 class ChannelListController 
 {
 	// Service instances
-	protected $channelListHandler;
+	private $channelListHandler;
 
-	public function __construct()
+	public function __construct($tourCMSclient, $templateRenderer)
 	{
-		$this->channelListHandler = new ChannelListHandlerService;
+		$this->channelListHandler = new ChannelListHandlerService(
+			$tourCMSclient,
+			$templateRenderer
+		);
 	}
 
 	public function showChannelList()
