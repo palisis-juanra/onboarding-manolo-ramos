@@ -7,6 +7,7 @@ use Core\Router;
 use Controllers\SessionController;
 use Services\TourCMSClientService;
 use Services\TemplateRendererService;
+use Helpers\RedisInstanceHelper;
 class App
 {
 	private $router;
@@ -14,6 +15,7 @@ class App
 	// Services
 	private $tourCMSclient;
 	private $templateRenderer;
+	private $redisClient;
 
 	// Controllers
 	private $sessionController;
@@ -24,15 +26,17 @@ class App
 		// Init core Service instances
 		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms']);
 		$this->templateRenderer = TemplateRendererService::getInstance();
+		$this->redisClient = RedisInstanceHelper::getInstance($envConfig['redis']);
 
 		// Initialize Controllers
 		$this->sessionController = new SessionController(
-			$envConfig['redis'],
+			$this->redisClient,
 			$this->templateRenderer
 		);
 		// Initialize the Channel List Controller
 		$this->channelListController = new ChannelListController(
 			$this->tourCMSclient,
+			$this->redisClient,
 			$this->templateRenderer
 		);
 

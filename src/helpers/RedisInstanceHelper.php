@@ -9,19 +9,29 @@ class RedisInstanceHelper extends RedisService
 	protected $redis;
 	private static $instance = null;
 
-	private function __construct($host, $port, $password) 
+	private function __construct($redisConfig) 
 	{
-		parent::__construct($host, $port, $password);
-		$this->redis = new RedisService($host, $port, $password);
+		parent::__construct(
+			$redisConfig['REDIS_HOST'],
+			$redisConfig['REDIS_PORT'],
+			$redisConfig['REDIS_PASSWORD']
+		);
+		$this->redis = new RedisService(
+			$redisConfig['REDIS_HOST'],
+			$redisConfig['REDIS_PORT'],
+			$redisConfig['REDIS_PASSWORD']
+		);
 	}
 
 	/**
 	 * Get an instance of the Redis Service (singleton pattern)
 	 */
-	public static function getInstance($host, $port, $password) 
+	public static function getInstance($redisConfig) 
 	{
 		if (self::$instance === null) {
-			self::$instance = new self($host, $port, $password);
+			self::$instance = new self(
+				$redisConfig
+			);
 		}
 
 		return self::$instance->redis;
