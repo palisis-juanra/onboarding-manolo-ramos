@@ -2,25 +2,35 @@
 
 namespace Services;
 
+use Helpers\RedisInstanceHelper;
+
 class ChannelListHandlerService 
 {
 	// Service instances
 	private $tourCMSclient;
 	private $templateRenderer;
+	private $redisClient;
 
 	// Member variables
 	private $channelList;
 	private array $templateData;
 
-	public function __construct($tourCMSclient, $templateRenderer)
+	public function __construct($tourCMSclient, $redisClient, $templateRenderer)
 	{
 		$this->tourCMSclient = $tourCMSclient;
+		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;
 	}
 
 	public function submitChannelPick(): void
 	{
-		
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			if(isset($_POST['channelList'])) {
+				// TODO: save on redis
+				print $_POST['channelList'];
+				$this->redisClient->storeItemInRedis('currentChannelID', $_POST['channelList'], RedisInstanceHelper::REDIS_TYPE_STRING);
+			}
+		}
 	}
 
 	public function renderChannelListPage(): void
