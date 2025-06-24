@@ -17,11 +17,6 @@ class ChannelListController
 		);
 	}
 
-	public function showChannelList()
-	{
-		$this->channelListHandler->showChannelList();
-	}
-
 	public function renderChannelListPage()
 	{
 		$this->channelListHandler->renderChannelListPage();
