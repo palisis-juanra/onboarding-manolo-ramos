@@ -2,8 +2,6 @@
 
 namespace Controllers;
 
-require_once __DIR__ . '/../../config/env_config.php';
-
 use Services\SessionHandlerService;
 
 class SessionController
@@ -35,7 +33,7 @@ class SessionController
 			exit;
 		} else {
 			// Redirect to the dashboard after creating a new session
-			header('Location: /dashboard/');
+			header('Location: /onboarding-manolo-ramos/dashboard/');
 			exit;
 		}
 	}

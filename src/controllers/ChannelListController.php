@@ -7,7 +7,7 @@ use Services\ChannelListHandlerService;
 class ChannelListController 
 {
 	// Service instances
-	private $channelListHandler;
+	protected $channelListHandler;
 
 	public function __construct($tourCMSclient, $templateRenderer)
 	{
