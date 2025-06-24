@@ -50,7 +50,7 @@ class Router
 	 *
 	 * @return void
 	 */
-	public function dispatch()
+	public function dispatch(): void
 	{
 		// Extract the last part of the current URL
 		$currentURL = $this->parseURL($_SERVER['REQUEST_URI']);
@@ -105,7 +105,7 @@ class Router
 	 * @param string $url The URL to parse.
 	 * @return string The complete endpoint path.
 	 */
-	private function parseURL($currentURL)
+	private function parseURL($currentURL): string
 	{
 		// Full URL
 		$urlParts = parse_url($currentURL);
@@ -127,7 +127,8 @@ class Router
 	 *
 	 * @return void 
 	 */
-	private function handleNotFound() {
+	private function handleNotFound(): void
+	{
 		$this->templateRenderer->renderTemplate('_common/error/404', []);
 		http_response_code(404);
 		return;
@@ -138,7 +139,7 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed)
+	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed): void
 	{
 		// Routes that don't require session verification
 		$routesWithoutSessionCheck = [
@@ -209,7 +210,7 @@ class Router
 		}
 	}
 
-	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed)
+	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed): void
 	{	
 		// Check if the route is in the list of excluded routes or if the session is active
 		if ($this->sessionController->checkIfSessionIsActive()) {
@@ -217,8 +218,7 @@ class Router
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						if ($routeMethod === 'GET') {
-							$this->channelListController->showChannelList();
-							//$this->channelListController->renderChannelListPage();
+							$this->channelListController->renderChannelListPage();
 						} else {
 							$this->handleNotFound();
 						}
@@ -265,7 +265,7 @@ class Router
 	 *
 	 * @return array An associative array of route names.
 	 */
-	private function getRouteNames($routes)
+	private function getRouteNames($routes): array
 	{
 		$routeNameList = [];
 		foreach ($routes as $route => $routeMethod) {
