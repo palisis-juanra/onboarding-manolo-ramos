@@ -43,6 +43,6 @@ class TourCMSClientService
 			);
 		}
 		
-		return self::$instance;
+		return self::$instance->tourCMS;
 	}
 }
