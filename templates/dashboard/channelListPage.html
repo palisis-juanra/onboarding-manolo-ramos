@@ -10,7 +10,8 @@
 						Select channel
 					</label>
 					
-					<select id="channelList" required>
+					<select name="channelList" id="channelList" required>
+						<option disabled selected>Pick a channel...</option>
 						{{# templateData}}
 							<option value="{{channelId}}">{{channelName}}</option>
 						{{/ templateData}}
