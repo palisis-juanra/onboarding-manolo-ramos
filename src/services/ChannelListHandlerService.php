@@ -10,31 +10,56 @@ class ChannelListHandlerService
 
 	// Member variables
 	private $channelList;
+	private array $templateData;
 
-	public function __constuct($tourCMSclient, $templateRenderer)
+	public function __construct($tourCMSclient, $templateRenderer)
 	{
 		$this->tourCMSclient = $tourCMSclient;
 		$this->templateRenderer = $templateRenderer;
 	}
 
-	public function showChannelList()
-	{
-		$this->channelList = $this->retrieveChannels();
-	}
-
-	private function retrieveChannels()
+	public function submitChannelPick(): void
 	{
 		
 	}
 
-	public function submitChannelPick()
+	public function renderChannelListPage(): void
 	{
-		
+		// Generate template data
+		$this->retrieveChannels();
+		$this->buildChannelsTemplateData();
+
+		// Render the template
+		$this->templateRenderer->renderTemplate('dashboard/channelListPage', ['templateData' => $this->templateData]);
 	}
 
-	public function renderChannelListPage()
+	private function retrieveChannels(): void
 	{
-		// TODO: pass on the channel list data array to the template render.
-		$this->templateRenderer->renderTemplate('channelList/channelListPage', []);
+		$this->channelList = $this->tourCMSclient->list_channels();
+	}
+	
+	private function buildChannelsTemplateData(): void
+	{
+		if (isset($this->channelList->channel)) {
+			foreach($this->channelList->channel as $channel) {
+				$this->templateData[] = [
+					'channelId' => $channel->channel_id ?? '',
+					'accountId' => $channel->account_id ?? '',
+					'channelName' => $channel->channel_name ?? '',
+					'tourCount' => $channel->tour_count ?? '',
+					'logoURL' => $channel->logo_url ? $channel->logo_url : '',
+					'connectionPermission' => $channel->connection_permission ?? '',
+					'lang' => $channel->lang ?? '',
+					'saleCurrency' => $channel->sale_currency ?? '',
+					'homeURL' => $channel->home_url ?? '',
+					'homeURLTracked' => $channel->home_url_tracked ?? '',
+					'shortDesc' => $channel->short_desc ?? '',
+					'longDesc' => $channel->long_desc ?? '',
+				];
+			}
+		} else {
+			error_log("No channel data available!", 0);
+			return;
+		}
 	}
 }
