@@ -40,7 +40,7 @@ class TemplateRendererService
 	 * This method ensures that only one instance of the TemplateRenderer Service is created
 	 * and returns that instance. If the instance does not exist, it creates a new one.
 	 *
-	 * @return TourCMSClientService The singleton instance of the TemplateRenderer Service.
+	 * @return TemplateRendererService The singleton instance of the TemplateRenderer Service.
 	 */
 	public static function getInstance()
 	{
