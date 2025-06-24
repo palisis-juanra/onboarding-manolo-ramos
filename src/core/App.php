@@ -2,14 +2,22 @@
 
 namespace Core;
 
+use Controllers\ChannelListController;
 use Core\Router;
+use Controllers\SessionController;
 use Services\TourCMSClientService;
 use Services\TemplateRendererService;
 class App
 {
 	private $router;
+
+	// Services
 	private $tourCMSclient;
 	private $templateRenderer;
+
+	// Controllers
+	private $sessionController;
+	private $channelListController;
 
 	public function __construct(array $envConfig)
 	{
@@ -17,10 +25,22 @@ class App
 		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms']);
 		$this->templateRenderer = TemplateRendererService::getInstance();
 
-		$this->router = new Router(
+		// Initialize Controllers
+		$this->sessionController = new SessionController(
+			$envConfig['redis'],
+			$this->templateRenderer
+		);
+		// Initialize the Channel List Controller
+		$this->channelListController = new ChannelListController(
 			$this->tourCMSclient,
-			$this->templateRenderer,
-			$envConfig['redis']
+			$this->templateRenderer
+		);
+
+		// Initialize Router
+		$this->router = new Router(
+			$this->sessionController,
+			$this->channelListController,
+			$this->templateRenderer
 		);
 	}
 
