@@ -11,9 +11,12 @@ class SessionController
 	// Service instances
 	protected $sessionHandlerService;
 
-	public function __construct(array $redisConfig)
+	public function __construct(array $redisConfig, $templateRenderer)
 	{
-		$this->sessionHandlerService = new SessionHandlerService($redisConfig);
+		$this->sessionHandlerService = new SessionHandlerService(
+			$redisConfig, 
+			$templateRenderer
+		);
 	}
 
 	/**

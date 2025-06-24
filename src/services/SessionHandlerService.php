@@ -3,8 +3,6 @@
 namespace Services;
 
 use Helpers\RedisInstanceHelper;
-use Services\TemplateRendererService;
-
 
 class SessionHandlerService
 {
@@ -13,7 +11,7 @@ class SessionHandlerService
 
 	private $templateRenderer;
 
-	public function __construct(array $redisConfig)
+	public function __construct(array $redisConfig, $templateRenderer)
 	{
 
 		// Redis client initialization
@@ -23,7 +21,7 @@ class SessionHandlerService
 			$redisConfig['REDIS_PASSWORD']
 		);
 
-		$this->templateRenderer = new TemplateRendererService();
+		$this->templateRenderer = $templateRenderer;
 	}
 
 	/**

@@ -2,21 +2,19 @@
 
 namespace Services;
 
-use Services\TemplateRendererService;
-
 class ChannelListHandlerService 
 {
 	// Service instances
-	private $tourCMS;
+	private $tourCMSclient;
 	private $templateRenderer;
 
 	// Member variables
 	private $channelList;
 
-	public function __constuct($tourCMS)
+	public function __constuct($tourCMSclient, $templateRenderer)
 	{
-		$this->tourCMS = $tourCMS;
-		$this->templateRenderer = new TemplateRendererService();
+		$this->tourCMSclient = $tourCMSclient;
+		$this->templateRenderer = $templateRenderer;
 	}
 
 	public function showChannelList()

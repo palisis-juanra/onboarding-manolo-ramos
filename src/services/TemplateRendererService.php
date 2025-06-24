@@ -5,10 +5,12 @@ namespace Services;
 require_once __DIR__ . '/../../config/config.php';
 
 use Mustache_Engine;
+use Mustache_Exception_UnknownTemplateException;
 use Mustache_Loader_FilesystemLoader;
 
 class TemplateRendererService 
 {
+	private static $instance;
 	private $mustache;
 
 	/**
@@ -16,7 +18,7 @@ class TemplateRendererService
 	 *
 	 * Initializes the Mustache engine with the templates directory and sets up the loader.
 	 */
-	public function __construct() 
+	private function __construct() 
 	{
 		// Init
 		$templatesPath = realpath(dirname(__FILE__) . '/../../templates');
@@ -30,6 +32,23 @@ class TemplateRendererService
 
 		// Instance the Mustache engine
 		$this->mustache = new Mustache_Engine($mustacheEngineArgs);
+	}
+
+	/**
+	 * Returns the singleton instance of the TemplateRenderer Service.
+	 *
+	 * This method ensures that only one instance of the TemplateRenderer Service is created
+	 * and returns that instance. If the instance does not exist, it creates a new one.
+	 *
+	 * @return TourCMSClientService The singleton instance of the TemplateRenderer Service.
+	 */
+	public static function getInstance()
+	{
+		if (self::$instance === null) {
+			self::$instance = new self();
+		}
+		
+		return self::$instance;
 	}
 
 	/**
