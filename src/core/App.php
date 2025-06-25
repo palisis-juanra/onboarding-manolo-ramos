@@ -4,7 +4,7 @@ namespace Core;
 
 use Controllers\ChannelListController;
 use Core\Router;
-use Controllers\SessionController;
+use Services\SessionHandlerService;
 use Services\TourCMSClientService;
 use Services\TemplateRendererService;
 use Helpers\RedisInstanceHelper;
@@ -18,7 +18,7 @@ class App
 	private $redisClient;
 
 	// Controllers
-	private $sessionController;
+	private $sessionHandlerService;
 	private $channelListController;
 
 	public function __construct(array $envConfig)
@@ -29,7 +29,7 @@ class App
 		$this->redisClient = RedisInstanceHelper::getInstance($envConfig['redis']);
 
 		// Initialize Controllers
-		$this->sessionController = new SessionController(
+		$this->sessionHandlerService = new SessionHandlerService(
 			$this->redisClient,
 			$this->templateRenderer
 		);
@@ -42,7 +42,7 @@ class App
 
 		// Initialize Router
 		$this->router = new Router(
-			$this->sessionController,
+			$this->sessionHandlerService,
 			$this->channelListController,
 			$this->templateRenderer
 		);
