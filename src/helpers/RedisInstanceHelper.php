@@ -7,9 +7,9 @@ use Services\RedisService;
 class RedisInstanceHelper extends RedisService
 {
 	protected $redis;
-	private static $instance = null;
+	private static $instance;
 
-	private function __construct($redisConfig) 
+	private function __construct(array $redisConfig) 
 	{
 		parent::__construct(
 			$redisConfig['REDIS_HOST'],
@@ -26,7 +26,7 @@ class RedisInstanceHelper extends RedisService
 	/**
 	 * Get an instance of the Redis Service (singleton pattern)
 	 */
-	public static function getInstance($redisConfig) 
+	public static function getInstance(array $redisConfig) 
 	{
 		if (self::$instance === null) {
 			self::$instance = new self(

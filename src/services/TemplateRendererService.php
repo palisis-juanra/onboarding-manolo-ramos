@@ -2,8 +2,6 @@
 
 namespace Services;
 
-require_once __DIR__ . '/../../config/config.php';
-
 use Mustache_Engine;
 use Mustache_Exception_UnknownTemplateException;
 use Mustache_Loader_FilesystemLoader;
@@ -42,7 +40,7 @@ class TemplateRendererService
 	 *
 	 * @return TemplateRendererService The singleton instance of the TemplateRenderer Service.
 	 */
-	public static function getInstance()
+	public static function getInstance(): TemplateRendererService
 	{
 		if (self::$instance === null) {
 			self::$instance = new self();
@@ -57,7 +55,7 @@ class TemplateRendererService
 	 * @param string $templateName The name of the template to render.
 	 * @param array $data The data to pass to the template.
 	 */
-	public function renderTemplate($templateName, $data) 
+	public function renderTemplate(string $templateName, array $data): void
 	{
 		try {
 			echo $this->mustache->render($templateName, $data);
@@ -72,21 +70,8 @@ class TemplateRendererService
 	 * @param string $partialName The name of the partial template to render.
 	 * @param array $data The data to pass to the partial template.
 	 */
-	public function renderPartial($partialName, $data) 
+	public function renderPartial(string $partialName, array $data): void
 	{
 		echo $this->mustache->renderPartial($partialName, $data);
-	}
-
-	/**
-	 * Builds data for rendering.
-	 *
-	 * This method can be used to prepare or transform data before rendering it with Mustache.
-	 *
-	 * @param array $data The data to be processed.
-	 */
-	public function buildTemplateData($data) 
-	{
-		// TODO: implement logic
-		return $data;
 	}
 }

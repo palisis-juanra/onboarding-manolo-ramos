@@ -15,7 +15,7 @@ class TourCMSClientService
 	 * Initializes the TourCMS client with environment variables.
 	 * This constructor is private to enforce the singleton pattern.
 	 */
-	private function __construct($tourCMSconfig)
+	private function __construct(array $tourCMSconfig)
 	{
 		$this->tourCMS = new TourCMS(
 			$tourCMSconfig['TCMS_MARKETPLACE_ID'],
@@ -35,7 +35,7 @@ class TourCMSClientService
 	 *
 	 * @return TourCMSClientService The singleton instance of the TourCMSClientService.
 	 */
-	public static function getInstance($tourCMSconfig)
+	public static function getInstance(array $tourCMSconfig)
 	{
 		if (self::$instance === null) {
 			self::$instance = new self(
@@ -43,6 +43,16 @@ class TourCMSClientService
 			);
 		}
 		
-		return self::$instance->tourCMS;
+		return self::$instance;
+	}
+
+	/**
+	 * Returns the TourCMS instance.
+	 *
+	 * @return TourCMS The TourCMS instance.
+	 */
+	public function getTourCMS(): TourCMS
+	{
+		return $this->tourCMS;
 	}
 }

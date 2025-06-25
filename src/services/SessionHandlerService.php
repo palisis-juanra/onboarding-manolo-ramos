@@ -11,7 +11,10 @@ class SessionHandlerService
 
 	private $templateRenderer;
 
-	public function __construct($redisClient, $templateRenderer)
+	public function __construct(
+		RedisService 	$redisClient,
+		TemplateRendererService $templateRenderer
+	)
 	{
 		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;

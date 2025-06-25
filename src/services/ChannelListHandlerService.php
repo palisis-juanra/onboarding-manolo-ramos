@@ -3,6 +3,7 @@
 namespace Services;
 
 use Helpers\RedisInstanceHelper;
+use TourCMS\Utils\TourCMS;
 
 class ChannelListHandlerService 
 {
@@ -15,7 +16,11 @@ class ChannelListHandlerService
 	private $channelList;
 	private array $templateData;
 
-	public function __construct($tourCMSclient, $redisClient, $templateRenderer)
+	public function __construct(
+		TourCMS 				$tourCMSclient, 
+		RedisService 			$redisClient, 
+		TemplateRendererService $templateRenderer
+	)
 	{
 		$this->tourCMSclient = $tourCMSclient;
 		$this->redisClient = $redisClient;
