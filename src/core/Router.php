@@ -2,8 +2,7 @@
 
 namespace Core;
 
-use Services\SessionHandlerService;
-use Controllers\ChannelListController;
+use Controllers\SessionHandlerController;
 use Helpers\HttpRequestsHelper;
 use Helpers\RedirectionHelper;
 use Routes\Routes;
@@ -12,7 +11,7 @@ use Services\TemplateRendererService;
 class Router
 {
 	// Controller instances
-	private $sessionHandlerService;
+	private $sessionHandlerController;
 	private $channelListController;
 
 	// Service Instances
@@ -24,8 +23,7 @@ class Router
 	
 	// Initialize the template rendering service and route collection.
 	public function __construct(
-		SessionHandlerService 	$sessionHandlerService,
-		ChannelListController 	$channelListController,
+		SessionHandlerController 	$sessionHandlerController,
 		TemplateRendererService $templateRenderer
 	)
 	{
@@ -34,11 +32,10 @@ class Router
 		$this->routeNames = Routes::getRouteNames();
 		
 		// Controller instances
-		$this->sessionHandlerService = $sessionHandlerService;
-		$this->channelListController = $channelListController;
+		$this->sessionHandlerController = $sessionHandlerController;
+
 		// Service instances
 		$this->templateRenderer = $templateRenderer;
-
 	}
 
 	/**
@@ -57,36 +54,40 @@ class Router
 		// Get the HTTP method of the request (GET, POST, etc.)
 		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
-		foreach ($this->routes as $route => $routeMethod) {
+		foreach ($this->routes as $route => $routeDetails) {
 			// Check if the current URL matches the saved route pattern
 			if (preg_match('#^' . $route . '$#', $currentURL, $action)) {
 				// If the HTTP method used is not defined for this route, skip to the next route
-				if (isset($httpRequestMethodUsed) && !isset($routeMethod[$httpRequestMethodUsed])) {
+				if (isset($httpRequestMethodUsed) && !isset($routeDetails[$httpRequestMethodUsed])) {
 					continue;
 				}
 				
-				$controllerFunction = null;
+				$handlerFunction = null;
 				$routeDefinedMethod = null;
+				$routeData = null;
+				// TODO: look for a better name
 
 				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
-				foreach ($routeMethod as $method => $routeDetails) {
+				foreach ($routeDetails as $method => $details) {
 					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
 					if (HttpRequestsHelper::compareRouteHttpMethodUsed( $method, $httpRequestMethodUsed)) {
-						$controllerFunction = $routeDetails['controller'];
-						$routeDefinedMethod = $routeDetails['method'];
+						$handlerFunction = $details['handler'];
+						$routeDefinedMethod = $details['method'];
+						$routeData = $routeDetails;
 						break;
 					}
 				}
 
 				// If no controller function or method is defined for the route, handle not found
-				if ($controllerFunction === null || $routeDefinedMethod === null) {
+				if ($handlerFunction === null || $routeDefinedMethod === null) {
 					$this->handleNotFound();
 					return;
 				}
 
-				// Call the controller function with the route, saved method, and the current HTTP request method used
-				$this->$controllerFunction(
+				// Call the handler function with the route, saved method, and the current HTTP request method used
+				$this->$handlerFunction(
 					$route, 
+					$routeData,
 					$routeDefinedMethod,
 					$httpRequestMethodUsed
 				);
@@ -100,14 +101,29 @@ class Router
 	}
 
 	/**
+	 * Dispatches the request to the appropriate controller based on the current URL.
+	 *
+	 * This method checks the current URL against the defined routes and calls the
+	 * corresponding controller method if a match is found. If no match is found,
+	 * it renders a 404 error page.
+	 *
+	 * @return array routeInfo
+	 */
+	public function getRouteInfo(array $route): array
+	{
+		return [];
+	}
+
+	/**
 	 * Handles requests to the Session Controller.
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
 	private function handleSessionHandlerService(
-		string $route, 
-		string $routeMethod, 
-		string $httpRequestMethodUsed
+		string 	$route, 
+		array 	$routeData,
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed,
 	): void
 	{
 		// Routes that don't require session verification
@@ -118,11 +134,12 @@ class Router
 		];
 
 		// Check if the route is in the list of excluded routes or if the session is active
-		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandlerService->checkIfSessionIsActive()) {
+		// TODO: remove logic and return route data
+		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandlerController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/']:
 					// Check if the user is logged in
-					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else {
@@ -133,11 +150,11 @@ class Router
 					break;
 
 				case $this->routeNames['/login']:
-					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
-						$this->sessionHandlerService->renderLoginPage();
+						$this->sessionHandlerController->renderLoginPage();
 					} else {
 						$this->handleNotFound();
 					}
@@ -146,7 +163,7 @@ class Router
 
 				case $this->routeNames['/login/loginAction']:
 					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
-						$this->sessionHandlerService->handleLogIn();
+						$this->sessionHandlerController->handleLogIn();
 					} else {
 						$this->handleNotFound();
 					}
@@ -154,8 +171,8 @@ class Router
 					break;
 
 				case $this->routeNames['/logout']:
-					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
-						$this->sessionHandlerService->handleLogOut();
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+						$this->sessionHandlerController->handleLogOut();
 					} else {
 						// If the session is not active, redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
@@ -174,16 +191,17 @@ class Router
 	}
 
 	private function handleChannelListController(
-		string $route, 
-		string $routeMethod, 
-		string $httpRequestMethodUsed
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed
 	): void
 	{	
 		// Check if the route is in the list of excluded routes or if the session is active
-		if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+		if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
-					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 						if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
 							$this->channelListController->index();
 						} else {
@@ -196,7 +214,7 @@ class Router
 
 					break;
 				case $this->routeNames['/dashboard/pickChannel']:
-					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 						if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
 							$this->channelListController->store();
 						} else {
