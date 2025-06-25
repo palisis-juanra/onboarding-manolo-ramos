@@ -24,7 +24,7 @@ class App
 	public function __construct(array $envConfig)
 	{
 		// Init core Service instances
-		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms']);
+		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms'])->getTourCMS();
 		$this->templateRenderer = TemplateRendererService::getInstance();
 		$this->redisClient = RedisInstanceHelper::getInstance($envConfig['redis']);
 
