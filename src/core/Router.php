@@ -4,6 +4,7 @@ namespace Core;
 
 use Services\SessionHandlerService;
 use Controllers\ChannelListController;
+use Helpers\HttpRequestsHelper;
 use Helpers\RedirectionHelper;
 use Routes\Routes;
 use Services\TemplateRendererService;
@@ -70,7 +71,7 @@ class Router
 				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
 				foreach ($routeMethod as $method => $routeDetails) {
 					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
-					if ($this->compareRouteHttpMethodUsed($method, $httpRequestMethodUsed)) {
+					if (HttpRequestsHelper::compareRouteHttpMethodUsed( $method, $httpRequestMethodUsed)) {
 						$controllerFunction = $routeDetails['controller'];
 						$routeDefinedMethod = $routeDetails['method'];
 						break;
@@ -138,7 +139,11 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionHandlerService($route, $routeMethod, $httpRequestMethodUsed): void
+	private function handleSessionHandlerService(
+		string $route, 
+		string $routeMethod, 
+		string $httpRequestMethodUsed
+	): void
 	{
 		// Routes that don't require session verification
 		$routesWithoutSessionCheck = [
@@ -166,7 +171,7 @@ class Router
 					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
-					} else if ($routeMethod === 'GET') {
+					} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
 						$this->sessionHandlerService->renderLoginPage();
 					} else {
 						$this->handleNotFound();
@@ -175,7 +180,7 @@ class Router
 					break;
 
 				case $this->routeNames['/login/loginAction']:
-					if ($routeMethod === 'POST') {
+					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
 						$this->sessionHandlerService->handleLogIn();
 					} else {
 						$this->handleNotFound();
@@ -199,20 +204,23 @@ class Router
 			}
 		} else {
 			// If the session is not active, redirect to the login page
-			// TODO: fix incorrect redirection with headers
 			RedirectionHelper::headerRedirection('/login/');
 		}
 	}
 
-	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed): void
+	private function handleChannelListController(
+		string $route, 
+		string $routeMethod, 
+		string $httpRequestMethodUsed
+	): void
 	{	
 		// Check if the route is in the list of excluded routes or if the session is active
 		if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
-						if ($routeMethod === 'GET') {
-							$this->channelListController->renderChannelListPage();
+						if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+							$this->channelListController->index();
 						} else {
 							$this->handleNotFound();
 						}
@@ -224,8 +232,8 @@ class Router
 					break;
 				case $this->routeNames['/dashboard/pickChannel']:
 					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
-						if ($routeMethod === 'POST') {
-							$this->channelListController->submitChannelPick();
+						if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+							$this->channelListController->store();
 						} else {
 							$this->handleNotFound();
 						}
@@ -244,22 +252,6 @@ class Router
 			// If the session is not active, redirect to the login page
 			RedirectionHelper::headerRedirection('/login/');
 		}
-	}
-
-	/**
-	 * Compares the HTTP method used in the request with the method defined in the route.
-	 *
-	 * @param string $routeDefinedMethod The HTTP method defined for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method used in the request.
-	 * @return bool True if they match, false otherwise.
-	 */
-	private function compareRouteHttpMethodUsed(string $routeDefinedMethod, string $httpRequestMethodUsed): bool
-	{
-		// Convert to uppercase
-		$routeDefinedMethod = strtoupper($routeDefinedMethod);
-		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
-
-		return $routeDefinedMethod === $httpRequestMethodUsed;
 	}
 
 	/**
