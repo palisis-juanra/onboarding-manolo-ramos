@@ -49,7 +49,30 @@ class Routes
 		],
 	];
 
+	/**
+	 * Returns the full list of routes.
+	 *
+	 * @return array An associative array of full route details.
+	 */
 	public static function getRoutes() {
 		return self::$routes;
+	}
+
+	/**
+	 * Returns a list of route names.
+	 *
+	 * This method iterates through the defined routes and returns an associative array
+	 * where the keys and values are the route names.
+	 *
+	 * @return array An associative array of route names.
+	 */
+	public static function getRouteNames(): array
+	{
+		$routeNameList = [];
+		foreach (self::$routes as $route => $routeMethod) {
+			$routeNameList[$route] = $route;
+		}
+
+		return $routeNameList;
 	}
 }
