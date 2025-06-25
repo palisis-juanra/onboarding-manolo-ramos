@@ -7,44 +7,56 @@ class Routes
 	protected static $routes = [
 		'/' => [
 			'GET' => [
-				'controller' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerService',
+				'controller' => 'SessionHandler',
 				'method' => 'GET',
-				'action' => 'login',
-			],
+				'action' => 'index',
+				'requiresLogIn' => false
+			]
 		],
 		'/login' => [
 			'GET' => [
-				'controller' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerService',
+				'controller' => 'SessionHandler',
 				'method' => 'GET',
-				'action' => 'login',
+				'action' => 'index',
+				'requiresLogIn' => false
 			]
 		],
 		'/login/loginAction' => [
 			'POST' => [
-				'controller' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerService',
+				'controller' => 'SessionHandler',
 				'method' => 'POST',
-				'action' => 'login',
-			],
+				'action' => 'logIn',
+				'requiresLogIn' => false
+			]
 		],
 		'/logout' => [
 			'GET' => [
-				'controller' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerService',
+				'controller' => 'SessionHandler',
 				'method' => 'GET',
-				'action' => 'logout',
-			],
+				'action' => 'logOut',
+				'requiresLogIn' => true
+			]
 		],
 		'/dashboard' => [
 			'GET' => [
-				'controller' => 'handleChannelListController',
+				'handler' => 'handleChannelListController',
+				'controller' => 'ChannelList',
 				'method' => 'GET',
-				'action' => 'showChannelList',
+				'action' => 'index',
+				'requiresLogIn' => true
 			]
 		],
 		'/dashboard/pickChannel' => [
 			'POST' => [
-				'controller' => 'handleChannelListController',
+				'handler' => 'handleChannelListController',
+				'controller' => 'ChannelList',
 				'method' => 'POST',
-				'action' => 'pickChannel',
+				'action' => 'store',
+				'requiresLogIn' => true
 			]
 		],
 	];
