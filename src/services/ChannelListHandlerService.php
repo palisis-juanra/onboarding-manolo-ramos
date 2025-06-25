@@ -30,10 +30,8 @@ class ChannelListHandlerService
 
 	public function submitChannelPick(): void
 	{
-		if ($_SERVER["REQUEST_METHOD"] == HttpRequestsHelper::getVerbs('POST')) {
+		if ($_SERVER["REQUEST_METHOD"] == HttpRequestsHelper::getVerb('POST')) {
 			if (isset($_POST['channelList'])) {
-				// TODO: save on redis
-				print $_POST['channelList'];
 				$this->redisClient->storeItemInRedis('currentChannelID', $_POST['channelList'], RedisInstanceHelper::REDIS_TYPE_STRING);
 			}
 		}
