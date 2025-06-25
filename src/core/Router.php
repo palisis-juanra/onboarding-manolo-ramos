@@ -4,7 +4,7 @@ namespace Core;
 
 use Controllers\SessionController;
 use Controllers\ChannelListController;
-
+use Helpers\RedirectionHelper;
 use Routes\Routes;
 use Services\TemplateRendererService;
 
@@ -23,8 +23,8 @@ class Router
 	
 	// Initialize the template rendering service and route collection.
 	public function __construct(
-		SessionController $sessionController,
-		ChannelListController $channelListController,
+		SessionController 		$sessionController,
+		ChannelListController 	$channelListController,
 		TemplateRendererService $templateRenderer
 	)
 	{
@@ -104,7 +104,7 @@ class Router
 	 * @param string $url The URL to parse.
 	 * @return string The complete endpoint path.
 	 */
-	private function parseURL($currentURL): string
+	private function parseURL(string $currentURL): string
 	{
 		// Full URL
 		$urlParts = parse_url($currentURL);
@@ -154,12 +154,10 @@ class Router
 					// Check if the user is logged in
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
-						header('Location: /onboarding-manolo-ramos/dashboard/');
-						exit;
+						RedirectionHelper::headerRedirection('/dashboard/');
 					} else {
 						// Redirect to the login page
-						header('Location: /onboarding-manolo-ramos/login/');
-						exit;
+						RedirectionHelper::headerRedirection('/login/');
 					}
 
 					break;
@@ -167,8 +165,7 @@ class Router
 				case $this->routeNames['/login']:
 					if ($this->sessionController->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
-						header('Location: /onboarding-manolo-ramos/dashboard/');
-						exit;
+						RedirectionHelper::headerRedirection('/dashboard/');
 					} else if ($routeMethod === 'GET') {
 						$this->sessionController->renderLoginPage();
 					} else {
@@ -191,8 +188,7 @@ class Router
 						$this->sessionController->handleLogOut();
 					} else {
 						// If the session is not active, redirect to the login page
-						header('Location: /onboarding-manolo-ramos/login/');
-						exit;
+						RedirectionHelper::headerRedirection('/login/');
 					}
 					
 					break;
@@ -204,8 +200,7 @@ class Router
 		} else {
 			// If the session is not active, redirect to the login page
 			// TODO: fix incorrect redirection with headers
-			header('Location: /onboarding-manolo-ramos/login/');
-			exit;
+			RedirectionHelper::headerRedirection('/login/');
 		}
 	}
 
@@ -223,8 +218,7 @@ class Router
 						}
 					} else {
 						// Redirect to the login page
-						header('Location: /onboarding-manolo-ramos/login/');
-						exit;
+						RedirectionHelper::headerRedirection('/login/');
 					}
 
 					break;
@@ -237,8 +231,7 @@ class Router
 						}
 					} else {
 						// Redirect to the login page
-						header('Location: /onboarding-manolo-ramos/login/');
-						exit;
+						RedirectionHelper::headerRedirection('/login/');
 					}
 
 					break;
@@ -249,8 +242,7 @@ class Router
 			}
 		} else {
 			// If the session is not active, redirect to the login page
-			header('Location: /onboarding-manolo-ramos/login/');
-			exit;
+			RedirectionHelper::headerRedirection('/login/');
 		}
 	}
 
@@ -261,7 +253,7 @@ class Router
 	 * @param string $httpRequestMethodUsed The HTTP method used in the request.
 	 * @return bool True if they match, false otherwise.
 	 */
-	private function compareRouteHttpMethodUsed($routeDefinedMethod, $httpRequestMethodUsed): bool
+	private function compareRouteHttpMethodUsed(string $routeDefinedMethod, string $httpRequestMethodUsed): bool
 	{
 		// Convert to uppercase
 		$routeDefinedMethod = strtoupper($routeDefinedMethod);
@@ -278,7 +270,7 @@ class Router
 	 *
 	 * @return array An associative array of route names.
 	 */
-	private function getRouteNames($routes): array
+	private function getRouteNames(array $routes): array
 	{
 		$routeNameList = [];
 		foreach ($routes as $route => $routeMethod) {
