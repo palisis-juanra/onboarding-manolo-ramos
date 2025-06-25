@@ -25,12 +25,12 @@ class ChannelListController
 		);
 	}
 
-	public function renderChannelListPage()
+	public function index(): void
 	{
 		$this->channelListHandler->renderChannelListPage();
 	}
 
-	public function submitChannelPick()
+	public function store(): void
 	{
 		$this->channelListHandler->submitChannelPick();
 	}
