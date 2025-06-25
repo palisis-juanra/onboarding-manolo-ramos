@@ -2,7 +2,7 @@
 
 namespace Core;
 
-use Controllers\SessionController;
+use Services\SessionHandlerService;
 use Controllers\ChannelListController;
 use Helpers\RedirectionHelper;
 use Routes\Routes;
@@ -11,7 +11,7 @@ use Services\TemplateRendererService;
 class Router
 {
 	// Controller instances
-	private $sessionController;
+	private $sessionHandlerService;
 	private $channelListController;
 
 	// Service Instances
@@ -23,7 +23,7 @@ class Router
 	
 	// Initialize the template rendering service and route collection.
 	public function __construct(
-		SessionController 		$sessionController,
+		SessionHandlerService 	$sessionHandlerService,
 		ChannelListController 	$channelListController,
 		TemplateRendererService $templateRenderer
 	)
@@ -33,7 +33,7 @@ class Router
 		$this->routeNames = $this->getRouteNames($this->routes);
 		
 		// Controller instances
-		$this->sessionController = $sessionController;
+		$this->sessionHandlerService = $sessionHandlerService;
 		$this->channelListController = $channelListController;
 		// Service instances
 		$this->templateRenderer = $templateRenderer;
@@ -138,7 +138,7 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionController($route, $routeMethod, $httpRequestMethodUsed): void
+	private function handleSessionHandlerService($route, $routeMethod, $httpRequestMethodUsed): void
 	{
 		// Routes that don't require session verification
 		$routesWithoutSessionCheck = [
@@ -148,11 +148,11 @@ class Router
 		];
 
 		// Check if the route is in the list of excluded routes or if the session is active
-		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionController->checkIfSessionIsActive()) {
+		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandlerService->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/']:
 					// Check if the user is logged in
-					if ($this->sessionController->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else {
@@ -163,11 +163,11 @@ class Router
 					break;
 
 				case $this->routeNames['/login']:
-					if ($this->sessionController->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else if ($routeMethod === 'GET') {
-						$this->sessionController->renderLoginPage();
+						$this->sessionHandlerService->renderLoginPage();
 					} else {
 						$this->handleNotFound();
 					}
@@ -176,7 +176,7 @@ class Router
 
 				case $this->routeNames['/login/loginAction']:
 					if ($routeMethod === 'POST') {
-						$this->sessionController->handleLogIn();
+						$this->sessionHandlerService->handleLogIn();
 					} else {
 						$this->handleNotFound();
 					}
@@ -184,8 +184,8 @@ class Router
 					break;
 
 				case $this->routeNames['/logout']:
-					if ($this->sessionController->checkIfSessionIsActive()) {
-						$this->sessionController->handleLogOut();
+					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
+						$this->sessionHandlerService->handleLogOut();
 					} else {
 						// If the session is not active, redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
@@ -207,10 +207,10 @@ class Router
 	private function handleChannelListController($route, $routeMethod, $httpRequestMethodUsed): void
 	{	
 		// Check if the route is in the list of excluded routes or if the session is active
-		if ($this->sessionController->checkIfSessionIsActive()) {
+		if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
-					if ($this->sessionController->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 						if ($routeMethod === 'GET') {
 							$this->channelListController->renderChannelListPage();
 						} else {
@@ -223,7 +223,7 @@ class Router
 
 					break;
 				case $this->routeNames['/dashboard/pickChannel']:
-					if ($this->sessionController->checkIfSessionIsActive()) {
+					if ($this->sessionHandlerService->checkIfSessionIsActive()) {
 						if ($routeMethod === 'POST') {
 							$this->channelListController->submitChannelPick();
 						} else {

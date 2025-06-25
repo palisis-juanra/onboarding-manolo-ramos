@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
 class SessionHandlerService
@@ -28,14 +29,14 @@ class SessionHandlerService
 	 *
 	 * @return bool
 	 */
-	public function handleLogIn(): bool
+	public function handleLogIn(): void
 	{
 		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			// If a session key exists, redirect to the home page or dashboard
-			return true;
+			RedirectionHelper::headerRedirection('/dashboard/');
 		} else {
 			$this->createSession();
-			return false;
+			RedirectionHelper::headerRedirection('/dashboard/');
 		}
 	}
 
