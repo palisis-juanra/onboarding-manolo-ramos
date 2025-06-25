@@ -31,7 +31,7 @@ class Router
 	{
 		// Get the route names for easy reference
 		$this->routes = Routes::getRoutes();
-		$this->routeNames = $this->getRouteNames($this->routes);
+		$this->routeNames = Routes::getRouteNames();
 		
 		// Controller instances
 		$this->sessionHandlerService = $sessionHandlerService;
@@ -97,41 +97,6 @@ class Router
 
 		// Handle any unknown endpoints by redirecting to the 404 page
 		$this->handleNotFound();
-	}
-
-	/**
-	 * Parses the URL to determine the complete request path.
-	 *
-	 * @param string $url The URL to parse.
-	 * @return string The complete endpoint path.
-	 */
-	private function parseURL(string $currentURL): string
-	{
-		// Full URL
-		$urlParts = parse_url($currentURL);
-		// Divide the path into segments
-		$pathSegments = explode('/', $urlParts['path']);
-		// Filter for empty segments
-		$pathSegments = array_filter($pathSegments);
-		// Remove the first segment (localhost or domain)
-		$pathSegments = array_slice($pathSegments, 1);
-
-		// Build the path before returning it
-		$requestPath = '/' . implode('/', $pathSegments);
-
-		return $requestPath;
-	}
-
-	/**
-	 * Renders the 404 error template and also throws the error code.
-	 *
-	 * @return void 
-	 */
-	private function handleNotFound(): void
-	{
-		$this->templateRenderer->renderTemplate('_common/error/404', []);
-		http_response_code(404);
-		return;
 	}
 
 	/**
@@ -255,20 +220,37 @@ class Router
 	}
 
 	/**
-	 * Returns a list of route names.
+	 * Parses the URL to determine the complete request path.
 	 *
-	 * This method iterates through the defined routes and returns an associative array
-	 * where the keys and values are the route names.
-	 *
-	 * @return array An associative array of route names.
+	 * @param string $url The URL to parse.
+	 * @return string The complete endpoint path.
 	 */
-	private function getRouteNames(array $routes): array
+	private function parseURL(string $currentURL): string
 	{
-		$routeNameList = [];
-		foreach ($routes as $route => $routeMethod) {
-			$routeNameList[$route] = $route;
-		}
+		// Full URL
+		$urlParts = parse_url($currentURL);
+		// Divide the path into segments
+		$pathSegments = explode('/', $urlParts['path']);
+		// Filter for empty segments
+		$pathSegments = array_filter($pathSegments);
+		// Remove the first segment (localhost or domain)
+		$pathSegments = array_slice($pathSegments, 1);
 
-		return $routeNameList;
+		// Build the path before returning it
+		$requestPath = '/' . implode('/', $pathSegments);
+
+		return $requestPath;
+	}
+
+	/**
+	 * Renders the 404 error template and also throws the error code.
+	 *
+	 * @return void 
+	 */
+	private function handleNotFound(): void
+	{
+		$this->templateRenderer->renderTemplate('_common/error/404', []);
+		http_response_code(404);
+		return;
 	}
 }
