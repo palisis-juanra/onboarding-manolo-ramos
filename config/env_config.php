@@ -8,6 +8,9 @@ $dotEnv->load();
 
 // Retrieve enviroment variables from .env
 
+// Project
+$envProjectBaseURL = $_ENV['BASE_URL'] ?? '';
+
 // TourCMS API
 $envTCMSapiUrl = $_ENV['TCMS_API_URL'];
 $envTCMSapiKey = $_ENV['TCMS_API_KEY'];
@@ -23,6 +26,9 @@ $redisPort = $_ENV['REDIS_PORT'];
 $redisPassword = $_ENV['REDIS_PASSWORD'];
 
 return [
+	'project' => [
+		'BASE_URL' => $envProjectBaseURL
+	],
 	'tourcms' => [
 		'TCMS_API_URL' => $envTCMSapiUrl,
 		'TCMS_API_KEY' => $envTCMSapiKey,
