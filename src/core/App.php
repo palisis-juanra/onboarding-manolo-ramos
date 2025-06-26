@@ -31,7 +31,7 @@ class App
 	{
 		// Init core Service instances
 		$this->tourCMSclient = TourCMSClientService::getInstance($envConfig['tourcms'])->getTourCMS();
-		$this->templateRenderer = TemplateRendererService::getInstance();
+		$this->templateRenderer = TemplateRendererService::getInstance($envConfig['project']);
 		$this->redisClient = RedisInstanceHelper::getInstance($envConfig['redis']);
 
 		// Initialize Session Handler
