@@ -2,8 +2,6 @@
 
 namespace Services;
 
-use Helpers\RedirectionHelper;
-
 class ErrorHandlerService
 {
 	private $templateRenderer;
@@ -20,7 +18,6 @@ class ErrorHandlerService
 	 */
 	public function renderNotFoundPage(): void
 	{
-		RedirectionHelper::headerRedirection('/notFound/');
 		$this->templateRenderer->renderTemplate('_common/error/404', []);
 		http_response_code(404);
 		return;
