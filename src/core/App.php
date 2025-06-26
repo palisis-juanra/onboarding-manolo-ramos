@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Controllers\ErrorHandlerController;
 use Core\Router;
 use Controllers\SessionHandlerController;
 use Services\TourCMSClientService;
@@ -20,6 +21,7 @@ class App
 
 	// Controllers
 	private $sessionHandlerController;
+	private $errorHandlerController;
 	private $controllerInstance;
 
 	// Factory dependencies
@@ -38,10 +40,16 @@ class App
 			$this->templateRenderer
 		);
 
-		// Build the controller dependencies collection
+		// Initialize Error Handler
+		$this->errorHandlerController = new ErrorHandlerController(
+			$this->templateRenderer
+		);
+
+		// Build the controller dependencies array
 		$this->controllerDependencies = [
 			'tourCMS' => $this->tourCMSclient,
 			'templateRenderer' => $this->templateRenderer,
+			'errorHandler' => $this->errorHandlerController,
 			'redisClient' => $this->redisClient
 		];
 
@@ -51,7 +59,7 @@ class App
 		// Initialize Router
 		$this->router = new Router(
 			$this->sessionHandlerController,
-			$this->templateRenderer
+			$this->errorHandlerController
 		);
 	}
 
@@ -59,17 +67,18 @@ class App
 	{
 		// Evaluate the route that is currently beign accessed.
 		$this->router->dispatch();
-		$routeInfo = $this->router->getRouteInfo();
+		// Get the current route details (method, controller to be called, action...)
+		$routeInfo = $this->router->getRouteDetails();
+
 		// Check if there's an active session or if the current route doesn't require login
-		if ($this->sessionHandlerController->checkIfSessionIsActive() || !$routeInfo['requiresLogin']) {
+		if ($this->sessionHandlerController->checkIfSessionIsActive() || !$routeInfo['requiresLogIn']) {
 			$this->controllerInstance = $this->controllerFactory->create($routeInfo['controller']);
 			
 			// Run the associated function 
 			$this->controllerInstance->{$routeInfo['action']}();
 		} else {
 			// Load error template
-			$sessionController = $this->controllerFactory->create('SessionHandler');
-			$sessionController->renderNotFoundPage();
+			$this->errorHandlerController->index();
 		}
 	}
 }

@@ -76,30 +76,6 @@ class SessionHandlerService
 	}
 
 	/**
-	 * Renders the login page.
-	 *
-	 * This method renders the login page template.
-	 *
-	 * @return void
-	 */
-	public function renderLoginPage(): void
-	{
-		$this->templateRenderer->renderTemplate('login/loginPage', []);
-	}
-
-	/**
-	 * Renders the 404 error page.
-	 *
-	 * @return void
-	 */
-	public function renderNotFoundPage(): void
-	{
-		$this->templateRenderer->renderTemplate('_common/error/404', []);
-		http_response_code(404);
-		return;
-	}
-
-	/**
 	 * Creates a new session if the current session is invalid or expired.
 	 *
 	 * This method checks if the session is still valid based on the time-to-live (TTL)
