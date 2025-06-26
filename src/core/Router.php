@@ -92,17 +92,18 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		$this->errorHandlerController->index();
+		RedirectionHelper::headerRedirection('/notFound/');
 	}
 
 	/**
-	 * Returns the details for the current 
+	 * Returns the details for the current route.
+	 * Can be returned empty if the route doesn't need to return its details.
 	 *
 	 * @return array routeInfo
 	 */
 	public function getRouteDetails(): array
 	{
-		return $this->routeDetails;
+		return isset($this->routeDetails) ? $this->routeDetails : [];
 	}
 
 	/**
@@ -119,6 +120,9 @@ class Router
 	 * Handles requests to the Session Controller.
 	 *
 	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleSessionHandlerController(
 		string 	$route, 
@@ -130,8 +134,7 @@ class Router
 		// Routes that don't require session verification
 		$routesWithoutSessionCheck = [
 			$this->routeNames['/'],
-			$this->routeNames['/login'],
-			$this->routeNames['/login/loginAction'],
+			$this->routeNames['/login/loginAction']
 		];
 
 		// Check if the route is in the list of excluded routes or if the session is active
@@ -142,17 +145,6 @@ class Router
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
-					}
-
-					break;
-
-				case $this->routeNames['/login']:
-					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						RedirectionHelper::headerRedirection('/dashboard/');
-					} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
-						$this->setRouteDetails($routeData);
-					} else {
-						$this->errorHandlerController->index();
 					}
 
 					break;
@@ -184,6 +176,14 @@ class Router
 		}
 	}
 
+	/**
+	 * Handles requests to the Channel List Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
 	private function handleChannelListController(
 		string 	$route,
 		array 	$routeData, 
@@ -226,6 +226,14 @@ class Router
 		}
 	}
 
+	/**
+	 * Handles requests to the Login Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
 	private function handleLoginController(
 		string 	$route,
 		array 	$routeData, 
@@ -233,41 +241,41 @@ class Router
 		string 	$httpRequestMethodUsed
 	): void
 	{	
-		if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-			switch ($route) {
-				case $this->routeNames['/dashboard']:
-					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
-							$this->setRouteDetails($routeData) 
-						: 
-							$this->errorHandlerController->index();
-					} else {
-						RedirectionHelper::headerRedirection('/login/');
-					}
-
-					break;
-
-				case $this->routeNames['/dashboard/pickChannel']:
-					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
-							$this->setRouteDetails($routeData)
-						:
-							$this->errorHandlerController->index();
-					} else {
-						RedirectionHelper::headerRedirection('/login/');
-					}
-
-					break;
-
-				default:
+		switch ($route) {
+			case $this->routeNames['/login']:
+				if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+					RedirectionHelper::headerRedirection('/dashboard/');
+				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+					$this->setRouteDetails($routeData);
+				} else {
 					$this->errorHandlerController->index();
-					break;
-			}
-		} else {
-			RedirectionHelper::headerRedirection('/login/');
+				}
+
+				break;
+
+			case $this->routeNames['/login/loginAction']:
+				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+					$this->setRouteDetails($routeData);
+				} else {
+					$this->errorHandlerController->index();
+				}
+
+				break;
+
+			default:
+				$this->errorHandlerController->index();
+				break;
 		}
 	}
 
+	/**
+	 * Handles requests to the Error Handler Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
 	private function handleErrorHandlerController(
 		string 	$route, 
 		array 	$routeData,
@@ -275,19 +283,8 @@ class Router
 		string 	$httpRequestMethodUsed,
 	): void
 	{
-		// TODO: revisit this logic
-		switch ($route) {
-			case $this->routeNames['/notFound']:
-				$routeMethod === HttpRequestsHelper::getVerb('GET') ?
-					$this->setRouteDetails($routeData) 
-				: 
-					$this->errorHandlerController->index();
-
-				break;
-
-			default:
-				$this->errorHandlerController->index();
-				break;
+		if ($this->routeNames['/notFound'] == $route) {
+			$this->errorHandlerController->index();
 		}
 	}
 
