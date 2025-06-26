@@ -10,9 +10,7 @@ use Controllers\SessionHandlerController;
 class ControllerFactory 
 {
 	// Controller names 
-	public const LOGIN_HANDLER_CONTROLLER = 'SessionHandler';
-	public const SESSION_HANDLER_CONTROLLER = 'SessionHandler';
-	public const ERROR_HANDLER_CONTROLLER = 'ErrorHandler';
+	public const LOGIN_HANDLER_CONTROLLER = 'LoginHandler';
 	public const CHANNEL_LIST_CONTROLLER = 'ChannelList';
 		
 	// Config passed on to the Controller instance
@@ -35,20 +33,11 @@ class ControllerFactory
 				return new LoginHandlerController(
 					$this->controllerDependencies['templateRenderer'],
 				);
-			case self::SESSION_HANDLER_CONTROLLER:
-				return new SessionHandlerController(
-					$this->controllerDependencies['redisClient'],
-					$this->controllerDependencies['templateRenderer'],
-				);
 			case self::CHANNEL_LIST_CONTROLLER:
 				return new ChannelListController(
 					$this->controllerDependencies['tourCMS'],
 					$this->controllerDependencies['redisClient'],
 					$this->controllerDependencies['templateRenderer'],
-				);
-			case self::ERROR_HANDLER_CONTROLLER:
-				return new ErrorHandlerController(
-					$this->controllerDependencies['templateRenderer']
 				);
 			default:
 				throw new \Exception("Controller '$controllerName' not found.");
