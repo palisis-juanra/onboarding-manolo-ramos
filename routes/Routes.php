@@ -7,7 +7,7 @@ class Routes
 	protected static $routes = [
 		'/' => [
 			'GET' => [
-				'handler' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerController',
 				'controller' => 'SessionHandler',
 				'method' => 'GET',
 				'action' => 'index',
@@ -16,8 +16,8 @@ class Routes
 		],
 		'/login' => [
 			'GET' => [
-				'handler' => 'handleSessionHandlerService',
-				'controller' => 'SessionHandler',
+				'handler' => 'handleLoginController',
+				'controller' => 'LoginHandler',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => false
@@ -25,7 +25,7 @@ class Routes
 		],
 		'/login/loginAction' => [
 			'POST' => [
-				'handler' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerController',
 				'controller' => 'SessionHandler',
 				'method' => 'POST',
 				'action' => 'logIn',
@@ -34,11 +34,20 @@ class Routes
 		],
 		'/logout' => [
 			'GET' => [
-				'handler' => 'handleSessionHandlerService',
+				'handler' => 'handleSessionHandlerController',
 				'controller' => 'SessionHandler',
 				'method' => 'GET',
 				'action' => 'logOut',
 				'requiresLogIn' => true
+			]
+		],
+		'/notFound' => [
+			'GET' => [
+				'handler' => 'handleErrorHandlerController',
+				'controller' => 'ErrorHandler',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => false
 			]
 		],
 		'/dashboard' => [
