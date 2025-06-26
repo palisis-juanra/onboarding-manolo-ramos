@@ -3,9 +3,7 @@
 namespace Core;
 
 use Controllers\ChannelListController;
-use Controllers\ErrorHandlerController;
 use Controllers\LoginHandlerController;
-use Controllers\SessionHandlerController;
 
 class ControllerFactory 
 {
