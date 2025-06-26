@@ -65,13 +65,19 @@ class App
 
 	public function run()
 	{
-		// Evaluate the route that is currently beign accessed.
+		// Evaluate the route that is currently being accessed.
 		$this->router->dispatch();
 		// Get the current route details (method, controller to be called, action...)
 		$routeInfo = $this->router->getRouteDetails();
+		
+		// If routeInfo is provided as empty, show the error page
+		if (empty($routeInfo)){
+			return;
+		}
 
-		// Check if there's an active session or if the current route doesn't require login
-		if ($this->sessionHandlerController->checkIfSessionIsActive() || !$routeInfo['requiresLogIn']) {
+		// Check if routeInfo contains valid route data
+		if (isset($routeInfo['controller']) && isset($routeInfo['action'])) {
+			// Generate an instance of the controller asocciated to that route
 			$this->controllerInstance = $this->controllerFactory->create($routeInfo['controller']);
 			
 			// Run the associated function 
