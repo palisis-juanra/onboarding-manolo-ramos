@@ -20,17 +20,7 @@ class SessionHandlerController
 			$templateRenderer
 		);	
 	}
-
-	public function index(): void
-	{
-		$this->sessionHandlerService->renderLoginPage();
-	}
-
-	public function notFound(): void
-	{
-		$this->sessionHandlerService->renderLoginPage();
-	}
-
+	
 	public function logIn(): void 
 	{
 		$this->sessionHandlerService->handleLogIn();
