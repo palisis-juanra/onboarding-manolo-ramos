@@ -2,29 +2,27 @@
 
 namespace Core;
 
+use Controllers\ErrorHandlerController;
 use Controllers\SessionHandlerController;
 use Helpers\HttpRequestsHelper;
 use Helpers\RedirectionHelper;
 use Routes\Routes;
-use Services\TemplateRendererService;
 
 class Router
 {
 	// Controller instances
 	private $sessionHandlerController;
-	private $channelListController;
-
-	// Service Instances
-	private $templateRenderer;
+	private $errorHandlerController;
 	
 	// Member variables
 	private $routes;
 	private $routeNames;
+	private $routeDetails;
 	
 	// Initialize the template rendering service and route collection.
 	public function __construct(
 		SessionHandlerController 	$sessionHandlerController,
-		TemplateRendererService $templateRenderer
+		ErrorHandlerController		$errorHandlerController,
 	)
 	{
 		// Get the route names for easy reference
@@ -33,9 +31,7 @@ class Router
 		
 		// Controller instances
 		$this->sessionHandlerController = $sessionHandlerController;
-
-		// Service instances
-		$this->templateRenderer = $templateRenderer;
+		$this->errorHandlerController = $errorHandlerController;
 	}
 
 	/**
@@ -54,40 +50,39 @@ class Router
 		// Get the HTTP method of the request (GET, POST, etc.)
 		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
-		foreach ($this->routes as $route => $routeDetails) {
+		foreach ($this->routes as $route => $routeData) {
 			// Check if the current URL matches the saved route pattern
 			if (preg_match('#^' . $route . '$#', $currentURL, $action)) {
 				// If the HTTP method used is not defined for this route, skip to the next route
-				if (isset($httpRequestMethodUsed) && !isset($routeDetails[$httpRequestMethodUsed])) {
+				if (isset($httpRequestMethodUsed) && !isset($routeData[$httpRequestMethodUsed])) {
 					continue;
 				}
 				
 				$handlerFunction = null;
 				$routeDefinedMethod = null;
-				$routeData = null;
-				// TODO: look for a better name
+				$currentRouteDetails = null;
 
 				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
-				foreach ($routeDetails as $method => $details) {
+				foreach ($routeData as $method => $details) {
 					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
 					if (HttpRequestsHelper::compareRouteHttpMethodUsed( $method, $httpRequestMethodUsed)) {
 						$handlerFunction = $details['handler'];
 						$routeDefinedMethod = $details['method'];
-						$routeData = $routeDetails;
+						$currentRouteDetails = $details;
 						break;
 					}
 				}
 
 				// If no controller function or method is defined for the route, handle not found
 				if ($handlerFunction === null || $routeDefinedMethod === null) {
-					$this->handleNotFound();
+					$this->errorHandlerController->index();
 					return;
 				}
 
 				// Call the handler function with the route, saved method, and the current HTTP request method used
 				$this->$handlerFunction(
 					$route, 
-					$routeData,
+					$currentRouteDetails,
 					$routeDefinedMethod,
 					$httpRequestMethodUsed
 				);
@@ -97,21 +92,27 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		$this->handleNotFound();
+		$this->errorHandlerController->index();
 	}
 
 	/**
-	 * Dispatches the request to the appropriate controller based on the current URL.
-	 *
-	 * This method checks the current URL against the defined routes and calls the
-	 * corresponding controller method if a match is found. If no match is found,
-	 * it renders a 404 error page.
+	 * Returns the details for the current 
 	 *
 	 * @return array routeInfo
 	 */
-	public function getRouteInfo(array $route): array
+	public function getRouteDetails(): array
 	{
-		return [];
+		return $this->routeDetails;
+	}
+
+	/**
+	 * Stores route details for the current accessed endpoint. 
+	 *
+	 * @return array routeInfo
+	 */
+	private function setRouteDetails(array $routeData): void
+	{
+		$this->routeDetails = $routeData;
 	}
 
 	/**
@@ -119,7 +120,7 @@ class Router
 	 *
 	 * @param string $route The URL of the route that its being accessed.
 	 */
-	private function handleSessionHandlerService(
+	private function handleSessionHandlerController(
 		string 	$route, 
 		array 	$routeData,
 		string 	$routeMethod, 
@@ -134,16 +135,12 @@ class Router
 		];
 
 		// Check if the route is in the list of excluded routes or if the session is active
-		// TODO: remove logic and return route data
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandlerController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/']:
-					// Check if the user is logged in
 					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else {
-						// Redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
 					}
 
@@ -151,41 +148,38 @@ class Router
 
 				case $this->routeNames['/login']:
 					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						// Redirect to the dashboard
 						RedirectionHelper::headerRedirection('/dashboard/');
 					} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
-						$this->sessionHandlerController->renderLoginPage();
+						$this->setRouteDetails($routeData);
 					} else {
-						$this->handleNotFound();
+						$this->errorHandlerController->index();
 					}
 
 					break;
 
 				case $this->routeNames['/login/loginAction']:
 					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
-						$this->sessionHandlerController->handleLogIn();
+						$this->setRouteDetails($routeData);
 					} else {
-						$this->handleNotFound();
+						$this->errorHandlerController->index();
 					}
 
 					break;
 
 				case $this->routeNames['/logout']:
 					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						$this->sessionHandlerController->handleLogOut();
+						$this->setRouteDetails($routeData);
 					} else {
-						// If the session is not active, redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
 					}
 					
 					break;
 
 				default:
-					$this->handleNotFound();
+					$this->errorHandlerController->index();
 					break;
 			}
 		} else {
-			// If the session is not active, redirect to the login page
 			RedirectionHelper::headerRedirection('/login/');
 		}
 	}
@@ -197,43 +191,103 @@ class Router
 		string 	$httpRequestMethodUsed
 	): void
 	{	
-		// Check if the route is in the list of excluded routes or if the session is active
 		if ($this->sessionHandlerController->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
-							$this->channelListController->index();
-						} else {
-							$this->handleNotFound();
-						}
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandlerController->index();
 					} else {
-						// Redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
 					}
 
 					break;
+
 				case $this->routeNames['/dashboard/pickChannel']:
 					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
-						if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
-							$this->channelListController->store();
-						} else {
-							$this->handleNotFound();
-						}
+						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandlerController->index();
 					} else {
-						// Redirect to the login page
 						RedirectionHelper::headerRedirection('/login/');
 					}
 
 					break;
 
 				default:
-					$this->handleNotFound();
+					$this->errorHandlerController->index();
 					break;
 			}
 		} else {
-			// If the session is not active, redirect to the login page
 			RedirectionHelper::headerRedirection('/login/');
+		}
+	}
+
+	private function handleLoginController(
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed
+	): void
+	{	
+		if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/dashboard']:
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandlerController->index();
+					} else {
+						RedirectionHelper::headerRedirection('/login/');
+					}
+
+					break;
+
+				case $this->routeNames['/dashboard/pickChannel']:
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandlerController->index();
+					} else {
+						RedirectionHelper::headerRedirection('/login/');
+					}
+
+					break;
+
+				default:
+					$this->errorHandlerController->index();
+					break;
+			}
+		} else {
+			RedirectionHelper::headerRedirection('/login/');
+		}
+	}
+
+	private function handleErrorHandlerController(
+		string 	$route, 
+		array 	$routeData,
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed,
+	): void
+	{
+		// TODO: revisit this logic
+		switch ($route) {
+			case $this->routeNames['/notFound']:
+				$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+					$this->setRouteDetails($routeData) 
+				: 
+					$this->errorHandlerController->index();
+
+				break;
+
+			default:
+				$this->errorHandlerController->index();
+				break;
 		}
 	}
 
@@ -258,17 +312,5 @@ class Router
 		$requestPath = '/' . implode('/', $pathSegments);
 
 		return $requestPath;
-	}
-
-	/**
-	 * Renders the 404 error template and also throws the error code.
-	 *
-	 * @return void 
-	 */
-	private function handleNotFound(): void
-	{
-		$this->templateRenderer->renderTemplate('_common/error/404', []);
-		http_response_code(404);
-		return;
 	}
 }
