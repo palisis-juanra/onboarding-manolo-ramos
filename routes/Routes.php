@@ -8,7 +8,7 @@ class Routes
 		'/' => [
 			'GET' => [
 				'handler' => 'handleSessionHandlerController',
-				'controller' => 'SessionHandler',
+				'controller' => false,
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => false
@@ -26,7 +26,7 @@ class Routes
 		'/login/loginAction' => [
 			'POST' => [
 				'handler' => 'handleSessionHandlerController',
-				'controller' => 'SessionHandler',
+				'controller' => false,
 				'method' => 'POST',
 				'action' => 'logIn',
 				'requiresLogIn' => false
