@@ -18,10 +18,18 @@ class ErrorHandlerService
 	 */
 	public function renderNotFoundPage(string $errorMessage): void
 	{
+		// Set the error message if it is not empty
+		$templateData = [];
+
+		if (!empty($errorMessage)) {
+			$templateData['errorMessage'] = $errorMessage;
+		}
+
 		$this->templateRenderer->renderTemplate(
 			'_common/error/404',
-			['errorMessage' => $errorMessage]
+			$templateData
 		);
+
 		http_response_code(404);
 		return;
 	}
