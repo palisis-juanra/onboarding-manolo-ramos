@@ -3,30 +3,30 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>TourCMS API Demo - Manolo Ramos</title>
 	<!-- Favicon -->
-	<link rel="icon" type="image/x-icon" href="/onboarding-manolo-ramos/assets/img/favicon.svg">
+	<link rel="icon" type="image/x-icon" href="{{BASE_URL}}/assets/img/favicon.svg">
 	<!-- CSS -->
-	<link rel="stylesheet" href="/onboarding-manolo-ramos/lib/normalize/normalize.min.css" />
-	<link rel="stylesheet" href="/onboarding-manolo-ramos/lib/bootstrap/bootstrap.min.css" />
-	<link rel="stylesheet" href="/onboarding-manolo-ramos/assets/css/styles.css">
-	<link rel="stylesheet" href="/onboarding-manolo-ramos/lib/fontawesome/css/fontawesome.min.css" />
-	<link rel="stylesheet" href="/onboarding-manolo-ramos/lib/fontawesome/css/solid.min.css" />
+	<link rel="stylesheet" href="{{BASE_URL}}/lib/normalize/normalize.min.css" />
+	<link rel="stylesheet" href="{{BASE_URL}}/lib/bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" href="{{BASE_URL}}/assets/css/styles.css">
+	<link rel="stylesheet" href="{{BASE_URL}}/lib/fontawesome/css/fontawesome.min.css" />
+	<link rel="stylesheet" href="{{BASE_URL}}/lib/fontawesome/css/solid.min.css" />
 	<!-- CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <header class="fixed top-0 left-0 w-full h-[100px] bg-white shadow-md flex items-center max-w-[1300px] mx-auto p-3">
 	<div class="ml-5">
-		<img src="/onboarding-manolo-ramos/assets/img/logo.png" alt="Palisis logo" class="h-6">
+		<img src="{{BASE_URL}}/assets/img/logo.png" alt="Palisis logo" class="h-6">
 	</div>
 	<nav class="ml-auto mr-5">
 		<ul class="flex list-none m-0 p-0">
 			<li class="ml-5">
-				<a href="/onboarding-manolo-ramos/logout" class="text-gray-700 font-bold hover:text-gray-500">Channel selection</a>
+				<a href="{{BASE_URL}}/logout" class="text-gray-700 font-bold hover:text-gray-500">Channel selection</a>
 			</li>
 			<li class="ml-5">
-				<a href="/onboarding-manolo-ramos/tourList" class="text-gray-700 font-bold hover:text-gray-500">Tour list</a>
+				<a href="{{BASE_URL}}/tourList" class="text-gray-700 font-bold hover:text-gray-500">Tour list</a>
 			</li>
 			<li class="ml-5">
-				<a href="/onboarding-manolo-ramos/logout"><i class="fas fa-sign-out-alt text-gray-700 text-[18px] cursor-pointer hover:text-gray-500"></i></a>
+				<a href="{{BASE_URL}}/logout"><i class="fas fa-sign-out-alt text-gray-700 text-[18px] cursor-pointer hover:text-gray-500"></i></a>
 			</li>
 		</ul>
 	</nav>
