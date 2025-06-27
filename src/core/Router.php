@@ -75,7 +75,7 @@ class Router
 
 				// If no controller function or method is defined for the route, handle not found
 				if ($handlerFunction === null || $routeDefinedMethod === null) {
-					$this->errorHandlerController->index();
+					$this->errorHandlerController->index('');
 					return;
 				}
 
@@ -151,9 +151,10 @@ class Router
 
 				case $this->routeNames['/login/loginAction']:
 					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+						// TODO: handle empty for sessionHandler
 						$this->setRouteDetails($routeData);
 					} else {
-						$this->errorHandlerController->index();
+						$this->errorHandlerController->index('');
 					}
 
 					break;
@@ -168,7 +169,7 @@ class Router
 					break;
 
 				default:
-					$this->errorHandlerController->index();
+					$this->errorHandlerController->index('');
 					break;
 			}
 		} else {
@@ -198,7 +199,7 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
 							$this->setRouteDetails($routeData) 
 						: 
-							$this->errorHandlerController->index();
+							$this->errorHandlerController->index('');
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -210,7 +211,7 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
 							$this->setRouteDetails($routeData)
 						:
-							$this->errorHandlerController->index();
+							$this->errorHandlerController->index('');
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -218,7 +219,7 @@ class Router
 					break;
 
 				default:
-					$this->errorHandlerController->index();
+					$this->errorHandlerController->index('');
 					break;
 			}
 		} else {
@@ -248,7 +249,7 @@ class Router
 				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
 					$this->setRouteDetails($routeData);
 				} else {
-					$this->errorHandlerController->index();
+					$this->errorHandlerController->index('');
 				}
 
 				break;
@@ -257,13 +258,13 @@ class Router
 				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
 					$this->setRouteDetails($routeData);
 				} else {
-					$this->errorHandlerController->index();
+					$this->errorHandlerController->index('');
 				}
 
 				break;
 
 			default:
-				$this->errorHandlerController->index();
+				$this->errorHandlerController->index('');
 				break;
 		}
 	}
@@ -284,7 +285,7 @@ class Router
 	): void
 	{
 		if ($this->routeNames['/notFound'] == $route) {
-			$this->errorHandlerController->index();
+			$this->errorHandlerController->index('');
 		}
 	}
 
