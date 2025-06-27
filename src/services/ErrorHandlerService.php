@@ -16,9 +16,12 @@ class ErrorHandlerService
 	 *
 	 * @return void
 	 */
-	public function renderNotFoundPage(): void
+	public function renderNotFoundPage(string $errorMessage): void
 	{
-		$this->templateRenderer->renderTemplate('_common/error/404', []);
+		$this->templateRenderer->renderTemplate(
+			'_common/error/404',
+			['errorMessage' => $errorMessage]
+		);
 		http_response_code(404);
 		return;
 	}
