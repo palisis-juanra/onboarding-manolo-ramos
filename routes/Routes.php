@@ -17,7 +17,7 @@ class Routes
 		'/login' => [
 			'GET' => [
 				'handler' => 'handleLoginController',
-				'controller' => 'LoginHandler',
+				'controller' => 'loginHandler',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => false
@@ -26,7 +26,7 @@ class Routes
 		'/login/loginAction' => [
 			'POST' => [
 				'handler' => 'handleSessionHandlerController',
-				'controller' => 'SessionHandler',
+				'controller' => 'sessionHandler',
 				'method' => 'POST',
 				'action' => 'logIn',
 				'requiresLogIn' => false
@@ -35,7 +35,7 @@ class Routes
 		'/logout' => [
 			'GET' => [
 				'handler' => 'handleSessionHandlerController',
-				'controller' => 'SessionHandler',
+				'controller' => 'sessionHandler',
 				'method' => 'GET',
 				'action' => 'logOut',
 				'requiresLogIn' => true
@@ -44,7 +44,7 @@ class Routes
 		'/notFound' => [
 			'GET' => [
 				'handler' => 'handleErrorHandlerController',
-				'controller' => 'ErrorHandler',
+				'controller' => 'errorHandler',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => false
@@ -53,7 +53,7 @@ class Routes
 		'/dashboard' => [
 			'GET' => [
 				'handler' => 'handleChannelListController',
-				'controller' => 'ChannelList',
+				'controller' => 'channelList',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => true
@@ -62,9 +62,27 @@ class Routes
 		'/dashboard/pickChannel' => [
 			'POST' => [
 				'handler' => 'handleChannelListController',
-				'controller' => 'ChannelList',
+				'controller' => 'channelList',
 				'method' => 'POST',
 				'action' => 'store',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList' => [
+			'GET' => [
+				'handler' => 'handleTourListController',
+				'controller' => 'tourList',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/viewTour' => [
+			'GET' => [
+				'handler' => 'handleTourListController',
+				'controller' => 'tourList',
+				'method' => 'GET',
+				'action' => 'show',
 				'requiresLogIn' => true
 			]
 		],

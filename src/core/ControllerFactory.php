@@ -4,12 +4,14 @@ namespace Core;
 
 use Controllers\ChannelListController;
 use Controllers\LoginHandlerController;
+use Controllers\TourListController;
 
 class ControllerFactory 
 {
 	// Controller names 
-	public const LOGIN_HANDLER_CONTROLLER = 'LoginHandler';
-	public const CHANNEL_LIST_CONTROLLER = 'ChannelList';
+	public const LOGIN_HANDLER_CONTROLLER = 'loginHandler';
+	public const CHANNEL_LIST_CONTROLLER = 'channelList';
+	public const TOUR_LIST_CONTROLLER = 'tourList';
 		
 	// Config passed on to the Controller instance
 	private $controllerDependencies;
@@ -34,13 +36,21 @@ class ControllerFactory
 		switch ($controllerName) {
 			case self::LOGIN_HANDLER_CONTROLLER:
 				return new LoginHandlerController(
-					$this->controllerDependencies['templateRenderer'],
+					$this->controllerDependencies['templateRenderer']
 				);
 			case self::CHANNEL_LIST_CONTROLLER:
 				return new ChannelListController(
 					$this->controllerDependencies['tourCMS'],
 					$this->controllerDependencies['redisClient'],
 					$this->controllerDependencies['templateRenderer'],
+					$this->controllerDependencies['errorHandler']
+				);
+			case self::TOUR_LIST_CONTROLLER:
+				return new TourListController(
+					$this->controllerDependencies['tourCMS'],
+					$this->controllerDependencies['redisClient'],
+					$this->controllerDependencies['templateRenderer'],
+					$this->controllerDependencies['errorHandler']
 				);
 			default:
 				throw new \Exception("Controller '$controllerName' not found.");

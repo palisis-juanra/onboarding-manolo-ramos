@@ -228,6 +228,56 @@ class Router
 	}
 
 	/**
+	 * Handles requests to the Tour List Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
+	private function handleTourListController(
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed
+	): void
+	{	
+		if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/tourList']:
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandlerController->index('');
+					} else {
+						RedirectionHelper::headerRedirection('/login/');
+					}
+
+					break;
+
+				case $this->routeNames['/tourList/viewTour']:
+					if ($this->sessionHandlerController->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandlerController->index('');
+					} else {
+						RedirectionHelper::headerRedirection('/login/');
+					}
+
+					break;
+
+				default:
+					$this->errorHandlerController->index('');
+					break;
+			}
+		} else {
+			RedirectionHelper::headerRedirection('/login/');
+		}
+	}
+
+	/**
 	 * Handles requests to the Login Controller.
 	 *
 	 * @param string $route The URL of the route that its being accessed.

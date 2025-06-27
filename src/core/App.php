@@ -47,11 +47,10 @@ class App
 
 		// Build the controller dependencies array
 		$this->controllerDependencies = [
-			'SessionHandler' => $this->sessionHandlerController,
-			'ErrorHandler' => $this->errorHandlerController,
+			'sessionHandler' => $this->sessionHandlerController,
+			'errorHandler' => $this->errorHandlerController,
 			'tourCMS' => $this->tourCMSclient,
 			'templateRenderer' => $this->templateRenderer,
-			'errorHandler' => $this->errorHandlerController,
 			'redisClient' => $this->redisClient
 		];
 
@@ -65,10 +64,12 @@ class App
 		);
 	}
 
+	// Serves as the main entrypoint for the application
 	public function run()
 	{
 		// Evaluate the route that is currently being accessed.
 		$this->router->dispatch();
+
 		// Get the current route details (method, controller to be called, action...)
 		$routeInfo = $this->router->getRouteDetails();
 		
