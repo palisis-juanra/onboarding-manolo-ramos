@@ -26,6 +26,11 @@ class ControllerFactory
 	 */
 	public function create(string $controllerName)
 	{
+		// Return pre-instantiated controller if available
+		if (isset($this->controllerDependencies[$controllerName]) && is_object($this->controllerDependencies[$controllerName])) {
+			return $this->controllerDependencies[$controllerName];
+		}
+
 		switch ($controllerName) {
 			case self::LOGIN_HANDLER_CONTROLLER:
 				return new LoginHandlerController(

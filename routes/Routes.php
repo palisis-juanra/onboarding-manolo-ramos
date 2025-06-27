@@ -26,7 +26,7 @@ class Routes
 		'/login/loginAction' => [
 			'POST' => [
 				'handler' => 'handleSessionHandlerController',
-				'controller' => false,
+				'controller' => 'SessionHandler',
 				'method' => 'POST',
 				'action' => 'logIn',
 				'requiresLogIn' => false

@@ -47,6 +47,8 @@ class App
 
 		// Build the controller dependencies array
 		$this->controllerDependencies = [
+			'SessionHandler' => $this->sessionHandlerController,
+			'ErrorHandler' => $this->errorHandlerController,
 			'tourCMS' => $this->tourCMSclient,
 			'templateRenderer' => $this->templateRenderer,
 			'errorHandler' => $this->errorHandlerController,
@@ -70,21 +72,26 @@ class App
 		// Get the current route details (method, controller to be called, action...)
 		$routeInfo = $this->router->getRouteDetails();
 		
-		// If routeInfo is provided as empty, show the error page
-		if (empty($routeInfo)){
+		// If routeInfo is provided as empty or there's no valid controller reference show the error page
+		if (empty($routeInfo) || empty($routeInfo['controller'])){
 			return;
 		}
 
-		// Check if routeInfo contains valid route data
-		if (isset($routeInfo['controller']) && isset($routeInfo['action'])) {
+		try {
 			// Generate an instance of the controller asocciated to that route
 			$this->controllerInstance = $this->controllerFactory->create($routeInfo['controller']);
-			
-			// Run the associated function 
-			$this->controllerInstance->{$routeInfo['action']}();
-		} else {
-			// Load error template
-			$this->errorHandlerController->index();
+
+			if (
+				isset($routeInfo['action']) &&
+				method_exists($this->controllerInstance, $routeInfo['action'])
+			) {
+				// Run the associated function 
+				$this->controllerInstance->{$routeInfo['action']}();
+			} else {
+				$this->errorHandlerController->index('');
+			}
+		} catch (\Exception $e) {
+			$this->errorHandlerController->index($e);
 		}
 	}
 }
