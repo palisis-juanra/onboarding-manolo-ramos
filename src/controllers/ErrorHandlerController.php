@@ -19,8 +19,8 @@ class ErrorHandlerController
 		);
 	}
 
-	public function index(): void
+	public function index(string $errorMessage): void
 	{
-		$this->errorHandlerService->renderNotFoundPage();
+		$this->errorHandlerService->renderNotFoundPage($errorMessage);
 	}
 }
