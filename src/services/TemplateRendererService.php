@@ -10,13 +10,14 @@ class TemplateRendererService
 {
 	private static $instance;
 	private $mustache;
+	private $mustacheConfig;
 
 	/**
 	 * TemplateRender constructor.
 	 *
 	 * Initializes the Mustache engine with the templates directory and sets up the loader.
 	 */
-	private function __construct() 
+	private function __construct(array $mustacheConfig) 
 	{
 		// Init
 		$templatesPath = realpath(dirname(__FILE__) . '/../../templates');
@@ -27,6 +28,7 @@ class TemplateRendererService
 			'loader' => $loader,
 			'partials_loader' => $loader,
 		];
+		$this->mustacheConfig = $mustacheConfig;
 
 		// Instance the Mustache engine
 		$this->mustache = new Mustache_Engine($mustacheEngineArgs);
@@ -40,10 +42,12 @@ class TemplateRendererService
 	 *
 	 * @return TemplateRendererService The singleton instance of the TemplateRenderer Service.
 	 */
-	public static function getInstance(): TemplateRendererService
+	public static function getInstance(array $mustacheConfig): TemplateRendererService
 	{
 		if (self::$instance === null) {
-			self::$instance = new self();
+			self::$instance = new self(
+				$mustacheConfig
+			);
 		}
 		
 		return self::$instance;
@@ -57,8 +61,11 @@ class TemplateRendererService
 	 */
 	public function renderTemplate(string $templateName, array $data): void
 	{
+		// Include the mustache config in the data array
+		$templateData = array_merge($this->mustacheConfig, $data);
+
 		try {
-			echo $this->mustache->render($templateName, $data);
+			echo $this->mustache->render($templateName, $templateData);
 		} catch (Mustache_Exception_UnknownTemplateException $e) {
 			echo $this->mustache->render('common/404', $data);
 		}
@@ -72,6 +79,8 @@ class TemplateRendererService
 	 */
 	public function renderPartial(string $partialName, array $data): void
 	{
-		echo $this->mustache->renderPartial($partialName, $data);
+		$templateData = array_merge($this->mustacheConfig, $data);
+
+		echo $this->mustache->renderPartial($partialName, $templateData);
 	}
 }
