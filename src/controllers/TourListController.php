@@ -26,7 +26,7 @@ class TourListController
 		);
 	}
 
-	public function view(): void
+	public function index(): void
 	{
 		$this->tourListHandler->renderTourListPage();
 	}
