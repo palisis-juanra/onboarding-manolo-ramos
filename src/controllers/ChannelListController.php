@@ -15,13 +15,15 @@ class ChannelListController
 	public function __construct(
 		TourCMS 				$tourCMSclient, 
 		RedisService 			$redisClient, 
-		TemplateRendererService $templateRenderer
+		TemplateRendererService $templateRenderer,
+		ErrorHandlerController 	$errorHandler
 	)
 	{
 		$this->channelListHandler = new ChannelListHandlerService(
 			$tourCMSclient,
 			$redisClient,
-			$templateRenderer
+			$templateRenderer,
+			$errorHandler
 		);
 	}
 
