@@ -8,19 +8,19 @@ use Services\TemplateRendererService;
 class LoginHandlerController
 {
 	private $templateRenderer;
-	private $loginHandlerService;
+	private $loginHandler;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
 		$this->templateRenderer = $templateRenderer;
 
-		$this->loginHandlerService = new LoginHandlerService(
+		$this->loginHandler = new LoginHandlerService(
 			$this->templateRenderer
 		);
 	}
 
 	public function index(): void
 	{
-		$this->loginHandlerService->renderLoginPage();
+		$this->loginHandler->renderLoginPage();
 	}
 }

@@ -8,19 +8,19 @@ use Services\TemplateRendererService;
 class ErrorHandlerController
 {
 	private $templateRenderer;
-	private $errorHandlerService;
+	private $errorHandler;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
 		$this->templateRenderer = $templateRenderer;
 
-		$this->errorHandlerService = new ErrorHandlerService(
+		$this->errorHandler = new ErrorHandlerService(
 			$this->templateRenderer
 		);
 	}
 
 	public function index(string $errorMessage): void
 	{
-		$this->errorHandlerService->renderNotFoundPage($errorMessage);
+		$this->errorHandler->renderNotFoundPage($errorMessage);
 	}
 }
