@@ -5,6 +5,13 @@ namespace Helpers;
 class ErrorHandlerHelper 
 {
 	protected static $errorMessages = [
+		'APP' => [
+			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid'
+		],
+		'ROUTER' => [
+			'ROUTE_NOT_FOUND' => 'The route being accessed does not exist',
+			'MISSING_ROUTE_DATA' => 'The route is missing its handler function or access method'
+		],
 		'CHANNELS' => [
 			'NO_CHANNEL_DATA' => 'No channel data available',
 			'SESS_NO_CHANNEL_ID' => 'No Channel ID was found in the current session',
