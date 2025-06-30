@@ -8,14 +8,14 @@ use Services\TemplateRendererService;
 
 class SessionHandlerController 
 {
-	private $sessionHandlerService;
+	private $sessionHandler;
 
 	public function __construct(
 		RedisService $redisClient,
 		TemplateRendererService $templateRenderer
 	)
 	{
-		$this->sessionHandlerService = new SessionHandlerService(
+		$this->sessionHandler = new SessionHandlerService(
 			$redisClient,
 			$templateRenderer
 		);	
@@ -23,16 +23,16 @@ class SessionHandlerController
 	
 	public function logIn(): void 
 	{
-		$this->sessionHandlerService->handleLogIn();
+		$this->sessionHandler->handleLogIn();
 	}
 
 	public function logOut(): void
 	{
-		$this->sessionHandlerService->handleLogOut();
+		$this->sessionHandler->handleLogOut();
 	}
 
 	public function checkIfSessionIsActive(): bool
 	{
-		return $this->sessionHandlerService->checkIfSessionIsActive();
+		return $this->sessionHandler->checkIfSessionIsActive();
 	}
 }
