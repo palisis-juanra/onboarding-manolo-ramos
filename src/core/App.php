@@ -67,13 +67,11 @@ class App
 	// Serves as the main entrypoint for the application
 	public function run()
 	{
-		// Evaluate the route that is currently being accessed.
+		// Evaluate the route that is currently being accessed and retrieve its details
 		$this->router->dispatch();
-
-		// Get the current route details (method, controller to be called, action...)
 		$routeInfo = $this->router->getRouteDetails();
 		
-		// If routeInfo is provided as empty or there's no valid controller reference show the error page
+		// If routeInfo is provided as empty or there's no valid controller reference, show the error page
 		if (empty($routeInfo) || empty($routeInfo['controller'])){
 			return;
 		}
