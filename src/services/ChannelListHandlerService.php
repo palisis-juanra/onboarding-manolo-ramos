@@ -85,8 +85,9 @@ class ChannelListHandlerService
 				];
 			}
 		} else {
-			// TODO: add error handling for empty channel results
-			error_log("No channel data available!", 0);
+			$this->errorHandler->index(
+				ErrorHandlerHelper::getErrorMessages('NO_CHANNEL_DATA')
+			);
 			return;
 		}
 	}
