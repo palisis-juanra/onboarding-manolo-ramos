@@ -32,7 +32,12 @@ class TourListHandlerService
 	public function renderTourListPage(): void
 	{
 		$this->retrieveTourList();
-		$this->templateRenderer->renderTemplate('tourList/tourListPage', ['templateData' => $this->templateData]);
+		$this->templateRenderer->renderTemplate(
+			'tourList/tourListPage',
+			[
+				'templateData' => $this->templateData
+			]
+		);
 	}
 
 	public function showTour(): void
@@ -54,7 +59,6 @@ class TourListHandlerService
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
 			);
-			//RedirectionHelper::doRedirection('/dashboard/');
 		}
 	}
 
@@ -77,7 +81,6 @@ class TourListHandlerService
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
 			);
-			return;
 		}
 
 		if (isset($tourList->tour)) {
@@ -90,14 +93,13 @@ class TourListHandlerService
 					'thumbnailImage' => $mappedTourImages[$tourID] ?? null,
 					'hasSale' => $tour->has_sale ?? '',
 					'lastUpdated' => $tour->descriptions_last_updated ?? '',
-					'channelId' => $tour->channel_id ?? '',
+					'channelId' => $tour->channel_id ?? ''
 				];
 			}
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
 			);
-			return;
 		}
 	}
 }
