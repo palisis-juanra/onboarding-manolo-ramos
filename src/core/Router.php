@@ -75,7 +75,8 @@ class Router
 
 				// If no controller function or method is defined for the route, handle not found
 				if ($handlerFunction === null || $routeDefinedMethod === null) {
-					$this->errorHandler->index('MISSING_ROUTE_DATA');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('MISSING_ROUTE_DATA'));
 					return;
 				}
 
@@ -92,7 +93,7 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		RedirectionHelper::headerRedirection('/notFound/');
+		RedirectionHelper::headerRedirection('/error/');
 	}
 
 	/**
@@ -154,7 +155,9 @@ class Router
 						// TODO: handle empty for sessionHandler
 						$this->setRouteDetails($routeData);
 					} else {
-						$this->errorHandler->index('ROUTE_NOT_FOUND');
+						$this->errorHandler->index(
+							$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						);
 					}
 
 					break;
@@ -169,7 +172,9 @@ class Router
 					break;
 
 				default:
-					$this->errorHandler->index('ROUTE_NOT_FOUND');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
 					break;
 			}
 		} else {
@@ -199,7 +204,9 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
 							$this->setRouteDetails($routeData) 
 						: 
-							$this->errorHandler->index('ROUTE_NOT_FOUND');
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -211,7 +218,9 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
 							$this->setRouteDetails($routeData)
 						:
-							$this->errorHandler->index('ROUTE_NOT_FOUND');
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -219,7 +228,9 @@ class Router
 					break;
 
 				default:
-					$this->errorHandler->index('ROUTE_NOT_FOUND');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
 					break;
 			}
 		} else {
@@ -249,7 +260,9 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
 							$this->setRouteDetails($routeData) 
 						: 
-							$this->errorHandler->index('ROUTE_NOT_FOUND');
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -261,7 +274,9 @@ class Router
 						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
 							$this->setRouteDetails($routeData)
 						:
-							$this->errorHandler->index('ROUTE_NOT_FOUND');
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
 					} else {
 						RedirectionHelper::headerRedirection('/login/');
 					}
@@ -269,7 +284,9 @@ class Router
 					break;
 
 				default:
-					$this->errorHandler->index('ROUTE_NOT_FOUND');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
 					break;
 			}
 		} else {
@@ -299,7 +316,9 @@ class Router
 				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
 					$this->setRouteDetails($routeData);
 				} else {
-					$this->errorHandler->index('ROUTE_NOT_FOUND');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
 				}
 
 				break;
@@ -308,13 +327,17 @@ class Router
 				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
 					$this->setRouteDetails($routeData);
 				} else {
-					$this->errorHandler->index('ROUTE_NOT_FOUND');
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
 				}
 
 				break;
 
 			default:
-				$this->errorHandler->index('ROUTE_NOT_FOUND');
+				$this->errorHandler->index(
+					$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+				);
 				break;
 		}
 	}
@@ -334,8 +357,10 @@ class Router
 		string 	$httpRequestMethodUsed,
 	): void
 	{
-		if ($this->routeNames['/notFound'] == $route) {
-			$this->errorHandler->index('ROUTE_NOT_FOUND');
+		if ($this->routeNames['/error'] == $route) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+			);
 		}
 	}
 

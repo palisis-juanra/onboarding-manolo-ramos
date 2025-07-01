@@ -3,7 +3,6 @@
 namespace Services;
 
 use Controllers\ErrorHandlerController;
-use Helpers\ErrorHandlerHelper;
 use Helpers\HttpRequestsHelper;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -43,7 +42,7 @@ class ChannelListHandlerService
 				RedirectionHelper::headerRedirection('/tourList/');
 			} else {
 				$this->errorHandler->index(
-					ErrorHandlerHelper::getErrorMessages('POST_NO_CHANNEL_ID')
+					$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
 				);
 			}
 		}
@@ -86,7 +85,7 @@ class ChannelListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				ErrorHandlerHelper::getErrorMessages('NO_CHANNEL_DATA')
+				$this->errorHandler->getErrorMessage('NO_CHANNEL_DATA')
 			);
 			return;
 		}

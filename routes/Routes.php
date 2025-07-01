@@ -41,7 +41,7 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/notFound' => [
+		'/error' => [
 			'GET' => [
 				'handler' => 'handleErrorHandlerController',
 				'controller' => 'errorHandler',

@@ -2,17 +2,21 @@
 
 namespace Services;
 
+use Helpers\ErrorHandlerHelper;
+
 class ErrorHandlerService
 {
 	private $templateRenderer;
+	private $errorMessagesList;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
 		$this->templateRenderer = $templateRenderer;
+		$this->errorMessagesList = ErrorHandlerHelper::getErrorMessages();
 	}
 
 	/**
-	 * Renders the 404 error page.
+	 * Renders a generic error page portraying the error message.
 	 *
 	 * @return void
 	 */
@@ -26,11 +30,28 @@ class ErrorHandlerService
 		}
 
 		$this->templateRenderer->renderTemplate(
-			'_common/error/404',
+			'_common/error/errorPage',
 			$templateData
 		);
 
 		http_response_code(404);
 		return;
+	}
+
+	/**
+	 * Returns an error message which describes the current problem or crash
+	 * that the application is experiencing.
+	 *
+	 * @return string 
+	 */
+	public function getErrorMessage(string $errorCode): string
+	{
+		foreach ($this->errorMessagesList as $errorType => $messages) {
+			if (array_key_exists($errorCode, $messages)) {
+				return $messages[$errorCode];
+			}
+		}
+
+		return 'Unknown error code: ' . $errorCode;
 	}
 }

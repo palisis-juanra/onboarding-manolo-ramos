@@ -87,7 +87,9 @@ class App
 				// Run the associated function 
 				$this->controllerInstance->{$routeInfo['action']}();
 			} else {
-				$this->errorHandlerController->index('INCORRECT_ROUTE_ACTION');
+				$this->errorHandlerController->index(
+					$this->errorHandlerController->getErrorMessage('INCORRECT_ROUTE_ACTION')
+				);
 			}
 		} catch (\Exception $e) {
 			$this->errorHandlerController->index($e);
