@@ -39,7 +39,7 @@ class ChannelListHandlerService
 			if (isset($_POST['channelList'])) {
 				$this->redisClient->storeItemInRedis('currentChannelID', $_POST['channelList'], RedisInstanceHelper::REDIS_TYPE_STRING);
 				// TODO: check if this is the best place to trigger a redirection
-				RedirectionHelper::headerRedirection('/tourList/');
+				RedirectionHelper::doRedirection('/tourList/');
 			} else {
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')

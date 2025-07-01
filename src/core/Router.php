@@ -93,7 +93,7 @@ class Router
 		}
 
 		// Handle any unknown endpoints by redirecting to the 404 page
-		RedirectionHelper::headerRedirection('/error/');
+		RedirectionHelper::doRedirection('/error/');
 	}
 
 	/**
@@ -143,9 +143,9 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						RedirectionHelper::headerRedirection('/dashboard/');
+						RedirectionHelper::doRedirection('/dashboard/');
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 
 					break;
@@ -166,7 +166,7 @@ class Router
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$this->setRouteDetails($routeData);
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 					
 					break;
@@ -178,7 +178,7 @@ class Router
 					break;
 			}
 		} else {
-			RedirectionHelper::headerRedirection('/login/');
+			RedirectionHelper::doRedirection('/login/');
 		}
 	}
 
@@ -208,7 +208,7 @@ class Router
 								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
 							);
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 
 					break;
@@ -222,7 +222,7 @@ class Router
 								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
 							);
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 
 					break;
@@ -234,7 +234,7 @@ class Router
 					break;
 			}
 		} else {
-			RedirectionHelper::headerRedirection('/login/');
+			RedirectionHelper::doRedirection('/login/');
 		}
 	}
 
@@ -264,7 +264,7 @@ class Router
 								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
 							);
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 
 					break;
@@ -278,7 +278,7 @@ class Router
 								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
 							);
 					} else {
-						RedirectionHelper::headerRedirection('/login/');
+						RedirectionHelper::doRedirection('/login/');
 					}
 
 					break;
@@ -290,7 +290,7 @@ class Router
 					break;
 			}
 		} else {
-			RedirectionHelper::headerRedirection('/login/');
+			RedirectionHelper::doRedirection('/login/');
 		}
 	}
 
@@ -312,7 +312,7 @@ class Router
 		switch ($route) {
 			case $this->routeNames['/login']:
 				if ($this->sessionHandler->checkIfSessionIsActive()) {
-					RedirectionHelper::headerRedirection('/dashboard/');
+					RedirectionHelper::doRedirection('/dashboard/');
 				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
 					$this->setRouteDetails($routeData);
 				} else {

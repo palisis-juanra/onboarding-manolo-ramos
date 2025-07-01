@@ -54,7 +54,7 @@ class TourListHandlerService
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
 			);
-			//RedirectionHelper::headerRedirection('/dashboard/');
+			//RedirectionHelper::doRedirection('/dashboard/');
 		}
 	}
 
