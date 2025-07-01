@@ -234,7 +234,9 @@ class Router
 					break;
 			}
 		} else {
-			RedirectionHelper::doRedirection('/login/');
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+			);
 		}
 	}
 
@@ -290,7 +292,9 @@ class Router
 					break;
 			}
 		} else {
-			RedirectionHelper::doRedirection('/login/');
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+			);
 		}
 	}
 

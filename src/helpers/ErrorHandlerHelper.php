@@ -6,7 +6,8 @@ class ErrorHandlerHelper
 {
 	protected static $errorMessages = [
 		'APP' => [
-			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid'
+			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid',
+			'LOGIN_REQUIRED' => 'You need to be logged in order to access this page'
 		],
 		'ROUTER' => [
 			'ROUTE_NOT_FOUND' => '404 - The route being accessed does not exist',
