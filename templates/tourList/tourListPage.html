@@ -2,14 +2,11 @@
 <html lang="en">
 {{> _partials/_header }}
 <body class="h-screen w-screen flex justify-center items-center">
-	<main>
-		<div style="margin-top: 75%; margin-bottom: 20%;" class="container mx-auto my-10">
-			{{# templateData}}
-			<h1 class="text-6xl font-bold text-gray-900 sm:text-7xl text-center mb-10">
+	<main class="h-screen">
+		<div style="margin-top: 10%; padding-bottom: 10%;" class="container mx-auto my-10">
+			<h1 class="text-4xl font-bold text-gray-900 text-center mb-10">
 				Tour List
 			</h1>
-			{{/ templateData}}
-
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
 				{{# templateData}}
 					<div class="bg-white shadow-md rounded-lg overflow-hidden">
