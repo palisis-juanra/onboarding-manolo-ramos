@@ -3,22 +3,24 @@
 {{> _partials/_header }}
 <body class="h-screen w-screen flex justify-center items-center">
 	<main>
+		<h1 class="text-4xl font-bold text-gray-900 text-center mb-10">
+			Channel selection
+		</h1>
 		<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
 			<form action="{{BASE_URL}}/dashboard/pickChannel" method="post">
 				<div class="mb-4">
 					<label class="block text-gray-700 font-bold mb-2" for="channelList">
-						Select channel
+						Available channels
 					</label>
-					
-					<select name="channelList" id="channelList" required>
+					<select class="g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="channelList" id="channelList" required>
 						<option disabled selected>Select an option...</option>
 						{{# templateData}}
 							<option value="{{channelId}}">{{channelName}}</option>
 						{{/ templateData}}
 					</select>
 					<div class="flex items-center justify-center">
-						<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-						Select channel
+						<button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+						Submit
 						</button>
 					</div>
 				</div>
