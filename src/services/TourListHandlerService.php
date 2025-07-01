@@ -32,10 +32,12 @@ class TourListHandlerService
 	public function renderTourListPage(): void
 	{
 		$this->retrieveTourList();
+		$channelName = $this->redisClient->getItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->templateRenderer->renderTemplate(
 			'tourList/tourListPage',
 			[
-				'templateData' => $this->templateData
+				'templateData' => $this->templateData,
+				'channelName' => $channelName
 			]
 		);
 	}
@@ -49,8 +51,17 @@ class TourListHandlerService
 	{
 		$channelID = $this->redisClient->getItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
 
+		$queryString = $this->buildQuery(
+			2,
+			1,
+			0,
+			'PT'
+		);
+
 		if ($channelID) {
+			// TODO: exchange endpoint for search_tours
 			$retrievedTours = $this->tourCMSclient->list_tours($channelID);
+			$retrievedToursa = $this->tourCMSclient->search_tours('', $channelID);
 			$retrievedTourThumbnails = $this->tourCMSclient->list_tour_images($channelID);
 
 			$this->buildTourListTemplateData($retrievedTourThumbnails, $retrievedTours);
@@ -101,5 +112,23 @@ class TourListHandlerService
 				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
 			);
 		}
+	}
+
+	private function buildQuery(
+		int $toursPerPage,
+		int $currentPage,
+		int  $productType,
+		string $country
+	) 
+	{
+		// Set a querystring for the search
+		$queryParameters = [
+			"per_page" => $toursPerPage,
+			"page" => $currentPage
+		];
+
+		$queryString = http_build_query($queryParameters);
+
+		return $queryString;
 	}
 }
