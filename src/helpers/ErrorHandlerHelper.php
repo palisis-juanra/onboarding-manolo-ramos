@@ -18,7 +18,7 @@ class ErrorHandlerHelper
 			'POST_NO_CHANNEL_ID' => 'There was an error handling the selected Channel ID'
 		],
 		'TOURS' => [
-			'NO_TOUR_DATA' => 'No tour data available'
+			'NO_TOUR_DATA' => 'No tour data available for the selected channel'
 		]
 	];
 
