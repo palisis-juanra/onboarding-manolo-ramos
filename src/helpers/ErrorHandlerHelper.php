@@ -9,7 +9,7 @@ class ErrorHandlerHelper
 			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid'
 		],
 		'ROUTER' => [
-			'ROUTE_NOT_FOUND' => 'The route being accessed does not exist',
+			'ROUTE_NOT_FOUND' => '404 - The route being accessed does not exist',
 			'MISSING_ROUTE_DATA' => 'The route is missing its handler function or access method'
 		],
 		'CHANNELS' => [
@@ -22,14 +22,8 @@ class ErrorHandlerHelper
 		]
 	];
 
-	public static function getErrorMessages(string $errorCode): string
+	public static function getErrorMessages(): array
 	{
-		foreach (self::$errorMessages as $type => $messages) {
-			if (array_key_exists($errorCode, $messages)) {
-				return $messages[$errorCode];
-			}
-		}
-
-		return 'Unknown error code: ' . $errorCode;
+		return self::$errorMessages;
 	}
 }

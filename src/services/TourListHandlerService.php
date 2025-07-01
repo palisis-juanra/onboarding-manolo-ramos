@@ -3,8 +3,6 @@
 namespace Services;
 
 use Controllers\ErrorHandlerController;
-use Helpers\ErrorHandlerHelper;
-use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use TourCMS\Utils\TourCMS;
 
@@ -54,7 +52,7 @@ class TourListHandlerService
 		} else {
 			// TODO: automatic redirection to dashboard page
 			$this->errorHandler->index(
-				ErrorHandlerHelper::getErrorMessages('SESS_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
 			);
 			//RedirectionHelper::headerRedirection('/dashboard/');
 		}
@@ -77,7 +75,7 @@ class TourListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				ErrorHandlerHelper::getErrorMessages('NO_TOUR_DATA')
+				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
 			);
 			return;
 		}
@@ -97,7 +95,7 @@ class TourListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				ErrorHandlerHelper::getErrorMessages('NO_TOUR_DATA')
+				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
 			);
 			return;
 		}

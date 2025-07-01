@@ -23,4 +23,9 @@ class ErrorHandlerController
 	{
 		$this->errorHandler->renderNotFoundPage($errorMessage);
 	}
+
+	public function getErrorMessage(string $errorCode)
+	{
+		return $this->errorHandler->getErrorMessage($errorCode);
+	}
 }
