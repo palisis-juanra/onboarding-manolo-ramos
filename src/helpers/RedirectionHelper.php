@@ -9,7 +9,7 @@ class RedirectionHelper
 	 *
 	 * @param string $location The location to which the application will be redirected. Specify with left slashes /location/
 	 */
-	public static function headerRedirection(string $location): void
+	public static function doRedirection(string $location): void
 	{
 		$redirectUrl = dirname($_SERVER['SCRIPT_NAME']) . $location;
 		header('Location: '. $redirectUrl .'');

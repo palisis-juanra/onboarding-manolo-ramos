@@ -33,10 +33,10 @@ class SessionHandlerService
 	{
 		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			// If a session key exists, redirect to the home page or dashboard
-			RedirectionHelper::headerRedirection('/dashboard/');
+			RedirectionHelper::doRedirection('/dashboard/');
 		} else {
 			$this->createSession();
-			RedirectionHelper::headerRedirection('/dashboard/');
+			RedirectionHelper::doRedirection('/dashboard/');
 		}
 	}
 
