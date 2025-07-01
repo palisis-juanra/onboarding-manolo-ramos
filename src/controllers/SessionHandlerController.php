@@ -12,12 +12,14 @@ class SessionHandlerController
 
 	public function __construct(
 		RedisService $redisClient,
-		TemplateRendererService $templateRenderer
+		TemplateRendererService $templateRenderer,
+		array $sessionConfig
 	)
 	{
 		$this->sessionHandler = new SessionHandlerService(
 			$redisClient,
-			$templateRenderer
+			$templateRenderer,
+			$sessionConfig
 		);	
 	}
 	

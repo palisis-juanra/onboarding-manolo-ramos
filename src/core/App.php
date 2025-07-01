@@ -37,7 +37,8 @@ class App
 		// Initialize Session Handler
 		$this->sessionHandlerController = new SessionHandlerController(
 			$this->redisClient,
-			$this->templateRenderer
+			$this->templateRenderer,
+			$envConfig['session']
 		);
 
 		// Initialize Error Handler
