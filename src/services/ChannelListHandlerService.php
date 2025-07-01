@@ -35,10 +35,14 @@ class ChannelListHandlerService
 
 	public function submitChannelPick(): void
 	{
-		if ($_SERVER["REQUEST_METHOD"] == HttpRequestsHelper::getVerb('POST')) {
-			if (isset($_POST['channelList'])) {
-				$this->redisClient->storeItemInRedis('currentChannelID', $_POST['channelList'], RedisInstanceHelper::REDIS_TYPE_STRING);
-				// TODO: check if this is the best place to trigger a redirection
+		if (isset($_POST['channelList'])) {
+			$channelData = explode('|', $_POST['channelList'], 2);
+			$channelId = $channelData[0] ?? '';
+			$channelName = $channelData[1] ?? '';
+
+			if ($channelId && $channelName) {
+				$this->redisClient->storeItemInRedis('currentChannelID', $channelId, RedisInstanceHelper::REDIS_TYPE_STRING);
+				$this->redisClient->storeItemInRedis('currentChannelName', $channelName, RedisInstanceHelper::REDIS_TYPE_STRING);
 				RedirectionHelper::doRedirection('/tourList/');
 			} else {
 				$this->errorHandler->index(
