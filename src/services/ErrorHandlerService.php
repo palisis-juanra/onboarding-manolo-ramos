@@ -35,7 +35,7 @@ class ErrorHandlerService
 		);
 
 		http_response_code(404);
-		return;
+		exit;
 	}
 
 	/**
