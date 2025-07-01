@@ -7,18 +7,23 @@ use Helpers\RedisInstanceHelper;
 
 class SessionHandlerService
 {
-	protected const SESSION_TTL = 1800; // 30 minutes
+	private $SESSION_TTL = 1800; // 30 minutes
 	protected $redisClient;
 
 	private $templateRenderer;
 
 	public function __construct(
 		RedisService 	$redisClient,
-		TemplateRendererService $templateRenderer
+		TemplateRendererService $templateRenderer,
+		array $sessionConfig
 	)
 	{
 		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;
+
+		if (isset($sessionConfig['SESSION_TTL'])) {
+			$this->SESSION_TTL = $sessionConfig['SESSION_TTL'];
+		}
 	}
 
 	/**
@@ -85,7 +90,7 @@ class SessionHandlerService
 	 */
 	private function createSession(): void {
 		// Check if the session is still valid
-		if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < self::SESSION_TTL) {
+		if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < $this->SESSION_TTL) {
 			return; // Session is still valid, no need to create a new one
 		}
 		

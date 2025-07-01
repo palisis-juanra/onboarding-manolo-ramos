@@ -25,9 +25,15 @@ $redisHost = $_ENV['REDIS_HOST'];
 $redisPort = $_ENV['REDIS_PORT'];
 $redisPassword = $_ENV['REDIS_PASSWORD'];
 
+// Session
+$sessionTTL = $_ENV['SESSION_TTL'];
+
 return [
 	'project' => [
 		'BASE_URL' => $envProjectBaseURL
+	],
+	'session' => [
+		'SESSION_TTL' => $sessionTTL,
 	],
 	'tourcms' => [
 		'TCMS_API_URL' => $envTCMSapiUrl,
