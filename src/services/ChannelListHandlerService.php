@@ -44,32 +44,39 @@ class ChannelListHandlerService
 			// Get channel name from matching channelID
 			foreach ($this->channelList->channel as $channel => $channelDetails) {
 				if ($channelDetails->channel_id == $channelID) {
+					$isChannelMatched = true;
+
 					$channelName = (string) $channelDetails->channel_name ?? '';
 					$tourCount = (string) $channelDetails->tour_count ?? '';
 					$channelLogo = (string) $channelDetails->logo_url ?? '';
 				}
 			}
 
-			if ($channelID && $channelName) {
-				$currentChannelDetails = [
-					'channelID' => $channelID,
-					'channelName' => $channelName,
-					'tourCount' => $tourCount,
-					'channelLogo' => $channelLogo
-				];
-
-				$this->redisClient->storeItemInRedis(
-					'currentChannelDetails', 
-					json_encode($currentChannelDetails), 
-					RedisInstanceHelper::REDIS_TYPE_STRING
-				);
-
-				RedirectionHelper::doRedirection('/tourList/');
-			} else {
+			// If no valid channelID is found
+			if (!$isChannelMatched) {
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
 				);
 			}
+
+			$currentChannelDetails = [
+				'channelID' => $channelID,
+				'channelName' => $channelName,
+				'tourCount' => $tourCount,
+				'channelLogo' => $channelLogo
+			];
+
+			$this->redisClient->storeItemInRedis(
+				'currentChannelDetails', 
+				json_encode($currentChannelDetails), 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
+			);
 		}
 	}
 
