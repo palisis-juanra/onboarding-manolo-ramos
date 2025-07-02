@@ -13,14 +13,14 @@
 						Available channels
 					</label>
 					<select class="g-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="channelList" id="channelList" required>
-						<option disabled selected>Select an option...</option>
+						<option value='disabled' disabled selected>Select an option...</option>
 						{{# templateData}}
-							<option value="{{channelId}}|{{channelName}}">{{channelName}}</option>
+							<option value="{{channelId}}">{{channelName}}</option>
 						{{/ templateData}}
 					</select>
 					<div class="flex items-center justify-center">
 						<button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-						Submit
+							Submit
 						</button>
 					</div>
 				</div>
