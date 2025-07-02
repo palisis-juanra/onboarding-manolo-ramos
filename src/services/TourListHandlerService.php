@@ -64,12 +64,7 @@ class TourListHandlerService
 	{
 		$channelID = $this->currentChannelDetails['channelID'];
 
-		$queryString = $this->buildQuery(
-			30,
-			1,
-			0,
-			'PT'
-		);
+		$queryString = $this->buildQuery(30, 1, 0, 'PT');
 
 		if ($channelID) {
 			$retrievedTours = $this->tourCMSclient->search_tours($queryString, $channelID);
@@ -85,7 +80,7 @@ class TourListHandlerService
 	private function buildTourListTemplateData(object $tourList): void
 	{
 		if (isset($tourList->tour)) {
-			$this->totalTourCount = count($tourList->tour); 
+			$this->totalTourCount = (string) $tourList->total_tour_count; 
 			foreach($tourList->tour as $tour) {
 				$this->toursTemplateData[] = [
 					'tourID' => $tour->tour_id ?? '',
