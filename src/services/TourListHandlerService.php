@@ -14,7 +14,10 @@ class TourListHandlerService
 	private $templateRenderer;
 	private $errorHandler;
 
-	private $templateData;
+	private $toursTemplateData;
+	private $currentChannelDetails;
+
+	private $totalTourCount;
 
 	public function __construct(
 		TourCMS 				$tourCMSclient, 
@@ -27,21 +30,31 @@ class TourListHandlerService
 		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;
 		$this->errorHandler = $errorHandler;
+
+		$this->currentChannelDetails = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'currentChannelDetails', 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			)
+		, true);
 	}
 
 	public function renderTourListPage(): void
 	{
 		$this->retrieveTourList();
-		$channelName = $this->redisClient->getItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
+
 		$this->templateRenderer->renderTemplate(
 			'tourList/tourListPage',
 			[
-				'templateData' => $this->templateData,
-				'channelName' => $channelName
+				'toursTemplateData' => $this->toursTemplateData,
+				'channelName' => $this->currentChannelDetails['channelName'],
+				'channelLogo' => $this->currentChannelDetails['channelLogo'],
+				'channelTourCount' => $this->totalTourCount
 			]
 		);
 	}
 
+	// TODO: move this function to a TourDetailsHandler class
 	public function showTour(): void
 	{
 		
@@ -49,22 +62,18 @@ class TourListHandlerService
 
 	private function retrieveTourList(): void
 	{
-		$channelID = $this->redisClient->getItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$channelID = $this->currentChannelDetails['channelID'];
 
 		$queryString = $this->buildQuery(
-			2,
+			30,
 			1,
 			0,
 			'PT'
 		);
 
 		if ($channelID) {
-			// TODO: exchange endpoint for search_tours
-			$retrievedTours = $this->tourCMSclient->list_tours($channelID);
-			$retrievedToursa = $this->tourCMSclient->search_tours('', $channelID);
-			$retrievedTourThumbnails = $this->tourCMSclient->list_tour_images($channelID);
-
-			$this->buildTourListTemplateData($retrievedTourThumbnails, $retrievedTours);
+			$retrievedTours = $this->tourCMSclient->search_tours($queryString, $channelID);
+			$this->buildTourListTemplateData($retrievedTours);
 		} else {
 			// TODO: automatic redirection to dashboard page
 			$this->errorHandler->index(
@@ -73,38 +82,22 @@ class TourListHandlerService
 		}
 	}
 
-	private function buildTourListTemplateData(object $tourImages, object $tourList): void
+	private function buildTourListTemplateData(object $tourList): void
 	{
-		$mappedTourImages = [];
-
-		// Process retrieved Tour Images
-		if (isset($tourImages->tour)) {
-			foreach ($tourImages->tour as $thumbnail){
-				$tourID = (string) $thumbnail->tour_id;
-
-				if(!isset($thumbnail->images->image->url_thumbnail)) {
-					$mappedTourImages[$tourID] = 'https://picsum.photos/342/228';
-				}
-
-				$mappedTourImages[$tourID] = (string) $thumbnail->images->image->url_thumbnail;
-			}
-		} else {
-			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
-			);
-		}
-
 		if (isset($tourList->tour)) {
+			$this->totalTourCount = count($tourList->tour); 
 			foreach($tourList->tour as $tour) {
-				$tourID = (string) $tour->tour_id;
-				$this->templateData[] = [
-					'tourID' => $tourID ?? '',
+				$this->toursTemplateData[] = [
+					'tourID' => $tour->tour_id ?? '',
 					'tourName' => $tour->tour_name ?? '',
+					'location' => $tour->location ?? '',
 					'tourCode' => $tour->tour_code ?? '',
-					'thumbnailImage' => $mappedTourImages[$tourID] ?? null,
+					'shortDescription' => $tour->shortdesc ?? '',
+					'thumbnailImage' => $tour->thumbnail_image ?? '',
 					'hasSale' => $tour->has_sale ?? '',
 					'lastUpdated' => $tour->descriptions_last_updated ?? '',
-					'channelId' => $tour->channel_id ?? ''
+					'channelId' => $tour->channel_id ?? '',
+					'fromPrice' => $tour->from_price_display ?? ''
 				];
 			}
 		} else {
