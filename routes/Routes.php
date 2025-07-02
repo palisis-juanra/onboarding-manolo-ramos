@@ -77,7 +77,16 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/tourList/viewTour' => [
+		'/tourList/pickTour' => [
+			'POST' => [
+				'handler' => 'handleTourListController',
+				'controller' => 'tourList',
+				'method' => 'POST',
+				'action' => 'store',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView' => [
 			'GET' => [
 				'handler' => 'handleTourListController',
 				'controller' => 'tourList',

@@ -3,6 +3,7 @@
 namespace Services;
 
 use Controllers\ErrorHandlerController;
+use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use TourCMS\Utils\TourCMS;
 
@@ -54,10 +55,25 @@ class TourListHandlerService
 		);
 	}
 
-	// TODO: move this function to a TourDetailsHandler class
-	public function showTour(): void
+	public function submitTourPick(): void
 	{
-		
+		if (isset($_POST['tourID'])) {
+			$currentTourID = $_POST['tourID'];
+
+			$this->redisClient->storeItemInRedis(
+				'currentTourID', 
+				$currentTourID, 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			$pepe = $this->redisClient->getItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_NO_TOUR_ID')
+			);
+		}
 	}
 
 	private function retrieveTourList(): void

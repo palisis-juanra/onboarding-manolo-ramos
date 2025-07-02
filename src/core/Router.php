@@ -50,6 +50,11 @@ class Router
 		// Get the HTTP method of the request (GET, POST, etc.)
 		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
+		// TODO: future router refactor to include direct index search instead of looping through all routes.
+		// if (array_key_exists($currentURL, $this->routes)) {
+		// 	$routeData = $this->routes[$currentURL];
+		// }
+		
 		foreach ($this->routes as $route => $routeData) {
 			// Check if the current URL matches the saved route pattern
 			if (preg_match('#^' . $route . '$#', $currentURL, $action)) {
@@ -271,9 +276,9 @@ class Router
 
 					break;
 
-				case $this->routeNames['/tourList/viewTour']:
+				case $this->routeNames['/tourList/pickTour']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
@@ -284,6 +289,21 @@ class Router
 					}
 
 					break;
+
+				// TODO: move this case to the tourViewController handle
+				case $this->routeNames['/tourList/tourView']:
+				if ($this->sessionHandler->checkIfSessionIsActive()) {
+					$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$this->setRouteDetails($routeData) 
+					: 
+						$this->errorHandler->index(
+							$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						);
+				} else {
+					RedirectionHelper::doRedirection('/login/');
+				}
+
+				break;
 
 				default:
 					$this->errorHandler->index(
