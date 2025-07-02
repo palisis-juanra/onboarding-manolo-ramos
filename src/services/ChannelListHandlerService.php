@@ -31,18 +31,39 @@ class ChannelListHandlerService
 		$this->redisClient = $redisClient;
 		$this->templateRenderer = $templateRenderer;
 		$this->errorHandler = $errorHandler;
+
+		// Initialize channelList
+		$this->channelList = $this->tourCMSclient->list_channels();
 	}
 
 	public function submitChannelPick(): void
 	{
 		if (isset($_POST['channelList'])) {
-			$channelData = explode('|', $_POST['channelList'], 2);
-			$channelId = $channelData[0] ?? '';
-			$channelName = $channelData[1] ?? '';
+			$channelID = $_POST['channelList'];
+			
+			// Get channel name from matching channelID
+			foreach ($this->channelList->channel as $channel => $channelDetails) {
+				if ($channelDetails->channel_id == $channelID) {
+					$channelName = (string) $channelDetails->channel_name ?? '';
+					$tourCount = (string) $channelDetails->tour_count ?? '';
+					$channelLogo = (string) $channelDetails->logo_url ?? '';
+				}
+			}
 
-			if ($channelId && $channelName) {
-				$this->redisClient->storeItemInRedis('currentChannelID', $channelId, RedisInstanceHelper::REDIS_TYPE_STRING);
-				$this->redisClient->storeItemInRedis('currentChannelName', $channelName, RedisInstanceHelper::REDIS_TYPE_STRING);
+			if ($channelID && $channelName) {
+				$currentChannelDetails = [
+					'channelID' => $channelID,
+					'channelName' => $channelName,
+					'tourCount' => $tourCount,
+					'channelLogo' => $channelLogo
+				];
+
+				$this->redisClient->storeItemInRedis(
+					'currentChannelDetails', 
+					json_encode($currentChannelDetails), 
+					RedisInstanceHelper::REDIS_TYPE_STRING
+				);
+
 				RedirectionHelper::doRedirection('/tourList/');
 			} else {
 				$this->errorHandler->index(
@@ -55,21 +76,15 @@ class ChannelListHandlerService
 	public function renderChannelListPage(): void
 	{
 		// Generate template data
-		$this->retrieveChannels();
 		$this->buildChannelsTemplateData($this->channelList);
 
 		// Render the template
 		$this->templateRenderer->renderTemplate('dashboard/channelListPage', ['templateData' => $this->templateData]);
 	}
-
-	private function retrieveChannels(): void
-	{
-		// TODO: add error handling for empty channel results
-		$this->channelList = $this->tourCMSclient->list_channels();
-	}
 	
 	private function buildChannelsTemplateData(object $channelList): void
 	{
+		// TODO: remove unnecesary data from the array
 		if (isset($channelList->channel)) {
 			foreach($channelList->channel as $channel) {
 				$this->templateData[] = [
