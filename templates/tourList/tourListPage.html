@@ -3,16 +3,44 @@
 {{> _partials/_header }}
 <body class="h-screen flex justify-center items-center">
 	<main class="h-screen">
+		
 		<div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
+			<!-- Breadcrumbs -->
+			<div class="mb-4">
+				<ul class="flex items-start justify-start gap-2">
+					<li class="hover:underline">
+						<a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+					</li>
+					<li> > </li>
+					<li class="underline">
+						<a href="{{BASE_URL}}/tourList">Tour List</a>
+					</li>
+				</ul>
+			</div>
+			<!-- Title and channel info -->
 			<h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
 				Tour List
 			</h1>
-			<pre class="text-center mb-10">({{channelName}})</pre>
+			{{# channelName}}
+				<div class="flex items-center justify-center gap-2 mb-10">
+					{{# channelLogo}}
+						<img class="h-4" src="{{channelLogo}}" alt="a"/>
+					{{/ channelLogo}}
+					<pre class="text-center">({{channelName}} - {{channelTourCount}} TOURS)</pre>
+				</div>
+			{{/ channelName}}
+			<!-- Tour grid -->
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-				{{# templateData}}
+				{{# toursTemplateData}}
+				<!-- Tour element -->
 					<div class="flex justify-between flex-col bg-white shadow-md rounded-lg overflow-hidden">
 						<div class="h-48 overflow-hidden h-1/2">
-							<img src="{{thumbnailImage}}" alt="thumbnail" class="w-full h-full object-cover">
+							{{# thumbnailImage}}
+								<img src="{{thumbnailImage}}" alt="thumbnail{{tourID}}" class="w-full h-full object-cover">
+							{{/ thumbnailImage}}
+							{{^ thumbnailImage}}	
+								<img src="https://picsum.photos/342/228" alt="tour thumbnail" class="w-full h-full object-cover">
+							{{/ thumbnailImage}}
 						</div>
 						<div class="flex flex-col justify-between p-4 h-1/2">
 							<!-- Tour details -->
@@ -36,7 +64,7 @@
 							</div>
 						</div>
 					</div>
-				{{/ templateData}}
+				{{/ toursTemplateData}}
 			</div>
 		</div>
 	</main>
