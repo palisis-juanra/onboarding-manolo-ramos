@@ -95,8 +95,8 @@ class ChannelListHandlerService
 		if (isset($channelList->channel)) {
 			foreach($channelList->channel as $channel) {
 				$this->templateData[] = [
-					'channelId' => $channel->channel_id ?? '',
-					'accountId' => $channel->account_id ?? '',
+					'channelID' => $channel->channel_id ?? '',
+					'accountID' => $channel->account_id ?? '',
 					'channelName' => $channel->channel_name ?? '',
 					'tourCount' => $channel->tour_count ?? '',
 					'logoURL' => $channel->logo_url ? $channel->logo_url : '',
