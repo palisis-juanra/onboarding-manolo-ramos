@@ -31,8 +31,8 @@ class TourListController
 		$this->tourListHandler->renderTourListPage();
 	}
 
-	public function show(): void
+	public function store(): void
 	{
-		$this->tourListHandler->showTour();
+		$this->tourListHandler->submitTourPick();
 	}
 }
