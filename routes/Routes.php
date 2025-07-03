@@ -88,8 +88,8 @@ class Routes
 		],
 		'/tourList/tourView' => [
 			'GET' => [
-				'handler' => 'handleTourListController',
-				'controller' => 'tourList',
+				'handler' => 'handleTourViewController',
+				'controller' => 'tourView',
 				'method' => 'GET',
 				'action' => 'show',
 				'requiresLogIn' => true
