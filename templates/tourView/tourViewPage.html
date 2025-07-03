@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> _partials/_header }}
+<body class="h-screen flex justify-center items-center">
+	<main class="h-screen w-full">
+		<div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
+			<!-- Breadcrumbs -->
+			<div class="mb-4">
+				<ul class="flex items-start justify-start gap-2">
+					<li class="hover:underline">
+						<a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+					</li>
+					<li> > </li>
+					<li class="hover:underline">
+						<a href="{{BASE_URL}}/tourList">Tour List</a>
+					</li>
+					<li> > </li>
+					<li class="underline">
+						<a href="{{BASE_URL}}/tourList/tourView">{{tourName}}</a>
+					</li>
+				</ul>
+			</div>
+			<!-- Tour Title -->
+			<h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
+				{{tourName}}
+			</h1>
+			<div class="flex justify-center items-center">
+				<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
+					<!-- First Side: Tour Details -->
+					<div class="w-1/2 p-6">
+						<img src="https://via.placeholder.com/400" alt="Tour Image" class="w-full h-64 object-cover rounded-lg mb-4">
+						<h2 class="text-2xl font-bold mb-2">Amazing Tour Name</h2>
+						<p class="text-xl text-green-600">$99.99</p>
+					</div>
+
+					<!-- Second Side: Booking Controls -->
+					<div class="w-1/2 p-6">
+						<h3 class="text-xl font-semibold mb-4">Select Booking</h3>
+						<div class="mb-4">
+							<label class="block text-gray-700">Adults</label>
+							<div class="flex items-center">
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('adults', -1)">-</button>
+								<input type="number" id="adults" value="0" class="border text-center w-16" readonly>
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('adults', 1)">+</button>
+							</div>
+						</div>
+						<div class="mb-4">
+							<label class="block text-gray-700">Kids</label>
+							<div class="flex items-center">
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('kids', -1)">-</button>
+								<input type="number" id="kids" value="0" class="border text-center w-16" readonly>
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('kids', 1)">+</button>
+							</div>
+						</div>
+						<div class="mb-4">
+							<label class="block text-gray-700">Seniors</label>
+							<div class="flex items-center">
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('seniors', -1)">-</button>
+								<input type="number" id="seniors" value="0" class="border text-center w-16" readonly>
+								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('seniors', 1)">+</button>
+							</div>
+						</div>
+						<div>
+							<label class="block text-gray-700 mb-2">Departure Date</label>
+							<input type="date" class="border rounded w-full py-2 px-3" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script>
+			function changeCount(type, delta) {
+				const input = document.getElementById(type);
+				let currentValue = parseInt(input.value);
+				currentValue = Math.max(0, currentValue + delta); // Prevent negative values
+				input.value = currentValue;
+			}
+		</script>
+	{{> _partials/_footer }}
+</body>
+</html>
