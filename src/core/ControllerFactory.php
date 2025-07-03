@@ -5,6 +5,7 @@ namespace Core;
 use Controllers\ChannelListController;
 use Controllers\LoginHandlerController;
 use Controllers\TourListController;
+use Controllers\TourViewController;
 
 class ControllerFactory 
 {
@@ -12,6 +13,7 @@ class ControllerFactory
 	public const LOGIN_HANDLER_CONTROLLER = 'loginHandler';
 	public const CHANNEL_LIST_CONTROLLER = 'channelList';
 	public const TOUR_LIST_CONTROLLER = 'tourList';
+	public const TOUR_VIEW_CONTROLLER = 'tourView';
 		
 	// Config passed on to the Controller instance
 	private $controllerDependencies;
@@ -47,6 +49,13 @@ class ControllerFactory
 				);
 			case self::TOUR_LIST_CONTROLLER:
 				return new TourListController(
+					$this->controllerDependencies['tourCMS'],
+					$this->controllerDependencies['redisClient'],
+					$this->controllerDependencies['templateRenderer'],
+					$this->controllerDependencies['errorHandler']
+				);
+			case self::TOUR_VIEW_CONTROLLER:
+				return new TourViewController(
 					$this->controllerDependencies['tourCMS'],
 					$this->controllerDependencies['redisClient'],
 					$this->controllerDependencies['templateRenderer'],

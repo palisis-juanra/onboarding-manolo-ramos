@@ -18,9 +18,14 @@ class ErrorHandlerHelper
 			'SESS_NO_CHANNEL_ID' => 'No Channel ID was found in the current session',
 			'POST_NO_CHANNEL_ID' => 'There was an error handling the selected Channel ID'
 		],
-		'TOURS' => [
-			'NO_TOUR_DATA' => 'No tour data available for the selected channel',
+		'TOUR_LIST' => [
+			'NO_CHANNEL_TOUR_DATA' => 'No tour data available for the selected channel',
 			'POST_NO_TOUR_ID' => 'There was an error handling the selected Tour ID'
+		],
+		'TOUR_VIEW' => [
+			'NO_TOUR_DATA' => 'No tour data available for the selected tour',
+			'POST_NO_TOUR_ID_VIEW' => 'There was an error handling the selected Tour ID',
+			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
 		]
 	];
 
