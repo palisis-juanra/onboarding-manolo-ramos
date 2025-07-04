@@ -96,9 +96,13 @@ class TourViewHandlerService
 					'tourEndTime' => $details->end_time,
 					'tourSummary' => $details->summary,
 					'tourShortDesc' => $details->shortdesc,
-					'tourPrice' => $details->from_price_display
+					'tourPrice' => html_entity_decode($details->from_price_display) 
 				];
 			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
+			);
 		}
 	}
 }
