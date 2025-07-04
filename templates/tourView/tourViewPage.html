@@ -21,61 +21,80 @@
 				</ul>
 			</div>
 			<!-- Tour Title -->
-			<h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
+			<!-- <h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
 				{{tourName}}
-			</h1>
-			<div class="flex justify-center items-center">
+			</h1> -->
+			{{# tourTemplateData}}
+			<div style="margin-top: 20%;" class="flex justify-center items-center">
 				<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
 					<!-- First Side: Tour Details -->
 					<div class="w-1/2 p-6">
-						<img src="https://via.placeholder.com/400" alt="Tour Image" class="w-full h-64 object-cover rounded-lg mb-4">
-						<h2 class="text-2xl font-bold mb-2">Amazing Tour Name</h2>
-						<p class="text-xl text-green-600">$99.99</p>
+						<img src="{{tourImage}}" alt="Tour Image" class="w-full h-64 object-cover rounded-lg mb-4">
+						<h2 class="text-2xl font-bold mb-2">{{tourName}}</h2>
+						<pre class="text-sm text-gray-600">TourID: {{tourID}} / Tour code: {{tourCode}}</pre>
+						<p class="text-2xl text-green-600 mb-4 mt-3">{{tourPrice}}</p>
+						<p class="text-md text-gray-800">{{tourShortDesc}}</p>
 					</div>
 
 					<!-- Second Side: Booking Controls -->
 					<div class="w-1/2 p-6">
-						<h3 class="text-xl font-semibold mb-4">Select Booking</h3>
-						<div class="mb-4">
-							<label class="block text-gray-700">Adults</label>
-							<div class="flex items-center">
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('adults', -1)">-</button>
-								<input type="number" id="adults" value="0" class="border text-center w-16" readonly>
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('adults', 1)">+</button>
+						<h3 class="text-xl font-semibold mb-4">Select booking details</h3>
+						<form action="{{BASE_URL}}/tourList/tourView/checkTourAvailability" method="POST">
+							{{# bookingDataPeople}}
+								<div class="mb-4">
+									<label class="block text-gray-700">{{label_1}}</label>
+									<pre class="text-sm block text-gray-700">{{tourPrice}}</pre>
+									<div class="flex items-center w-full">
+										<input 
+											type="range" 
+											min="{{minimum}}" 
+											max="{{maximum}}" 
+											value="0" 
+											class="border w-11/12 text-center w-16 booking-range" 
+											oninput="updateRangeValue(this)"
+											required
+										>
+										<span style="padding: 5px 12px;" class="ml-3 text-gray-100 bg-blue-500 rounded booking-range-value">0</span>
+									</div>
+								</div>
+							{{/ bookingDataPeople}}
+							<div>
+								<label class="block text-gray-700 mb-2">Departure Date</label>
+								<input 
+									type="date" 
+									id="departure-date"
+									name="departure_date"
+									min="{{tourNextBookableDate}}" 
+									max="{{tourLastBookableDate}}" 
+									class="border rounded w-full py-2 px-3" 
+									required
+								/>
 							</div>
-						</div>
-						<div class="mb-4">
-							<label class="block text-gray-700">Kids</label>
-							<div class="flex items-center">
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('kids', -1)">-</button>
-								<input type="number" id="kids" value="0" class="border text-center w-16" readonly>
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('kids', 1)">+</button>
+							<div class="mt-5 flex items-center justify-center">
+								<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+								Check availability
+								</button>
 							</div>
-						</div>
-						<div class="mb-4">
-							<label class="block text-gray-700">Seniors</label>
-							<div class="flex items-center">
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-l" onclick="changeCount('seniors', -1)">-</button>
-								<input type="number" id="seniors" value="0" class="border text-center w-16" readonly>
-								<button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-r" onclick="changeCount('seniors', 1)">+</button>
-							</div>
-						</div>
-						<div>
-							<label class="block text-gray-700 mb-2">Departure Date</label>
-							<input type="date" class="border rounded w-full py-2 px-3" />
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>
+			{{/ tourTemplateData}}
 		</div>
 	</main>
 	<script>
-			function changeCount(type, delta) {
-				const input = document.getElementById(type);
-				let currentValue = parseInt(input.value);
-				currentValue = Math.max(0, currentValue + delta); // Prevent negative values
-				input.value = currentValue;
+		function updateRangeValue(input) {
+			const valueSpan = input.parentElement.querySelector('.booking-range-value');
+			if (valueSpan) {
+				valueSpan.textContent = input.value;
 			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.booking-range').forEach(function(range) {
+				updateRangeValue(range);
+			});
+		});
 		</script>
 	{{> _partials/_footer }}
 </body>
