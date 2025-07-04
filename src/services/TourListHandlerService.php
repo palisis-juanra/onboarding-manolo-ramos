@@ -66,8 +66,6 @@ class TourListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			$pepe = $this->redisClient->getItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
-
 			RedirectionHelper::doRedirection('/tourList/tourView/');
 		} else {
 			$this->errorHandler->index(
@@ -83,7 +81,10 @@ class TourListHandlerService
 		$queryString = $this->buildQuery(30, 1, 0, 'PT');
 
 		if ($channelID) {
-			$retrievedTours = $this->tourCMSclient->search_tours($queryString, $channelID);
+			$retrievedTours = $this->tourCMSclient->search_tours(
+				$queryString,
+				$channelID
+			);
 			$this->buildTourListTemplateData($retrievedTours);
 		} else {
 			// TODO: automatic redirection to dashboard page
@@ -101,7 +102,7 @@ class TourListHandlerService
 				$this->toursTemplateData[] = [
 					'tourID' => $tour->tour_id ?? '',
 					'tourName' => $tour->tour_name ?? '',
-					'location' => $tour->location ?? '',
+					'location' => $tour->location ? html_entity_decode($tour->location) : '',
 					'tourCode' => $tour->tour_code ?? '',
 					'shortDescription' => $tour->shortdesc ?? '',
 					'thumbnailImage' => $tour->thumbnail_image ?? '',
@@ -113,11 +114,12 @@ class TourListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
+				$this->errorHandler->getErrorMessage('NO_CHANNEL_TOUR_DATA')
 			);
 		}
 	}
 
+	// TODO: revisit this logic
 	private function buildQuery(
 		int $toursPerPage,
 		int $currentPage,
