@@ -96,7 +96,9 @@ class TourViewHandlerService
 					'tourEndTime' => $details->end_time,
 					'tourSummary' => $details->summary,
 					'tourShortDesc' => $details->shortdesc,
-					'tourPrice' => html_entity_decode($details->from_price_display) 
+					'tourPrice' => html_entity_decode($details->from_price_display),
+					'bookingDataPeople' => $details->new_booking->people_selection->rate,
+					'bookingDataDates' => $details->new_booking->date_selection
 				];
 			}
 		} else {
