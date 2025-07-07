@@ -68,20 +68,14 @@ class TourViewHandlerService
 		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
 			$currentTourBookingDetails = [
 				'tourID' => $_POST['tourID'],
-				'departureDate' => $_POST['departure_date'],
+				'date' => $_POST['departure_date'],
 			];
 
 			// Check if there are any rates in the POST data
 			$hasRates = false;
 			foreach ($_POST as $rate_id => $rate_quantity) {
 				if (strpos($rate_id, 'rate') !== false) {
-					// Clean the rate ID to use as a key
-					// Remove 'rate' prefix and any leading hyphens or underscores
-					$cleanRateID = str_replace('rate', '', $rate_id);
-					$cleanRateID = ltrim($cleanRateID, '-_');
-
-					$currentTourBookingDetails[$cleanRateID] = $rate_quantity;
-					
+					$currentTourBookingDetails['rates'][$rate_id] = $rate_quantity;
 					$hasRates = true;
 				}
 			}
