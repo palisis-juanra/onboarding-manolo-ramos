@@ -25,6 +25,13 @@ class ErrorHandlerHelper
 		'TOUR_VIEW' => [
 			'NO_TOUR_DATA' => 'No tour data available for the selected tour',
 			'POST_NO_TOUR_ID_VIEW' => 'There was an error handling the selected Tour ID',
+			'POST_NO_VALID_TOUR_BOOKING_DETAILS' => 'There was an error handling the selected Tour booking details',
+			'POST_NO_VALID_TOUR_BOOKING_RATES' => 'There was an error handling the selected Tour booking rates',
+			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
+		],
+		'TOUR_CHECK_AVAILABILITY' => [
+			'NO_TOUR_DATA' => 'No tour data available for the selected tour',
+			
 			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
 		]
 	];
