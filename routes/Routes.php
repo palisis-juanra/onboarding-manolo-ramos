@@ -17,7 +17,7 @@ class Routes
 		'/login' => [
 			'GET' => [
 				'handler' => 'handleLoginHandlerController',
-				'controller' => 'loginHandler',
+				'controller' => 'loginController',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => false
@@ -106,7 +106,7 @@ class Routes
 		],
 		'/tourList/tourView/checkTourAvailability' => [
 			'GET' => [
-				'handler' => 'handleBookingController',
+				'handler' => 'handleBookingHandlerController',
 				'controller' => 'bookingController',
 				'method' => 'GET',
 				'action' => 'checkTourAvailability',
