@@ -75,7 +75,13 @@ class TourViewHandlerService
 			$hasRates = false;
 			foreach ($_POST as $rate_id => $rate_quantity) {
 				if (strpos($rate_id, 'rate') !== false) {
-					$currentTourBookingDetails[$rate_id] = $rate_quantity;
+					// Clean the rate ID to use as a key
+					// Remove 'rate' prefix and any leading hyphens or underscores
+					$cleanRateID = str_replace('rate', '', $rate_id);
+					$cleanRateID = ltrim($cleanRateID, '-_');
+
+					$currentTourBookingDetails[$cleanRateID] = $rate_quantity;
+					
 					$hasRates = true;
 				}
 			}
