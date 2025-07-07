@@ -62,6 +62,46 @@ class TourViewHandlerService
 		);
 	}
 
+	public function submitTourBookingDetails(): void
+	{
+		$pepe = $_POST;
+		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
+			$currentTourBookingDetails = [
+				'tourID' => $_POST['tourID'],
+				'departureDate' => $_POST['departure_date'],
+			];
+
+			// Check if there are any rates in the POST data
+			$hasRates = false;
+			foreach ($_POST as $rate_id => $rate_quantity) {
+				if (strpos($rate_id, 'rate') !== false) {
+					$currentTourBookingDetails[$rate_id] = $rate_quantity;
+					$hasRates = true;
+				}
+			}
+
+			// TODO: check case when all rate values are 0
+			if (!$hasRates) {
+				$this->errorHandler->index(
+					$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_RATES')
+				);
+				return;
+			}
+
+			$this->redisClient->storeItemInRedis(
+				'currentTourBookingDetails', 
+				json_encode($currentTourBookingDetails), 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/checkTourAvailability');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_DETAILS')
+			);
+		}
+	}
+
 	private function retrieveTourDetails(): void
 	{
 		$channelID = $this->currentChannelDetails['channelID'];
