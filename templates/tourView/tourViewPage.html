@@ -39,7 +39,7 @@
 					<!-- Second Side: Booking Controls -->
 					<div class="w-1/2 p-6">
 						<h3 class="text-xl font-semibold mb-4">Select booking details</h3>
-						<form action="{{BASE_URL}}/tourList/tourView/checkTourAvailability" method="POST">
+						<form action="{{BASE_URL}}/tourList/tourView/pickBookingDetails" method="POST">
 							{{# bookingDataPeople}}
 								<div class="mb-4">
 									<label class="block text-gray-700">{{label_1}}</label>
@@ -47,6 +47,7 @@
 									<div class="flex items-center w-full">
 										<input 
 											type="range" 
+											name="rate-{{rate_id}}"
 											min="{{minimum}}" 
 											max="{{maximum}}" 
 											value="0" 
@@ -70,6 +71,7 @@
 									required
 								/>
 							</div>
+							<input type="hidden" id="tourID{{tourID}}" name="tourID" value="{{tourID}}">
 							<div class="mt-5 flex items-center justify-center">
 								<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
 								Check availability
