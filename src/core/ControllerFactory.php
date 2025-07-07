@@ -11,11 +11,11 @@ use Controllers\TourViewController;
 class ControllerFactory 
 {
 	// Controller names 
-	public const LOGIN_HANDLER_CONTROLLER = 'loginHandler';
+	public const LOGIN_HANDLER_CONTROLLER = 'loginController';
 	public const CHANNEL_LIST_CONTROLLER = 'channelList';
 	public const TOUR_LIST_CONTROLLER = 'tourList';
 	public const TOUR_VIEW_CONTROLLER = 'tourView';
-	public const BOOKING_HANDLER_CONTROLLER = 'bookingHandler';
+	public const BOOKING_HANDLER_CONTROLLER = 'bookingController';
 		
 	// Config passed on to the Controller instance
 	private $controllerDependencies;
