@@ -30,4 +30,9 @@ class TourViewController
 	{
 		$this->tourViewHandler->renderTourViewPage();
 	}
+
+	public function store(): void
+	{
+		$this->tourViewHandler->submitTourBookingDetails();
+	}
 }
