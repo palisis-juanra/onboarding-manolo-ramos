@@ -68,20 +68,33 @@ class BookingHandlerService
 				isset($availabilityQueryResult->available_components->component) && 
 				count($availabilityQueryResult->available_components->component) > 0
 			) {
-				// We have some components, loop through them
+				$retrievedBookingComponents = [];
+
 				foreach ($availabilityQueryResult->available_components->component as $component)
 				{
-					echo "<pre>";
-					print_r($component);
-					print $component->date_code . " ";
-					print $component->total_price_display . "<br />";
-					echo "</pre>";
+					$retrievedBookingComponents = [
+						'componentKey' => (string) $component->component_key,
+						'dateCode' => (string) $component->date_code,
+						'startDate' => (string) $component->start_date,
+						'endDate' => (string) $component->end_date,
+						'dateType' => (string) ucfirst($component->date_type),
+						'note' => (string) ucfirst($component->note),
+						'totalPrice' => (string) html_entity_decode($component->total_price_display)
+					];
 				}
+
 			} else {
-				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('NO_AVAILABLE_COMPONENTS')
-				);
+				
+				$retrievedBookingComponents = [];
 			}
+
+			$this->redisClient->storeItemInRedis(
+				'currentTourBookingComponentDetails', 
+				json_encode($retrievedBookingComponents), 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/');
 		}
 	}
 

@@ -17,6 +17,7 @@ class TourViewHandlerService
 	private $errorHandler;
 
 	private $tourTemplateData;
+	private $bookingComponentData;
 
 	private $currentChannelDetails;
 	private $currentTourID;
@@ -50,21 +51,43 @@ class TourViewHandlerService
 	public function renderTourViewPage(): void
 	{
 		$this->retrieveTourDetails();
+		$this->retrieveBookingComponentDetails();
+
+		$hasBookingComponentData = !empty($this->bookingComponentData);
+
+		$componentFetchAttempted = $this->redisClient->getItemFromRedis(
+			'componentFetchAttempted',
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		) === 'true';
 
 		$this->templateRenderer->renderTemplate(
 			'tourView/tourViewPage',
 			[
 				'tourTemplateData' => $this->tourTemplateData,
+				'hasBookingComponentData' => $hasBookingComponentData,
+				'bookingComponentData' => $this->bookingComponentData ?: null,
 				'tourName' => $this->tourTemplateData['tourName'],
 				'channelName' => $this->currentChannelDetails['channelName'],
 				'channelLogo' => $this->currentChannelDetails['channelLogo'],
+				'componentFetchAttempted' => $componentFetchAttempted
 			] 
+		);
+
+		// Remove the current tour component data from Redis 
+		$this->redisClient->deleteItemFromRedis(
+			'currentTourBookingComponentDetails',
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		// Reset the component fetch attempted flag
+		$this->redisClient->deleteItemFromRedis(
+			'componentFetchAttempted',
+			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 	}
 
 	public function submitTourBookingDetails(): void
 	{
-		$pepe = $_POST;
 		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
 			$currentTourBookingDetails = [
 				'tourID' => $_POST['tourID'],
@@ -94,6 +117,13 @@ class TourViewHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
+			// Save a flag to indicate that the component fetch has been attempted
+			$this->redisClient->storeItemInRedis(
+				'componentFetchAttempted',
+				'true',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
 			RedirectionHelper::doRedirection('/tourList/tourView/checkTourAvailability');
 		} else {
 			$this->errorHandler->index(
@@ -118,6 +148,20 @@ class TourViewHandlerService
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_OR_TOUR_ID')
 			);
+		}
+	}
+
+	private function retrieveBookingComponentDetails(): void
+	{
+		$bookingComponentDetails = $this->redisClient->getItemFromRedis(
+			'currentTourBookingComponentDetails', 
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		if (!empty($bookingComponentDetails)) {
+			$this->bookingComponentData = json_decode($bookingComponentDetails, true);;
+		} else {
+			$this->bookingComponentData = null;
 		}
 	}
 
