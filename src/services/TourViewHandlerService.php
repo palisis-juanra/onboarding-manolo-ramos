@@ -15,10 +15,8 @@ class TourViewHandlerService
 	private $redisClient; 
 	private $templateRenderer;
 	private $errorHandler;
-
 	private $tourTemplateData;
 	private $bookingComponentData;
-
 	private $currentChannelDetails;
 	private $currentTourID;
 
