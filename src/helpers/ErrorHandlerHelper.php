@@ -4,7 +4,7 @@ namespace Helpers;
 
 class ErrorHandlerHelper 
 {
-	protected static $errorMessages = [
+	protected static array $errorMessages = [
 		'APP' => [
 			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid',
 			'LOGIN_REQUIRED' => 'You need to be logged in order to access this page'
