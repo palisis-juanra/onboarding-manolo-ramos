@@ -13,7 +13,6 @@ class Router
 	// Controller instances
 	private $sessionHandler;
 	private $errorHandler;
-	
 	// Member variables
 	private $routes;
 	private $routeNames;
