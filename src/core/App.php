@@ -78,7 +78,7 @@ class App
 		}
 
 		try {
-			// Generate an instance of the controller asocciated to that route
+			// Generate an instance of the controller associated to that route
 			$this->controllerInstance = $this->controllerFactory->create($routeInfo['controller']);
 
 			if (

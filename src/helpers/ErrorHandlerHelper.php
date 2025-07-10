@@ -33,6 +33,9 @@ class ErrorHandlerHelper
 			'EMPTY_TOUR_BOOKING_DATA' => 'The Tour booking data object is empty',
 			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
 			'NO_AVAILABLE_COMPONENTS' => 'There are no available components for the selected tour',
+		],
+        'TOUR_DEPARTURES' => [
+			'EMPTY_DEPARTURE_CUSTOMER_DATA' => 'The Tour booking data object is empty',
 		]
 	];
 

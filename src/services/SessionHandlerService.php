@@ -60,9 +60,17 @@ class SessionHandlerService
 			session_unset(); // Clear session variables
 		}
 
-		// Unset the session key in Redis
+		// Purge all stored data in Redis
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
-		
+		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
+        $this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
+        $this->redisClient->deleteItemFromRedis('currentBookingComponentDetails',
+            RedisInstanceHelper::REDIS_TYPE_STRING);
+        $this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
+        $this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+        $this->redisClient->deleteItemFromRedis('componentFetchAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
+
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
 	}
 
