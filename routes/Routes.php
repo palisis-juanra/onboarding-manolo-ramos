@@ -100,7 +100,7 @@ class Routes
 				'handler' => 'handleTourViewController',
 				'controller' => 'tourView',
 				'method' => 'POST',
-				'action' => 'store',
+				'action' => 'storeBookingDetails',
 				'requiresLogIn' => true
 			]
 		],
@@ -113,6 +113,24 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
+        '/tourList/tourView/pickDeparture' => [
+            'POST' => [
+                'handler' => 'handleTourViewController',
+                'controller' => 'tourView',
+                'method' => 'POST',
+                'action' => 'storeDepartureDetails',
+                'requiresLogIn' => true
+            ]
+        ],
+        '/tourList/tourView/submitCustomerDetails' => [
+            'POST' => [
+                'handler' => 'handleTourViewController',
+                'controller' => 'tourView',
+                'method' => 'POST',
+                'action' => 'storeCustomerDetails',
+                'requiresLogIn' => true
+            ]
+        ],
 	];
 
 	/**
