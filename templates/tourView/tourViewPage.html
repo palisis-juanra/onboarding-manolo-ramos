@@ -22,117 +22,131 @@
 			</div>
 			<div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
 				{{^ hasBookingComponentData}}
-					<!-- Only show template data when no component has been retrieved yet -->
 					{{^ componentFetchAttempted}}
-						{{# tourTemplateData}}
-							<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
-								<!-- First Side: Tour Details -->
-								<div class="w-1/2 p-6">
-									<img src="{{tourImage}}" alt="Tour Image" class="w-full h-64 object-cover rounded-lg mb-4">
-									<h2 class="text-2xl font-bold mb-2">{{tourName}}</h2>
-									<pre class="text-sm text-gray-600">TourID: {{tourID}} / Tour code: {{tourCode}}</pre>
-									<p class="text-2xl text-green-600 mb-4 mt-3">{{tourPrice}}</p>
-									<p class="text-md text-gray-800">{{tourShortDesc}}</p>
-								</div>
+						{{^ departurePickAttempted}}
+							{{^ customerDetailsSubmitted}}
+								{{# tourTemplateData}}
+									<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
+										<!-- First Side: Tour Details -->
+										<div class="w-1/2 p-6">
+											<img src="{{tourImage}}" alt="Tour Image" class="w-full h-64 object-cover rounded-lg mb-4">
+											<h2 class="text-2xl font-bold mb-2">{{tourName}}</h2>
+											<pre class="text-sm text-gray-600">TourID: {{tourID}} / Tour code: {{tourCode}}</pre>
+											<p class="text-2xl text-green-600 mb-4 mt-3">{{tourPrice}}</p>
+											<p class="text-md text-gray-800">{{tourShortDesc}}</p>
+										</div>
 
-								<!-- Second Side: Booking Controls -->
-								<div class="w-1/2 p-6">
-									<h3 class="text-xl font-semibold mb-4">Select booking details</h3>
-									<form action="{{BASE_URL}}/tourList/tourView/pickBookingDetails" method="POST">
-										{{# bookingDataPeople}}
-											<div class="mb-4">
-												<label class="block text-gray-700">{{label_1}}</label>
-												<pre class="text-sm block text-gray-700">{{tourPrice}}</pre>
-												<div class="flex items-center w-full">
-													<input 
-														type="range" 
-														name="rate-{{rate_id}}"
-														min="{{minimum}}" 
-														max="{{maximum}}" 
-														value="0" 
-														class="border w-11/12 text-center w-16 booking-range" 
-														oninput="updateRangeValue(this)"
+										<!-- Second Side: Booking Controls -->
+										<div class="w-1/2 p-6">
+											<h3 class="text-xl font-semibold mb-4">Select booking details</h3>
+											<form action="{{BASE_URL}}/tourList/tourView/pickBookingDetails" method="POST">
+												{{# bookingDataPeople}}
+													<div class="mb-4">
+														<label class="block text-gray-700">{{label_1}}</label>
+														<pre class="text-sm block text-gray-700">{{tourPrice}}</pre>
+														<div class="flex items-center w-full">
+															<input
+																type="range"
+																name="rate-{{rate_id}}"
+																min="{{minimum}}"
+																max="{{maximum}}"
+																value="0"
+																class="border w-11/12 text-center w-16 booking-range"
+																oninput="updateRangeValue(this)"
+																required
+															>
+															<span style="padding: 5px 12px;" class="ml-3 text-gray-100 bg-blue-500 rounded booking-range-value">0</span>
+														</div>
+													</div>
+												{{/ bookingDataPeople}}
+												<div>
+													<label class="block text-gray-700 mb-2">Departure Date</label>
+													<input
+														type="date"
+														id="departure-date"
+														name="departure_date"
+														min="{{tourNextBookableDate}}"
+														max="{{tourLastBookableDate}}"
+														class="border rounded w-full py-2 px-3"
 														required
-													>
-													<span style="padding: 5px 12px;" class="ml-3 text-gray-100 bg-blue-500 rounded booking-range-value">0</span>
+													/>
 												</div>
-											</div>
-										{{/ bookingDataPeople}}
-										<div>
-											<label class="block text-gray-700 mb-2">Departure Date</label>
-											<input 
-												type="date" 
-												id="departure-date"
-												name="departure_date"
-												min="{{tourNextBookableDate}}" 
-												max="{{tourLastBookableDate}}" 
-												class="border rounded w-full py-2 px-3" 
-												required
-											/>
+												<input type="hidden" id="tourID{{tourID}}" name="tourID" value="{{tourID}}">
+												<div class="mt-5 flex items-center justify-center">
+													<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+													Check availability
+													</button>
+												</div>
+											</form>
 										</div>
-										<input type="hidden" id="tourID{{tourID}}" name="tourID" value="{{tourID}}">
-										<div class="mt-5 flex items-center justify-center">
-											<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-											Check availability
-											</button>
-										</div>
-									</form>
-								</div>
-							</div>
-						{{/ tourTemplateData}}
-						{{^ pickCustomer}}
-							<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
-								<div class="max-w-md w-full mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+									</div>
+								{{/ tourTemplateData}}
+							{{/ customerDetailsSubmitted}}
+							{{# customerDetailsSubmitted}}
+								<div>Customer Data / Tour Booking confirmed placeholder</div>
+							{{/ customerDetailsSubmitted}}
+						{{/ departurePickAttempted}}
+						{{# departurePickAttempted}}
+								<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
 									<h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Customer details</h2>
-									<form action="{{BASE_URL}}/tourView/submitCustomerBookingDetails" class="space-y-4">
-										<div>
-											<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-											<input
-												type="text"
-												id="name"
-												name="name"
-												required
-												class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-												placeholder="Customer name"
-											>
-										</div>
+									<div class="max-w-md w-full mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+										<form class="space-y-4"
+											  action="{{BASE_URL}}/tourList/tourView/submitCustomerDetails"
+											  method="POST"
+										>
+											<div>
+												<label for="customerName"
+													   class="block text-sm font-medium text-gray-700">Name
+												</label>
+												<input
+													type="text"
+													id="customerName"
+													name="customerName"
+													required
+													class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+													placeholder="Customer name"
+												>
+											</div>
 
-										<div>
-											<label for="surname" class="block text-sm font-medium text-gray-700">Surname</label>
-											<input
-												type="text"
-												id="surname"
-												name="surname"
-												required
-												class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-												placeholder="Customer surname"
-											>
-										</div>
+											<div>
+												<label for="customerSurname"
+													   class="block text-sm font-medium text-gray-700">Surname</label>
+												<input
+													type="text"
+													id="customerSurname"
+													name="customerSurname"
+													required
+													class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+													placeholder="Customer surname"
+												>
+											</div>
 
-										<div>
-											<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-											<input
-												type="email"
-												id="email"
-												name="email"
-												required
-												class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-												placeholder="email@test.com"
-											>
-										</div>
+											<div>
+												<label for="customerEmail"
+													   class="block text-sm font-medium text-gray-700">
+													Email</label>
+												<input
+													type="email"
+													id="customerEmail"
+													name="customerEmail"
+													required
+													class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+													placeholder="email@test.com"
+												>
+											</div>
 
-										<div>
-											<button
-												type="submit"
-												class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
-											>
-												Save customer details
-											</button>
-										</div>
-									</form>
+											<div>
+												<button
+													type="submit"
+													class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
+												>
+													Save customer details
+												</button>
+											</div>
+										</form>
+									</div>
 								</div>
-							</div>
-						{{/ pickCustomer}}
+						{{/ departurePickAttempted}}
 					{{/ componentFetchAttempted}}
 					{{# componentFetchAttempted}}
 						<div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
@@ -177,10 +191,11 @@
 									</div>
 
 									<div class="mt-4 text-center">
-										<form action="{{BASE_URL}}/tourView/pickDeparture" method="POST">
+										<form action="{{BASE_URL}}/tourList/tourView/pickDeparture"
+											  method="POST">
 											<input type="hidden" value="{{componentKey}}" name="componentKey">
 											<button class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300">
-												Select booking
+												Select departure
 											</button>
 										</form>
 									</div>
