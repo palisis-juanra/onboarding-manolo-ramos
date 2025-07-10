@@ -5,6 +5,7 @@ namespace Services;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
+use SimpleXMLElement;
 use TourCMS\Utils\TourCMS;
 
 class BookingHandlerService 
@@ -18,8 +19,8 @@ class BookingHandlerService
 	private $currentChannelDetails;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
-		RedisService 			$redisClient, 
+		TourCMS 				$tourCMSclient,
+		RedisService 			$redisClient,
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler
 	)
@@ -37,6 +38,15 @@ class BookingHandlerService
 		, true);
 	}
 
+    /**
+     * Checks the availability of the current tour.
+     *
+     * Retrieves booking details from Redis, builds the query parameters,
+     * queries the TourCMS API for availability, and stores available components in Redis.
+     * Redirects the user based on the query result.
+     *
+     * @return void
+     */
 	public function checkTourAvailability(): void
 	{
 		
@@ -51,8 +61,6 @@ class BookingHandlerService
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('EMPTY_TOUR_BOOKING_DATA')
 			);
-
-			return;
 
 		} else {
 			$availabilityParameters = $this->buildAvailabilityParameters($currentTourBookingDetails);
@@ -97,6 +105,62 @@ class BookingHandlerService
 			RedirectionHelper::doRedirection('/tourList/tourView/');
 		}
 	}
+
+    public function startNewBooking(): void
+    {
+        $papas = $this->redisClient->getItemFromRedis(
+            'currentSelectedComponentKey',
+            RedisInstanceHelper::REDIS_TYPE_STRING
+        );
+
+        $pepes = $this->redisClient->getItemFromRedis(
+            'currentCustomerDetails',
+            RedisInstanceHelper::REDIS_TYPE_STRING
+        );
+
+        $bookingDataObject = $this->buildBookingDataObject();
+        $bookingResult = $this->tourCMSclient->start_new_booking($bookingData, $this->currentChannelDetails['channelID']);
+
+        $temporaryBoookingData = $bookingResult->booking;
+    }
+
+    public function commitBooking(): void
+    {
+
+    }
+
+    private function buildBookingDataObject(array $bookingData): SimpleXMLElement
+    {
+
+        $bookingDataObject = new SimpleXMLElement('<booking />');
+
+        // Add total customers
+        $bookingDataObject->addChild('total_customers', '1');
+
+        // Append a container for the components to be booked
+        $components = $bookingDataObject->addChild('components');
+
+        // TODO: Loop through component data
+        // Add a component node for each item to add to the booking
+        $component = $components->addChild('component');
+
+        // "Component key" obtained via call to "Check availability"
+        $component->addChild('component_key', 'COMPONENT_KEY_HERE');
+
+
+        // TODO: customers
+        $customers = $bookingDataObject->addChild('customers');
+
+        // Optionally append the customer details
+        // Either add their details (as here)
+        // OR an existing customer_id
+        // OR leave blank and TourCMS will create a blank customer
+        $customer = $customers->addChild('customer');
+        $customer->addChild('title', 'Mr');
+        $customer->addChild('firstname', 'Joe');
+        $customer->addChild('surname', 'Bloggs');
+        $customer->addChild('email', 'Email');
+    }
 
 	// Build the query string for the TourCMS API
 	// TODO: find a generic approach to build query strings

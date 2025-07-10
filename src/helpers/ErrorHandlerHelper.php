@@ -35,8 +35,9 @@ class ErrorHandlerHelper
 			'NO_AVAILABLE_COMPONENTS' => 'There are no available components for the selected tour',
 		],
         'TOUR_DEPARTURES' => [
-			'EMPTY_DEPARTURE_CUSTOMER_DATA' => 'The Tour booking data object is empty',
-		]
+			'POST_EMPTY_DEPARTURE_CUSTOMER_DATA' => 'The Customer data object is empty',
+			'POST_ERROR_SAVING_COMPONENT_KEY' => 'There has been an error processing the selected component key',
+		],
 	];
 
 	public static function getErrorMessages(): array

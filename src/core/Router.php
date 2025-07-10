@@ -376,6 +376,20 @@ class Router
 
                     break;
 
+                case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
+                    if ($this->sessionHandler->checkIfSessionIsActive()) {
+                        $routeMethod === HttpRequestsHelper::getVerb('POST') ?
+                            $this->setRouteDetails($routeData)
+                        :
+                            $this->errorHandler->index(
+                                $this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+                            );
+                    } else {
+                        RedirectionHelper::doRedirection('/login/');
+                    }
+
+                    break;
+
 				default:
 					$this->errorHandler->index(
 						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')

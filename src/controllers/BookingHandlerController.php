@@ -9,7 +9,7 @@ use TourCMS\Utils\TourCMS;
 
 class BookingHandlerController 
 {
-	protected $bookingHandler;
+	protected BookingHandlerService $bookingHandler;
 
 	public function __construct(
 		TourCMS 				$tourCMSclient, 
@@ -30,4 +30,9 @@ class BookingHandlerController
 	{
 		$this->bookingHandler->checkTourAvailability();
 	}
+
+    public function startNewBooking(): void
+    {
+        $this->bookingHandler->startNewBooking();
+    }
 }
