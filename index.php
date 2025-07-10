@@ -7,4 +7,3 @@ use Core\App;
 
 $app = new App($envConfig);
 $app->run();
-?>
