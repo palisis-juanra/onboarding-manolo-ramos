@@ -4,7 +4,7 @@ namespace Helpers;
 
 class ErrorHandlerHelper 
 {
-	protected static $errorMessages = [
+	protected static array $errorMessages = [
 		'APP' => [
 			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid',
 			'LOGIN_REQUIRED' => 'You need to be logged in order to access this page'
@@ -25,8 +25,22 @@ class ErrorHandlerHelper
 		'TOUR_VIEW' => [
 			'NO_TOUR_DATA' => 'No tour data available for the selected tour',
 			'POST_NO_TOUR_ID_VIEW' => 'There was an error handling the selected Tour ID',
+			'POST_NO_VALID_TOUR_BOOKING_DETAILS' => 'There was an error handling the selected Tour booking details',
+			'POST_NO_VALID_TOUR_BOOKING_RATES' => 'There was an error handling the selected Tour booking rates',
 			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
-		]
+		],
+		'TOUR_CHECK_AVAILABILITY' => [
+			'EMPTY_TOUR_BOOKING_DATA' => 'The Tour booking data object is empty',
+			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
+			'NO_AVAILABLE_COMPONENTS' => 'There are no available components for the selected tour',
+		],
+		'TOUR_DEPARTURES' => [
+			'POST_EMPTY_DEPARTURE_CUSTOMER_DATA' => 'The Customer data object is empty',
+			'POST_ERROR_SAVING_COMPONENT_KEY' => 'There has been an error processing the selected component key',
+		],
+		'TOUR_START_BOOKING' => [
+			'ERROR_CREATING_TEMPORAL_BOOKING' => 'There was an error creating the temporary booking'
+		],
 	];
 
 	public static function getErrorMessages(): array

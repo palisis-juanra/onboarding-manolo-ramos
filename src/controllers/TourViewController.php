@@ -9,7 +9,7 @@ use TourCMS\Utils\TourCMS;
 
 class TourViewController 
 {
-	protected $tourViewHandler;
+	protected TourViewHandlerService $tourViewHandler;
 
 	public function __construct(
 		TourCMS 				$tourCMSclient, 
@@ -29,5 +29,20 @@ class TourViewController
 	public function show(): void
 	{
 		$this->tourViewHandler->renderTourViewPage();
+	}
+
+	public function storeBookingDetails(): void
+	{
+		$this->tourViewHandler->submitTourBookingDetails();
+	}
+
+    public function storeDepartureDetails(): void
+	{
+		$this->tourViewHandler->submitDepartureDetails();
+	}
+
+    public function storeCustomerDetails(): void
+	{
+		$this->tourViewHandler->submitCustomerDetails();
 	}
 }

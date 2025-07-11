@@ -13,7 +13,6 @@ class Router
 	// Controller instances
 	private $sessionHandler;
 	private $errorHandler;
-	
 	// Member variables
 	private $routes;
 	private $routeNames;
@@ -290,7 +289,6 @@ class Router
 
 					break;
 
-				// TODO: move this case to the tourViewController handle
 				case $this->routeNames['/tourList/tourView']:
 				if ($this->sessionHandler->checkIfSessionIsActive()) {
 					$routeMethod === HttpRequestsHelper::getVerb('GET') ?
@@ -349,6 +347,120 @@ class Router
 
 					break;
 
+				case $this->routeNames['/tourList/tourView/pickBookingDetails']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+
+                case $this->routeNames['/tourList/tourView/pickDeparture']:
+                    if ($this->sessionHandler->checkIfSessionIsActive()) {
+                        $routeMethod === HttpRequestsHelper::getVerb('POST') ?
+                            $this->setRouteDetails($routeData)
+                        :
+                            $this->errorHandler->index(
+                                $this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+                            );
+                    } else {
+                        RedirectionHelper::doRedirection('/login/');
+                    }
+
+                    break;
+
+                case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
+                    if ($this->sessionHandler->checkIfSessionIsActive()) {
+                        $routeMethod === HttpRequestsHelper::getVerb('POST') ?
+                            $this->setRouteDetails($routeData)
+                        :
+                            $this->errorHandler->index(
+                                $this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+                            );
+                    } else {
+                        RedirectionHelper::doRedirection('/login/');
+                    }
+
+                    break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+			);
+		}
+	}
+
+	/**
+	 * Handles requests to the Booking Handler Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
+	private function handleBookingHandlerController(
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod, 
+		string 	$httpRequestMethodUsed
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+				
+				case $this->routeNames['/tourList/tourView/createBooking']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+				
+				case $this->routeNames['/tourList/tourView/bookingConfirmation']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+
 				default:
 					$this->errorHandler->index(
 						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
@@ -370,7 +482,7 @@ class Router
 	 * @param string $routeMethod The HTTP method configured for the route.
 	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
-	private function handleLoginController(
+	private function handleLoginHandlerController(
 		string 	$route,
 		array 	$routeData, 
 		string 	$routeMethod, 

@@ -1,0 +1,241 @@
+<?php
+
+namespace Services;
+
+use Controllers\ErrorHandlerController;
+use Helpers\RedirectionHelper;
+use Helpers\RedisInstanceHelper;
+use SimpleXMLElement;
+use SimpleXMLObject;
+use TourCMS\Utils\TourCMS;
+
+class BookingHandlerService 
+{
+	// Instances
+	private $tourCMSclient; 
+	private $redisClient; 
+	private $templateRenderer;
+	private $errorHandler;
+
+	private $currentChannelDetails;
+
+	public function __construct(
+		TourCMS 				$tourCMSclient,
+		RedisService 			$redisClient,
+		TemplateRendererService $templateRenderer,
+		ErrorHandlerController 	$errorHandler
+	)
+	{
+		$this->tourCMSclient = $tourCMSclient;
+		$this->redisClient = $redisClient;
+		$this->templateRenderer = $templateRenderer;
+		$this->errorHandler = $errorHandler;
+
+		$this->currentChannelDetails = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'currentChannelDetails', 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			)
+		,true);
+	}
+
+	/**
+	 * Checks the availability of the current tour.
+	 *
+	 * Retrieves booking details from Redis, builds the query parameters,
+	 * queries the TourCMS API for availability, and stores available components in Redis.
+	 * Redirects the user based on the query result.
+	 *
+	 * @return void
+	 */
+	public function checkTourAvailability(): void
+	{
+		
+		$currentTourBookingDetails = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'currentTourBookingDetails', 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			)
+		, true );
+
+		if (empty($currentTourBookingDetails)) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('EMPTY_TOUR_BOOKING_DATA')
+		);
+
+		} else {
+			$availabilityParameters = $this->buildAvailabilityParameters($currentTourBookingDetails);
+
+			$availabilityQueryResult = $this->tourCMSclient->check_tour_availability(
+				$availabilityParameters['queryString'], 
+				$availabilityParameters['tourID'],
+				$this->currentChannelDetails['channelID']
+			);
+
+			// Check if there are any components available
+			if (
+				isset($availabilityQueryResult->available_components->component) && 
+				count($availabilityQueryResult->available_components->component) > 0
+			) {
+				$retrievedBookingComponents = [];
+
+				foreach ($availabilityQueryResult->available_components->component as $component)
+				{
+					$retrievedBookingComponents = [
+						'componentKey' => (string) $component->component_key,
+						'dateCode' => (string) $component->date_code,
+						'startDate' => (string) $component->start_date,
+						'endDate' => (string) $component->end_date,
+						'dateType' => (string) ucfirst($component->date_type),
+						'note' => (string) ucfirst($component->note),
+						'totalPrice' => (string) html_entity_decode($component->total_price_display)
+					];
+				}
+
+			} else {
+				
+				$retrievedBookingComponents = [];
+			}
+
+			$this->redisClient->storeItemInRedis(
+				'currentTourBookingComponentDetails', 
+				json_encode($retrievedBookingComponents), 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/');
+		}
+	}
+
+	/**
+	 * Starts a new booking by retrieving the selected component key and customer details from Redis,
+	 * building the booking data object, and calling the TourCMS API to start the booking.
+	 *
+	 * @return void
+	 */
+	public function startNewBooking(): void
+	{
+		$selectedComponentKey = $this->redisClient->getItemFromRedis(
+			'currentSelectedComponentKey',
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		$tourCustomerDetails = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'currentCustomersDetails',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			),true
+		);
+
+		$bookingDataObject = $this->buildBookingDataObject($tourCustomerDetails, $selectedComponentKey);
+		$bookingResult = $this->tourCMSclient->start_new_booking($bookingDataObject, $this->currentChannelDetails['channelID']);
+
+		if ($bookingResult->error == "OK") {
+			$tempBookingKey = (string) $bookingResult->booking->booking_id;
+			//$b = (string) $bookingResult->booking->available_component_count;
+			//$c = (string) $bookingResult->booking->unavailable_component_count;
+			$this->commitBooking($tempBookingKey);
+
+			// Store the temporary booking key in Redis
+			$this->redisClient->storeItemInRedis(
+				'currentTemporaryBookingKey', 
+				$tempBookingKey, 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/bookingConfirmation');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('ERROR_CREATING_TEMPORAL_BOOKING')
+			);
+		}
+	}
+
+	public function commitBooking(string $tempBookingKey): void
+	{
+		$booking = new SimpleXMLElement('<booking />');
+		$booking->addChild('booking_id', $tempBookingKey);
+
+		$result = $tourcms->commit_new_booking($booking, $this->currentChannelDetails['channelID']);
+
+		if($result->error == "OK") {
+			// Redirect to confirmation template
+			$result->booking->booking_id;
+		} else {
+			print "Sorry, there was a problem: " . $result->error;
+		}
+	}
+
+	/**
+	 * Builds the booking data object for the TourCMS API.
+	 *
+	 * @param array $customerData The customer data to include in the booking.
+	 * @param string $componentKey The component key for the booking.
+	 * @return SimpleXMLElement The booking data object as an XML element.
+	 */
+	private function buildBookingDataObject(array $customerData, string $componentKey): SimpleXMLElement
+	{
+
+		$bookingDataObject = new SimpleXMLElement('<booking />');
+
+		// Add total customers
+
+		$bookingDataObject->addChild('total_customers', count($customerData));
+
+		// Append a container for the components to be booked
+		$components = $bookingDataObject->addChild('components');
+
+		// TODO: Loop through component data
+		// Add a component node for each item to add to the booking
+		$component = $components->addChild('component');
+
+		// "Component key" obtained via call to "Check availability"
+		$component->addChild('component_key', $componentKey);
+
+
+		// Add customer details
+		$customers = $bookingDataObject->addChild('customers');
+
+		foreach ($customerData as $customer) {
+			$customer = $customers->addChild('customer');
+			$customer->addChild('firstname', $customer['customerName']);
+			$customer->addChild('surname', $customer['customerSurname']);
+			$customer->addChild('email', $customer['customerEmail']);
+		}
+
+		return $bookingDataObject;
+	}
+
+	// TODO: find a generic approach to build query strings
+	/**
+	 * Builds the query parameters for checking tour availability.
+	 *
+	 * @param array $parameters The parameters including date and rates.
+	 * @return array An array containing the tour ID and the query string.
+	 */
+	private function buildAvailabilityParameters(array $parameters): array
+	{
+		// Add the date to the query params
+		 $queryParams = [
+			'date' => $parameters['date']
+		];
+
+		foreach ($parameters['rates'] as $rate_id => $rate_quantity) {
+			if (strpos($rate_id, 'rate') !== false) {
+				// Clean the rate ID to use as a key
+				// Remove 'rate' prefix and any leading hyphens or underscores
+				$cleanRateID = str_replace('rate', '', $rate_id);
+				$cleanRateID = ltrim($cleanRateID, '-_');
+
+				$queryParams[$cleanRateID] = $rate_quantity;
+			}
+		}
+
+		$queryString = http_build_query($queryParams);
+		
+		return [
+			"tourID" => $parameters['tourID'],
+			"queryString" => $queryString
+		];
+	}
+}
