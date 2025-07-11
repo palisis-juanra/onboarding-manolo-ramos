@@ -15,9 +15,10 @@ class TourViewHandlerService
 	private $redisClient; 
 	private $templateRenderer;
 	private $errorHandler;
+
 	private $tourTemplateData;
 	private $bookingComponentData;
-    private $tourCustomerDetails;
+	private $tourCustomerDetails;
 	private $currentChannelDetails;
 	private $currentTourID;
 
@@ -53,18 +54,18 @@ class TourViewHandlerService
 
 		$hasBookingComponentData = !empty($this->bookingComponentData);
 
-        // Booking steps comprobations
+		// Booking steps comprobations
 		$componentFetchAttempted = $this->redisClient->getItemFromRedis(
-            'componentFetchAttempted',
-            RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
+			'componentFetchAttempted',
+			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-        $departurePickAttempted = $this->redisClient->getItemFromRedis(
-            'departurePickAttempted',
-            RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
+		$departurePickAttempted = $this->redisClient->getItemFromRedis(
+			'departurePickAttempted',
+			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-        $customerDetailsSubmitted = $this->redisClient->getItemFromRedis(
-            'customerDetailsSubmitted',
-            RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
+		$customerDetailsSubmitted = $this->redisClient->getItemFromRedis(
+			'customerDetailsSubmitted',
+			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$this->templateRenderer->renderTemplate(
 			'tourView/tourViewPage',
@@ -76,8 +77,8 @@ class TourViewHandlerService
 				'channelName' => $this->currentChannelDetails['channelName'],
 				'channelLogo' => $this->currentChannelDetails['channelLogo'],
 				'componentFetchAttempted' => $componentFetchAttempted,
-                'departurePickAttempted' => $departurePickAttempted,
-                'customerDetailsSubmitted' => $customerDetailsSubmitted,
+				'departurePickAttempted' => $departurePickAttempted,
+				'customerDetailsSubmitted' => $customerDetailsSubmitted,
 			]
 		);
 
@@ -93,13 +94,13 @@ class TourViewHandlerService
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
-        // Reset the departure pick attempted flag
+		// Reset the departure pick attempted flag
 		$this->redisClient->deleteItemFromRedis(
 			'departurePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
-        // Reset the customer details submitted flag
+		// Reset the customer details submitted flag
 		$this->redisClient->deleteItemFromRedis(
 			'customerDetailsSubmitted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
@@ -116,15 +117,20 @@ class TourViewHandlerService
 
 			// Check if there are any rates in the POST data
 			$hasRates = false;
+			$totalCustomers = 0;
 			foreach ($_POST as $rate_id => $rate_quantity) {
 				if (strpos($rate_id, 'rate') !== false) {
 					$currentTourBookingDetails['rates'][$rate_id] = $rate_quantity;
+					$totalCustomers += (int) $rate_quantity;
 					$hasRates = true;
 				}
 			}
 
+			// Count the total number of customer and add it to the booking details
+			$currentTourBookingDetails['totalCustomers'] = $totalCustomers;
+
 			// TODO: check case when all rate values are 0
-			if (!$hasRates) {
+			if (!$hasRates || $totalCustomers <= 0) {
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_RATES')
 
@@ -153,57 +159,77 @@ class TourViewHandlerService
 		}
 	}
 
-    public function submitDepartureDetails(): void
-    {
-        if (!empty($_POST['componentKey'])) {
-            $this->redisClient->storeItemInRedis(
-                'currentSelectedComponentKey',
-                $_POST['componentKey'],
-                RedisInstanceHelper::REDIS_TYPE_STRING
-            );
+	public function submitDepartureDetails(): void
+	{
+		if (!empty($_POST['componentKey'])) {
+			$this->redisClient->storeItemInRedis(
+				'currentSelectedComponentKey',
+				$_POST['componentKey'],
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
 
-            $this->redisClient->storeItemInRedis(
-                'departurePickAttempted',
-                'true',
-                RedisInstanceHelper::REDIS_TYPE_STRING
-            );
+			$this->redisClient->storeItemInRedis(
+				'departurePickAttempted',
+				'true',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
 
-            RedirectionHelper::doRedirection('/tourList/tourView/');
-        } else {
-            $this->errorHandler->index(
-                $this->errorHandler->getErrorMessage('POST_ERROR_SAVING_COMPONENT_KEY')
-            );
-        }
-    }
+			RedirectionHelper::doRedirection('/tourList/tourView/');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_ERROR_SAVING_COMPONENT_KEY')
+			);
+		}
+	}
 
-    public function submitCustomerDetails(): void
-    {
-        if (!empty($_POST['customerName'])) {
-            $customerDetails = [
-                'customerName' => $_POST['customerName'],
-                'customerSurname' => $_POST['customerSurname'],
-                'customerEmail' => $_POST['customerEmail'],
-            ];
+	public function submitCustomerDetails(): void
+	{
+		if (
+			!empty($_POST['customerName']) ||
+			!empty($_POST['customerSurname']) ||
+			!empty($_POST['customerEmail'])
+		) {
+			$customersDetails[] = [
+				'customerName' => $_POST['customerName'],
+				'customerSurname' => $_POST['customerSurname'],
+				'customerEmail' => $_POST['customerEmail'],
+			];
+			
+			$totalCustomerNumber = json_decode(
+				$this->redisClient->getItemFromRedis(
+					'currentTourBookingDetails', 
+					RedisInstanceHelper::REDIS_TYPE_STRING
+				), true
+			)['totalCustomers'];
 
-            $this->redisClient->storeItemInRedis(
-                'currentCustomerDetails',
-                json_encode($customerDetails),
-                RedisInstanceHelper::REDIS_TYPE_STRING
-            );
+			// Generate the rest of costumer details
+			for ($i = 1; $i < $totalCustomerNumber; $i++) {
+				$customersDetails[] = [
+					'customerName' => 'customer' . $i,
+					'customerSurname' => 'surname',
+					'customerEmail' => 'mail@tourcms.com',
+				];
+			}
 
-            $this->redisClient->storeItemInRedis(
-                'customerDetailsSubmitted',
-                'true',
-                RedisInstanceHelper::REDIS_TYPE_STRING
-            );
+			$this->redisClient->storeItemInRedis(
+				'currentCustomersDetails',
+				json_encode($customersDetails),
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
 
-            RedirectionHelper::doRedirection('/tourList/tourView/');
-        } else {
-            $this->errorHandler->index(
-                $this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
-            );
-        }
-    }
+			$this->redisClient->storeItemInRedis(
+				'customerDetailsSubmitted',
+				'true',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection('/tourList/tourView/createBooking');
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
+			);
+		}
+	}
 
 	private function retrieveTourDetails(): void
 	{
@@ -228,29 +254,29 @@ class TourViewHandlerService
 	{
 		$bookingComponentDetails = $this->redisClient->getItemFromRedis('currentTourBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 
-        $this->bookingComponentData = null;
+		$this->bookingComponentData = null;
 
 		if (!empty($bookingComponentDetails)) {
 			$this->bookingComponentData = json_decode($bookingComponentDetails, true);
 		} else {
-            $this->errorHandler->getErrorMessage('NO_AVAILABLE_COMPONENTS');
-        }
+			$this->errorHandler->getErrorMessage('NO_AVAILABLE_COMPONENTS');
+		}
 	}
 
-    private function retrieveCustomerDetails(): void
-    {
-        $customerDetails = $this->redisClient->getItemFromRedis('currentCustomerDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+	private function retrieveCustomerDetails(): void
+	{
+		$customerDetails = $this->redisClient->getItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 
-        $this->tourCustomerDetails = null;
+		$this->tourCustomerDetails = null;
 
-        if (!empty($customerDetails)) {
-            $this->tourCustomerDetails = json_decode($customerDetails, true);
-        } else {
-            $this->errorHandler->index(
-                $this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
-            );
-        }
-    }
+		if (!empty($customerDetails)) {
+			$this->tourCustomerDetails = json_decode($customerDetails, true);
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
+			);
+		}
+	}
 
 	private function buildTourDetailsTemplateData(SimpleXMLElement $tourDetails): void
 	{

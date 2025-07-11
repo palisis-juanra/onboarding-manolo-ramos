@@ -64,12 +64,16 @@ class SessionHandlerService
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
-        $this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
-        $this->redisClient->deleteItemFromRedis('currentBookingComponentDetails',
-            RedisInstanceHelper::REDIS_TYPE_STRING);
-        $this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
-        $this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
-        $this->redisClient->deleteItemFromRedis('componentFetchAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);$this->redisClient->deleteItemFromRedis('currentCustomerDetails', RedisInstanceHelper::REDIS_TYPE_STRING);$this->redisClient->deleteItemFromRedis('customerDetailsSubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('componentFetchAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('departurePickAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTemporaryBookingKey', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('customerDetailsSubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
 
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
 	}
@@ -106,7 +110,7 @@ class SessionHandlerService
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 
 		// Store a unique session key in Redis
-        session_start();
+		session_start();
 		$session_id = session_id();
 		$this->redisClient->storeItemInRedis('session_key', $session_id, RedisInstanceHelper::REDIS_TYPE_STRING);
 	}
