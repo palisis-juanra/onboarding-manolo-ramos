@@ -31,8 +31,8 @@ class BookingHandlerController
 		$this->bookingHandler->checkTourAvailability();
 	}
 
-    public function startNewBooking(): void
-    {
-        $this->bookingHandler->startNewBooking();
-    }
+	public function startNewBooking(): void
+	{
+		$this->bookingHandler->startNewBooking();
+	}
 }

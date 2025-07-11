@@ -34,9 +34,12 @@ class ErrorHandlerHelper
 			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
 			'NO_AVAILABLE_COMPONENTS' => 'There are no available components for the selected tour',
 		],
-        'TOUR_DEPARTURES' => [
+		'TOUR_DEPARTURES' => [
 			'POST_EMPTY_DEPARTURE_CUSTOMER_DATA' => 'The Customer data object is empty',
 			'POST_ERROR_SAVING_COMPONENT_KEY' => 'There has been an error processing the selected component key',
+		],
+		'TOUR_START_BOOKING' => [
+			'ERROR_CREATING_TEMPORAL_BOOKING' => 'There was an error creating the temporary booking'
 		],
 	];
 

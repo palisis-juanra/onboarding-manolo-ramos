@@ -289,7 +289,6 @@ class Router
 
 					break;
 
-				// TODO: move this case to the tourViewController handle
 				case $this->routeNames['/tourList/tourView']:
 				if ($this->sessionHandler->checkIfSessionIsActive()) {
 					$routeMethod === HttpRequestsHelper::getVerb('GET') ?
@@ -421,6 +420,34 @@ class Router
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+				
+				case $this->routeNames['/tourList/tourView/createBooking']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							);
+					} else {
+						RedirectionHelper::doRedirection('/login/');
+					}
+
+					break;
+				
+				case $this->routeNames['/tourList/tourView/bookingConfirmation']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
 							$this->setRouteDetails($routeData) 

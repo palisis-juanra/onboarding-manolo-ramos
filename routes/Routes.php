@@ -113,24 +113,42 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-        '/tourList/tourView/pickDeparture' => [
-            'POST' => [
-                'handler' => 'handleTourViewController',
-                'controller' => 'tourView',
-                'method' => 'POST',
-                'action' => 'storeDepartureDetails',
-                'requiresLogIn' => true
-            ]
-        ],
-        '/tourList/tourView/submitCustomerDetails' => [
-            'POST' => [
-                'handler' => 'handleTourViewController',
-                'controller' => 'tourView',
-                'method' => 'POST',
-                'action' => 'storeCustomerDetails',
-                'requiresLogIn' => true
-            ]
-        ],
+		'/tourList/tourView/pickDeparture' => [
+			'POST' => [
+				'handler' => 'handleTourViewController',
+				'controller' => 'tourView',
+				'method' => 'POST',
+				'action' => 'storeDepartureDetails',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView/submitCustomerDetails' => [
+			'POST' => [
+				'handler' => 'handleTourViewController',
+				'controller' => 'tourView',
+				'method' => 'POST',
+				'action' => 'storeCustomerDetails',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView/createBooking' => [
+			'GET' => [
+				'handler' => 'handleBookingHandlerController',
+				'controller' => 'bookingController',
+				'method' => 'GET',
+				'action' => 'startNewBooking',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView/bookingConfirmation' => [
+			'GET' => [
+				'handler' => 'handleBookingHandlerController',
+				'controller' => 'bookingController',
+				'method' => 'GET',
+				'action' => 'commitBooking',
+				'requiresLogIn' => true
+			]
+		],
 	];
 
 	/**
