@@ -47,6 +47,14 @@ class TourViewHandlerService
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 	}
+
+	/**
+	 * Renders the Tour View page with the tour details and booking components.
+	 *
+	 * Retrieves tour details and booking component data, then renders the template.
+	 *
+	 * @return void
+	 */
 	public function renderTourViewPage(): void
 	{
 		$this->retrieveTourDetails();
@@ -107,6 +115,13 @@ class TourViewHandlerService
 		);
 	}
 
+	/**
+	 * Submits the tour booking details from the form.
+	 *
+	 * Validates the POST data, stores it in Redis, and redirects to check availability.
+	 *
+	 * @return void
+	 */
 	public function submitTourBookingDetails(): void
 	{
 		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
@@ -126,7 +141,7 @@ class TourViewHandlerService
 				}
 			}
 
-			// Count the total number of customer and add it to the booking details
+			// Count the total number of customers and add it to the booking details
 			$currentTourBookingDetails['totalCustomers'] = $totalCustomers;
 
 			// TODO: check case when all rate values are 0
@@ -159,6 +174,13 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Submits the departure details for the selected tour component.
+	 *
+	 * Validates the POST data, stores it in Redis, and redirects to the next step.
+	 *
+	 * @return void
+	 */
 	public function submitDepartureDetails(): void
 	{
 		if (!empty($_POST['componentKey'])) {
@@ -182,6 +204,13 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Submits the customer details for the booking.
+	 *
+	 * Validates the POST data, stores it in Redis, and redirects to create a new booking.
+	 *
+	 * @return void
+	 */
 	public function submitCustomerDetails(): void
 	{
 		if (
@@ -211,6 +240,11 @@ class TourViewHandlerService
 				];
 			}
 
+			// Add the calculated total number of customers
+			$customersDetails [] = [
+				'totalCustomers' => $totalCustomerNumber
+			];
+
 			$this->redisClient->storeItemInRedis(
 				'currentCustomersDetails',
 				json_encode($customersDetails),
@@ -231,6 +265,13 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Retrieves the tour details from the TourCMS client and prepares the template data.
+	 *
+	 * If the channel ID or tour ID is not set, it throws an error.
+	 *
+	 * @return void
+	 */
 	private function retrieveTourDetails(): void
 	{
 		$channelID = $this->currentChannelDetails['channelID'];
@@ -250,6 +291,13 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Retrieves the booking component details from Redis and prepares the booking component data.
+	 *
+	 * If no booking component details are found, it throws an error.
+	 *
+	 * @return void
+	 */
 	private function retrieveBookingComponentDetails(): void
 	{
 		$bookingComponentDetails = $this->redisClient->getItemFromRedis('currentTourBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
@@ -263,6 +311,13 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Retrieves the customer details from Redis.
+	 *
+	 * If no customer details are found, it throws an error.
+	 *
+	 * @return void
+	 */
 	private function retrieveCustomerDetails(): void
 	{
 		$customerDetails = $this->redisClient->getItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
@@ -278,6 +333,14 @@ class TourViewHandlerService
 		}
 	}
 
+	/**
+	 * Builds the template data for the tour details.
+	 *
+	 * Extracts relevant information from the tour details XML and stores it in the tourTemplateData property.
+	 *
+	 * @param SimpleXMLElement $tourDetails The XML object containing tour details.
+	 * @return void
+	 */
 	private function buildTourDetailsTemplateData(SimpleXMLElement $tourDetails): void
 	{
 		if (isset($tourDetails->tour)) {
@@ -298,6 +361,18 @@ class TourViewHandlerService
 					'bookingDataDates' => $details->new_booking->date_selection
 				];
 			}
+
+			// Persist current tour details
+			$this->redisClient->storeItemInRedis(
+				'currentTourDetails',
+				json_encode([
+					'tourID' => $this->tourTemplateData['tourID'],
+					'tourCode' => $this->tourTemplateData['tourCode'],
+					'tourImage' => $this->tourTemplateData['tourImage'],
+					'tourName' => $this->tourTemplateData['tourName'],
+				]),
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
