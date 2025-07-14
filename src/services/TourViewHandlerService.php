@@ -240,11 +240,6 @@ class TourViewHandlerService
 				];
 			}
 
-			// Add the calculated total number of customers
-			$customersDetails [] = [
-				'totalCustomers' => $totalCustomerNumber
-			];
-
 			$this->redisClient->storeItemInRedis(
 				'currentCustomersDetails',
 				json_encode($customersDetails),
@@ -360,19 +355,18 @@ class TourViewHandlerService
 					'bookingDataPeople' => $details->new_booking->people_selection->rate,
 					'bookingDataDates' => $details->new_booking->date_selection
 				];
-			}
 
-			// Persist current tour details
-			$this->redisClient->storeItemInRedis(
-				'currentTourDetails',
-				json_encode([
-					'tourID' => $this->tourTemplateData['tourID'],
-					'tourCode' => $this->tourTemplateData['tourCode'],
-					'tourImage' => $this->tourTemplateData['tourImage'],
-					'tourName' => $this->tourTemplateData['tourName'],
-				]),
-				RedisInstanceHelper::REDIS_TYPE_STRING
-			);
+				$this->redisClient->storeItemInRedis(
+					'currentTourDetails',
+					json_encode([
+						'tourID' => (string) $details->tour_id,
+						'tourCode' => (string) $details->tour_code,
+						'tourName' => (string) $details->tour_name,
+						'tourImage' => (string) $details->images->image->url,
+					]),
+					RedisInstanceHelper::REDIS_TYPE_STRING
+				);
+			}
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')

@@ -63,9 +63,11 @@ class SessionHandlerService
 		// Purge all stored data in Redis
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('bookingConfirmationDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
