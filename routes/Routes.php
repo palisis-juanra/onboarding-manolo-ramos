@@ -50,6 +50,24 @@ class Routes
 				'requiresLogIn' => false
 			]
 		],
+		'/bookings' => [
+			'GET' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => true
+			]
+		],
+		'/bookings/showBooking' => [
+			'GET' => [
+				'handler' => 'handleBookingListHandlerController',
+				'controller' => 'bookingListController',
+				'method' => 'GET',
+				'action' => 'show',
+				'requiresLogIn' => true
+			]
+		],
 		'/dashboard' => [
 			'GET' => [
 				'handler' => 'handleChannelListController',
@@ -145,7 +163,7 @@ class Routes
 				'handler' => 'handleBookingHandlerController',
 				'controller' => 'bookingController',
 				'method' => 'GET',
-				'action' => 'commitBooking',
+				'action' => 'confirmBooking',
 				'requiresLogIn' => true
 			]
 		],
