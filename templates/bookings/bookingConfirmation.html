@@ -22,47 +22,48 @@
 			</div>
 			<div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
 				 <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full text-center">
-					<h1 class="text-3xl font-bold text-green-600 mb-6">Booking Confirmed!</h1>
-					
-					<div class="mb-4">
-						<h2 class="text-xl font-semibold text-gray-800">Tropical Paradise Adventure</h2>
-						<p class="text-gray-600">Tour ID: #TP2023-0742</p>
-					</div>
-					
-					<div class="mb-6">
-						<p class="text-lg font-medium text-gray-700">Departure Date: August 15, 2023</p>
-					</div>
-					
-					<div class="mb-6">
-						<h3 class="text-lg font-semibold text-gray-800 mb-4">Customers (3)</h3>
-						<div class="flex justify-center space-x-4">
-							<div class="text-center">
-								<img src="https://randomuser.me/api/portraits/women/44.jpg" 
-									alt="Sarah Johnson" 
-									class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
-								<p class="text-sm font-medium">Sarah Johnson</p>
+					{{# bookingConfirmationData}}
+						<div class="flex justify-center mb-6">
+							<img src="{{tourImage}}" alt="{{tourName}}" class="w-32 h-32 rounded-full object-cover">
+							<h1 class="text-3xl font-bold text-green-600 mb-6">Booking Confirmed!</h1>
+						
+							<div class="mb-4">
+								<h2 class="text-xl font-semibold text-gray-800">{{tourName}}</h2>
+								<pre class="text-gray-600">Tour ID: #{{tourID}}</pre>
+								<pre class="text-gray-600">Booking ID: #{{bookingID}}</pre>
 							</div>
-							<div class="text-center">
-								<img src="https://randomuser.me/api/portraits/men/32.jpg" 
-									alt="Mike Thompson" 
-									class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
-								<p class="text-sm font-medium">Mike Thompson</p>
+							
+							<div class="mb-6">
+								<p class="text-lg font-medium text-gray-700">Departure Date: {{departureDate}}</p>
 							</div>
-							<div class="text-center">
-								<img src="https://randomuser.me/api/portraits/women/67.jpg" 
-									alt="Emily Rodriguez" 
-									class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
-								<p class="text-sm font-medium">Emily Rodriguez</p>
+							
+							<div class="mb-6">
+								<h3 class="text-lg font-semibold text-gray-800 mb-4">Customers ({{totalCustomers}})</h3>
+								<div class="flex justify-center space-x-4">
+									{{# customerData}}
+										<div class="text-center">
+											<img src="https://randomuser.me/api/portraits/women/44.jpg" 
+												alt="Sarah Johnson" 
+												class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
+											<p class="text-sm font-medium">{{customerName}} {{customerSurname}}</p>
+											<p class="text-sm font-medium">{{customerEmail}}</p>
+										</div>
+									{{/ customerData}}
+								</div>
+							</div>
+							
+							<div class="border-t pt-4">
+								<a href="#" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
+									View booking details
+								</a>
 							</div>
 						</div>
-					</div>
+					{{/ bookingConfirmationData}}
 					
-					<div class="border-t pt-4">
-						<a href="#" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
-							View booking details
-						</a>
-					</div>
-				</div>
+					{{^ bookingConfirmationData}}
+						<div>error</div>
+					{{/ bookingConfirmationData}}
+					
 			</div>
 		</div>
 	</main>
