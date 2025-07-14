@@ -41,6 +41,9 @@ class ErrorHandlerHelper
 		'TOUR_START_BOOKING' => [
 			'ERROR_CREATING_TEMPORAL_BOOKING' => 'There was an error creating the temporary booking'
 		],
+		'TOUR_COMMIT_BOOKING' => [
+			'ERROR_COMMITTING_BOOKING' => 'There was an error commiting the booking with the current temp booking key'
+		]
 	];
 
 	public static function getErrorMessages(): array

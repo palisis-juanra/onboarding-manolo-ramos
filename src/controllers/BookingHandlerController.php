@@ -35,4 +35,9 @@ class BookingHandlerController
 	{
 		$this->bookingHandler->startNewBooking();
 	}
+
+	public function confirmBooking(): void
+	{
+		$this->bookingHandler->confirmBooking();
+	}
 }
