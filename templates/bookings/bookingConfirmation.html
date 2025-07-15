@@ -60,11 +60,13 @@
 										View booking details
 									</a>
 								</div>
-
 						{{/ bookingConfirmationData}}
 
 						{{^ bookingConfirmationData}}
-							<div>error</div>
+							 <div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
+								 <p class="text-gray-600 text-center">There's no existing booking data for the selected
+									 tour.</p>
+							 </div>
 						{{/ bookingConfirmationData}}
 
 					</div>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> _partials/_header }}
+    <body class="h-screen flex justify-center items-center bg-gray-100">
+        <main class="h-screen">
+            <div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
+                <!-- Breadcrumbs -->
+                <div class="mb-4">
+                    <ul class="flex items-start justify-start gap-2">
+                        <li class="hover:underline">
+                            <a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+                        </li>
+                        <li> > </li>
+                        <li class="underline">
+                            <a href="{{BASE_URL}}/bookings">Bookings</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Title and channel info -->
+                <h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
+                   Active bookings
+                </h1>
+                <!-- Bookings list -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    {{# bookingsTemplateData}}
+                        <div class="flex justify-between flex-col bg-white shadow-md rounded-lg overflow-hidden">
+                            <div class="h-48 overflow-hidden h-1/2">
+                                {{# thumbnailImage}}
+                                <img src="{{thumbnailImage}}" alt="thumbnail{{bookingID}}" class="w-full h-full object-cover">
+                                {{/ thumbnailImage}}
+                                {{^ thumbnailImage}}
+                                <img src="https://picsum.photos/342/228" alt="booking thumbnail" class="w-full h-full object-cover">
+                                {{/ thumbnailImage}}
+                            </div>
+                            <div class="flex flex-col justify-between p-4 h-1/2">
+                                <!-- Booking details -->
+                                <h3 class="text-lg font-bold mb-2">{{bookingName}}</h3>
+                                <p class="text-gray-600 mb-2">{{bookingCode}}</p>
+                                <p class="text-gray-600 mb-1">{{location}}</p>
+                                <p class="text-gray-600 mb-2">{{lastUpdated}}</p>
+                                <p style="display: box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; text-overflow: ellipsis; max-height: 5em;" class="text-gray-900 mb-2">{{shortDescription}}</p>
+                                <div class="flex self-start justify-between items-center w-full">
+                                    <form action="{{BASE_URL}}/bookings/showBooking" method="POST">
+                                        <input type="hidden" id="bookingID{{bookingID}}" name="bookingID"
+                                               value="{{bookingID}}">
+                                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                            Show booking details
+                                        </button>
+                                    </form>
+                                    <form action="{{BASE_URL}}/bookings/viewBooking" method="POST">
+                                        <input type="hidden" id="bookingID{{bookingID}}" name="bookingID"
+                                               value="{{bookingID}}">
+                                        <button type="submit"
+                                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Cancel booking
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {{/ bookingsTemplateData}}
+                </div>
+            </div>
+        </main>
+        {{> _partials/_footer }}
+    </body>
+</html>
