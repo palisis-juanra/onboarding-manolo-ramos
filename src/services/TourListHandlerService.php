@@ -44,8 +44,15 @@ class TourListHandlerService
 	{
 		$this->retrieveTourList();
 
+		if (empty($this->toursTemplateData)) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage('NO_CHANNEL_TOUR_DATA')
+			);
+			return;
+		}
+
 		$this->templateRenderer->renderTemplate(
-			'tourList/tourListPage',
+			'tours/tourListPage',
 			[
 				'toursTemplateData' => $this->toursTemplateData,
 				'channelName' => $this->currentChannelDetails['channelName'],
@@ -78,6 +85,7 @@ class TourListHandlerService
 	{
 		$channelID = $this->currentChannelDetails['channelID'];
 
+		// TODO: better explain this asignation using variables instead of direct values
 		$queryString = $this->buildQuery(30, 1, 0, 'PT');
 
 		if ($channelID) {
@@ -121,10 +129,10 @@ class TourListHandlerService
 
 	// TODO: revisit this logic
 	private function buildQuery(
-		int $toursPerPage,
-		int $currentPage,
-		int  $productType,
-		string $country
+		int     $toursPerPage,
+		int     $currentPage,
+		int     $productType,
+		string  $country
 	) 
 	{
 		// Set a querystring for the search

@@ -55,7 +55,7 @@ class TourViewHandlerService
 	 *
 	 * @return void
 	 */
-	public function renderTourViewPage(): void
+	public function renderViewTourPage(): void
 	{
 		$this->retrieveTourDetails();
 		$this->retrieveBookingComponentDetails();
@@ -76,7 +76,7 @@ class TourViewHandlerService
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$this->templateRenderer->renderTemplate(
-			'tourView/tourViewPage',
+			'tours/tourViewPage',
 			[
 				'tourTemplateData' => $this->tourTemplateData,
 				'hasBookingComponentData' => $hasBookingComponentData,

@@ -4,6 +4,13 @@ namespace Helpers;
 
 class RedirectionHelper
 {
+	// TODO: future refactor of magic strings used for redirections
+	protected static $redirectionLocations = [
+		'ROOT' => '/',
+		'DASHBOARD' => '/dashboard',
+		'LOGIN_PAGE' => '/login'
+	];
+
 	/**
 	 * Fires a header redirection to the specified location
 	 *
@@ -12,8 +19,7 @@ class RedirectionHelper
 	public static function doRedirection(string $location): void
 	{
 		$redirectUrl = dirname($_SERVER['SCRIPT_NAME']) . $location;
-		header('Location: '. $redirectUrl .'');
+		header('Location: ' . $redirectUrl . '');
 		exit;
-		
 	}
 }

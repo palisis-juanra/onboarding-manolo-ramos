@@ -4,7 +4,7 @@ namespace Helpers;
 
 class HttpRequestsHelper
 {
-	private static $httpVerbs = [
+	protected static array $httpVerbs = [
 		'GET',
 		'POST',
 		'PUT',
@@ -14,6 +14,7 @@ class HttpRequestsHelper
 		'OPTIONS'
 	];
 
+	// TODO: improve access method to the HTTP verbs list
 	/**
 	 * Returns a valid HTTP verb from the list
 	 *

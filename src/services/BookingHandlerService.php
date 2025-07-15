@@ -6,7 +6,7 @@ use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use SimpleXMLElement;
-use SimpleXMLObject;
+
 use TourCMS\Utils\TourCMS;
 
 class BookingHandlerService 
@@ -77,9 +77,7 @@ class BookingHandlerService
 				count($availabilityQueryResult->available_components->component) > 0
 			) {
 				$retrievedBookingComponents = [];
-
-				foreach ($availabilityQueryResult->available_components->component as $component)
-				{
+				foreach ($availabilityQueryResult->available_components->component as $component) {
 					$retrievedBookingComponents = [
 						'componentKey' => (string) $component->component_key,
 						'dateCode' => (string) $component->date_code,
@@ -92,7 +90,6 @@ class BookingHandlerService
 				}
 
 			} else {
-				
 				$retrievedBookingComponents = [];
 			}
 
@@ -131,10 +128,6 @@ class BookingHandlerService
 
 		if ($bookingResult->error == "OK") {
 			$tempBookingKey = (string) $bookingResult->booking->booking_id;
-			//$b = (string) $bookingResult->booking->available_component_count;
-			//$c = (string) $bookingResult->booking->unavailable_component_count;
-			
-
 			// Store the temporary booking key in Redis
 			$this->redisClient->storeItemInRedis(
 				'currentTemporaryBookingKey', 
@@ -227,6 +220,7 @@ class BookingHandlerService
 			'departureDate' => $bookingDetails['date'] ?? '',
 		];
 
+		// TODO: check if storing the booking confirmation data is necessary
 		$this->redisClient->storeItemInRedis(
 			'bookingConfirmationData',
 			json_encode($bookingConfirmationData),

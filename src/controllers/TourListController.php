@@ -9,7 +9,7 @@ use TourCMS\Utils\TourCMS;
 
 class TourListController 
 {
-	protected $tourListHandler;
+	protected TourListHandlerService $tourListHandler;
 
 	public function __construct(
 		TourCMS 				$tourCMSclient, 

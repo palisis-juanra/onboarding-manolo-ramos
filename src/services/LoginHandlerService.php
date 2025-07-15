@@ -4,7 +4,7 @@ namespace Services;
 
 class LoginHandlerService
 {
-	private $templateRenderer;
+	private TemplateRendererService $templateRenderer;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
