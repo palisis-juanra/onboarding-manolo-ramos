@@ -28,7 +28,7 @@ class TourViewController
 
 	public function show(): void
 	{
-		$this->tourViewHandler->renderTourViewPage();
+		$this->tourViewHandler->renderViewTourPage();
 	}
 
 	public function storeBookingDetails(): void
