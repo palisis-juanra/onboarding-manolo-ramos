@@ -59,11 +59,20 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/bookings/showBooking' => [
+		'/bookings/searchBookingByID' => [
 			'POST' => [
-				'handler' => 'handleBookingListHandlerController',
+				'handler' => 'handleBookingListController',
 				'controller' => 'bookingListController',
 				'method' => 'POST',
+				'action' => 'searchBookingByID',
+				'requiresLogIn' => true
+			]
+		],
+		'/bookings/showBooking' => [
+			'GET' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'GET',
 				'action' => 'show',
 				'requiresLogIn' => true
 			]
