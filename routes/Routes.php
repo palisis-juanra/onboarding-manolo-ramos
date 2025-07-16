@@ -143,7 +143,7 @@ class Routes
 		'/tourList/tourView/submitCustomerDetails' => [
 			'POST' => [
 				'handler' => 'handleTourViewController',
-				'controller' => 'tourView',
+				'controller' => 'tourViewController',
 				'method' => 'POST',
 				'action' => 'storeCustomerDetails',
 				'requiresLogIn' => true
