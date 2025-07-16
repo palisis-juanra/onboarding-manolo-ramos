@@ -262,10 +262,10 @@ class BookingHandlerService
 		$customers = $bookingDataObject->addChild('customers');
 
 		foreach ($customerData as $customer) {
-			$customer = $customers->addChild('customer');
-			$customer->addChild('firstname', $customer['customerName']);
-			$customer->addChild('surname', $customer['customerSurname']);
-			$customer->addChild('email', $customer['customerEmail']);
+			$customerNode = $customers->addChild('customer');
+			$customerNode->addChild('firstname', $customer['customerName']);
+			$customerNode->addChild('surname', $customer['customerSurname']);
+			$customerNode->addChild('customer_email', $customer['customerEmail']);
 		}
 
 		return $bookingDataObject;
