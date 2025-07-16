@@ -45,7 +45,7 @@ class ErrorHandlerHelper
 			'ERROR_COMMITTING_BOOKING' => 'There was an error commiting the booking with the current temp booking key'
 		],
 		'BOOKINGS' => [
-			'NO_BOOKINGS_DATA' => 'No booking data available for the selected account',
+			'NO_BOOKINGS_DATA' => 'No booking data available for the selected ID',
 			'POST_NO_BOOKING_ID' => 'There was an error handling the selected Booking ID'
 		],
 	];
