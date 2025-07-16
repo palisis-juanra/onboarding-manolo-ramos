@@ -2,7 +2,7 @@
 <html lang="en">
 {{> _partials/_header }}
     <body class="h-screen flex justify-center items-center bg-gray-100">
-        <main class="h-screen">
+        <main class="h-screen w-full">
             <div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
                 <!-- Breadcrumbs -->
                 <div class="mb-4">
@@ -17,48 +17,71 @@
                     </ul>
                 </div>
                 <!-- Title and channel info -->
-                <h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
-                   Active bookings
-                </h1>
-                <!-- Bookings list -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {{# bookingsTemplateData}}
-                        <div class="flex justify-between flex-col bg-white shadow-md rounded-lg overflow-hidden">
-                            <div class="h-48 overflow-hidden h-1/2">
-                                {{# thumbnailImage}}
-                                <img src="{{thumbnailImage}}" alt="thumbnail{{bookingID}}" class="w-full h-full object-cover">
-                                {{/ thumbnailImage}}
-                                {{^ thumbnailImage}}
-                                <img src="https://picsum.photos/342/228" alt="booking thumbnail" class="w-full h-full object-cover">
-                                {{/ thumbnailImage}}
+                <div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
+                    <h1 class="text-4xl font-bold text-gray-900 text-center mb-10">
+                       Search Bookings
+                    </h1>
+                    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+                        <form action="{{BASE_URL}}/bookings/searchBookingByID" method="POST">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-bold mb-2" for="bookingID">
+                                    Booking ID
+                                </label>
+                                <input
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="bookingID" type="number" name="bookingID" placeholder="Enter Booking ID">
                             </div>
-                            <div class="flex flex-col justify-between p-4 h-1/2">
-                                <!-- Booking details -->
-                                <h3 class="text-lg font-bold mb-2">{{bookingName}}</h3>
-                                <p class="text-gray-600 mb-2">{{bookingCode}}</p>
-                                <p class="text-gray-600 mb-1">{{location}}</p>
-                                <p class="text-gray-600 mb-2">{{lastUpdated}}</p>
-                                <p style="display: box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; text-overflow: ellipsis; max-height: 5em;" class="text-gray-900 mb-2">{{shortDescription}}</p>
-                                <div class="flex self-start justify-between items-center w-full">
-                                    <form action="{{BASE_URL}}/bookings/showBooking" method="POST">
-                                        <input type="hidden" id="bookingID{{bookingID}}" name="bookingID"
-                                               value="{{bookingID}}">
-                                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                            Show booking details
-                                        </button>
-                                    </form>
-                                    <form action="{{BASE_URL}}/bookings/viewBooking" method="POST">
-                                        <input type="hidden" id="bookingID{{bookingID}}" name="bookingID"
-                                               value="{{bookingID}}">
-                                        <button type="submit"
-                                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                            Cancel booking
-                                        </button>
-                                    </form>
+                            <div class="flex items-center justify-center">
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Booking details -->
+                <div class="flex justify-center flex-col items-center">
+                    {{# bookingIDsubmitted}}
+                        {{# bookingTemplateData}}
+                            <div class="mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">{{bookingName}}</h2>
+                                <pre class="text-gray-600">Channel: {{channelName}} #{{channelID}}</pre>
+                                <pre class="text-gray-600">Booking ID: #{{bookingID}}</pre>
+                                <pre class="text-gray-600">Status: #{{statusText}}</pre>
+                            </div>
+                            <div class="mb-6">
+                                <p class="text-lg font-medium text-gray-700">Start Date: {{startDate}}</p>
+                                <p class="text-lg font-medium text-gray-700">End Date: {{endDate}}</p>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Customers in this booking ({{customerCount}})</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 space-x-3">
+                                    {{# customerData}}
+                                    <div class="text-center">
+                                        <img src="https://randomuser.me/api/portraits/lego/6.jpg"
+                                             alt="Lego Antonio"
+                                             class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
+                                        <p class="text-sm font-medium">{{customerName}} {{customerSurname}}</p>
+                                        <p class="text-sm font-medium">{{customerEmail}}</p>
+                                    </div>
+                                    {{/ customerData}}
                                 </div>
                             </div>
+                            <div class="border-t pt-4">
+                            <a href="{{BASE_URL}}/bookings"
+                               class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
+                                View booking details
+                            </a>
                         </div>
-                    {{/ bookingsTemplateData}}
+                        {{/ bookingTemplateData}}
+                    {{/ bookingIDsubmitted}}
+                    {{# bookingIDsubmitted}}
+                        {{^ bookingTemplateData}}
+                        <div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
+                            <p class="text-gray-600 text-center">There's no existing booking data for the selected
+                                Booking ID.</p>
+                        </div>
+                        {{/ bookingTemplateData}}
+                    {{/ bookingIDsubmitted}}
                 </div>
             </div>
         </main>
