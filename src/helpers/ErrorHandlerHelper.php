@@ -43,7 +43,11 @@ class ErrorHandlerHelper
 		],
 		'TOUR_COMMIT_BOOKING' => [
 			'ERROR_COMMITTING_BOOKING' => 'There was an error commiting the booking with the current temp booking key'
-		]
+		],
+		'BOOKINGS' => [
+			'NO_BOOKINGS_DATA' => 'No booking data available for the selected account',
+			'POST_NO_BOOKING_ID' => 'There was an error handling the selected Booking ID'
+		],
 	];
 
 	public static function getErrorMessages(): array
