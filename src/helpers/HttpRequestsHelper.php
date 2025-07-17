@@ -4,48 +4,13 @@ namespace Helpers;
 
 class HttpRequestsHelper
 {
-	protected static array $httpVerbs = [
-		'GET',
-		'POST',
-		'PUT',
-		'DELETE',
-		'PATCH',
-		'HEAD',
-		'OPTIONS'
-	];
-
-	// TODO: improve access method to the HTTP verbs list
-	/**
-	 * Returns a valid HTTP verb from the list
-	 *
-	 * @param string $verb The verb to be matched against the known verbs list
-	 * @return string $matchingVerb The matched verb
-	 */
-	public static function getVerb(string $verb): string
-	{
-		$matchingVerb = null;
-		$uppercaseVerb = strtoupper($verb);
-
-		foreach (self::$httpVerbs as $knownVerb) {
-			if ($uppercaseVerb === $knownVerb) {
-				$matchingVerb = $knownVerb;
-				break;
-			}
-		}
-
-		return $matchingVerb;
-	}
-
-	/**
-	 * Checks if a verb is valid
-	 *
-	 * @param string $verb The verb to be checked
-	 * @return bool returns the result of the comprobation
-	 */
-	public static function checkHttpMethod(string $verb): bool
-	{
-		return in_array($verb, self::$httpVerbs);
-	}
+	public const string GET = 'GET';
+	public const string POST = 'POST';
+	public const string PUT = 'PUT';
+	public const string DELETE = 'DELETE';
+	public const string PATCH = 'PATCH';
+	public const string HEAD = 'HEAD';
+	public const string OPTIONS = 'OPTIONS';
 
 	/**
 	 * Compares the HTTP method used in the request with the method defined in the route.
@@ -59,7 +24,6 @@ class HttpRequestsHelper
 		string $httpRequestMethodUsed
 	): bool
 	{
-		// Convert to uppercase
 		$routeDefinedMethod = strtoupper($routeDefinedMethod);
 		$httpRequestMethodUsed = strtoupper($httpRequestMethodUsed);
 
