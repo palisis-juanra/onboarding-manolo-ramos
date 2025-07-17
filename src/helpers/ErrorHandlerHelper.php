@@ -50,6 +50,9 @@ class ErrorHandlerHelper
 			ErrorCodes::NO_BOOKINGS_DATA => 'No booking data available for the selected ID',
 			ErrorCodes::POST_NO_BOOKING_ID => 'There was an error handling the selected Booking ID'
 		],
+		ErrorCodes::CUSTOMERS => [
+			ErrorCodes::NO_CUSTOMERS_DATA => 'No customer data available for the selected ID',
+		],
 	];
 
 

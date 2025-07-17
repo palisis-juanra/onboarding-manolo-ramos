@@ -4,10 +4,12 @@ namespace Services;
 
 use Constants\ErrorCodes;
 use Constants\Paths;
+use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use TourCMS\Utils\TourCMS;
+use SimpleXMLElement;
 
 class TourListHandlerService 
 {
@@ -23,7 +25,7 @@ class TourListHandlerService
 	private $totalTourCount;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
+		\TourCMS\Utils\TourCMS 	$tourCMSclient,
 		RedisService 			$redisClient, 
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler
@@ -54,7 +56,7 @@ class TourListHandlerService
 		}
 
 		$this->templateRenderer->renderTemplate(
-			'tours/tourListPage',
+			Templates::TOUR_LIST_PAGE,
 			[
 				'toursTemplateData' => $this->toursTemplateData,
 				'channelName' => $this->currentChannelDetails['channelName'],
@@ -104,7 +106,7 @@ class TourListHandlerService
 		}
 	}
 
-	private function buildTourListTemplateData(object $tourList): void
+	private function buildTourListTemplateData(SimpleXMLElement $tourList): void
 	{
 		if (isset($tourList->tour)) {
 			$this->totalTourCount = (string) $tourList->total_tour_count; 

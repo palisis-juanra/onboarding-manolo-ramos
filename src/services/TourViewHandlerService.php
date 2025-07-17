@@ -8,7 +8,6 @@ use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use SimpleXMLElement;
-use TourCMS\Utils\TourCMS;
 
 class TourViewHandlerService 
 {
@@ -25,7 +24,7 @@ class TourViewHandlerService
 	private $currentTourID;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
+		\TourCMS\Utils\TourCMS 	$tourCMSclient,
 		RedisService 			$redisClient, 
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler

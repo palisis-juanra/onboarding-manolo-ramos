@@ -4,6 +4,7 @@ namespace Services;
 
 use Constants\ErrorCodes;
 use Constants\Paths;
+use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -49,7 +50,7 @@ class BookingListHandlerService
 		// Render just the search form if no data has not been submitted
 		if (!$bookingIDsubmitted) {
 			$this->templateRenderer->renderTemplate(
-				'bookings/bookingsListPage',
+				Templates::BOOKINGS_LIST,
 				[
 					'bookingIDsubmitted' => $bookingIDsubmitted
 				]
@@ -62,7 +63,7 @@ class BookingListHandlerService
 
 		if (!empty($this->bookingTemplateData)) {
 			$this->templateRenderer->renderTemplate(
-				'bookings/bookingsListPage',
+				Templates::BOOKINGS_LIST,
 				[
 					'bookingTemplateData' => $this->bookingTemplateData,
 					'bookingIDsubmitted' => $bookingIDsubmitted
@@ -153,5 +154,4 @@ class BookingListHandlerService
 			);
 		}
 	}
-
 }
