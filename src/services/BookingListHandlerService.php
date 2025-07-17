@@ -49,7 +49,7 @@ class BookingListHandlerService
 			$this->templateRenderer->renderTemplate(
 				'bookings/bookingsListPage',
 				[
-					'bookingIDsubmitted' => $bookingIDsubmitted,
+					'bookingIDsubmitted' => $bookingIDsubmitted
 				]
 			);
 
@@ -121,8 +121,6 @@ class BookingListHandlerService
 			// TODO: check if the channel ID matches the one associated to the booking, throw incorrect booking id or
 			// channelID
 			$bookingResult =$this->tourCMSclient->show_booking($currentBookingID, $this->currentChannelDetails['channelID']);
-
-			error_log(print_r($bookingResult, true));
 
 			$this->buildBookingTemplateData($bookingResult);
 		} else {
