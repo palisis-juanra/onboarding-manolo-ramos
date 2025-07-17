@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -69,7 +70,7 @@ class ChannelListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/');
+			RedirectionHelper::doRedirection(Paths::TOUR_LIST);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')

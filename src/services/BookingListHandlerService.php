@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -102,7 +103,7 @@ class BookingListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/bookings');
+			RedirectionHelper::doRedirection(Paths::BOOKINGS);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_NO_BOOKING_ID')

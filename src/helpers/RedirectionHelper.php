@@ -4,13 +4,6 @@ namespace Helpers;
 
 class RedirectionHelper
 {
-	// TODO: future refactor of magic strings used for redirections
-	protected static $redirectionLocations = [
-		'ROOT' => '/',
-		'DASHBOARD' => '/dashboard',
-		'LOGIN_PAGE' => '/login'
-	];
-
 	/**
 	 * Fires a header redirection to the specified location
 	 *

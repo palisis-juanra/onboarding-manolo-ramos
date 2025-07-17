@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -73,7 +74,7 @@ class TourListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/');
+			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_NO_TOUR_ID')

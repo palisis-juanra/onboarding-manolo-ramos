@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -83,9 +84,9 @@ class BookingHandlerService
 						'dateCode' => (string) $component->date_code,
 						'startDate' => (string) $component->start_date,
 						'endDate' => (string) $component->end_date,
-						'dateType' => (string) ucfirst($component->date_type),
-						'note' => (string) ucfirst($component->note),
-						'totalPrice' => (string) html_entity_decode($component->total_price_display)
+						'dateType' => ucfirst($component->date_type),
+						'note' => ucfirst($component->note),
+						'totalPrice' => html_entity_decode($component->total_price_display)
 					];
 				}
 
@@ -99,7 +100,7 @@ class BookingHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/');
+			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		}
 	}
 
@@ -182,7 +183,7 @@ class BookingHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/bookingConfirmation');
+			RedirectionHelper::doRedirection(Paths::BOOKING_CONFIRMATION);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('ERROR_COMMITTING_BOOKING')

@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -166,7 +167,7 @@ class TourViewHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/checkTourAvailability');
+			RedirectionHelper::doRedirection(Paths::CHECK_TOUR_AVAILABILITY);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_DETAILS')
@@ -196,7 +197,7 @@ class TourViewHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/');
+			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_ERROR_SAVING_COMPONENT_KEY')
@@ -252,7 +253,7 @@ class TourViewHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/createBooking');
+			RedirectionHelper::doRedirection(Paths::CREATE_BOOKING);
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
