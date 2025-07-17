@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
@@ -148,7 +149,7 @@ class TourViewHandlerService
 			// TODO: check case when all rate values are 0
 			if (!$hasRates || $totalCustomers <= 0) {
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_RATES')
+					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_RATES)
 
 				);
 				return;
@@ -170,7 +171,7 @@ class TourViewHandlerService
 			RedirectionHelper::doRedirection(Paths::CHECK_TOUR_AVAILABILITY);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_VALID_TOUR_BOOKING_DETAILS')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_DETAILS)
 			);
 		}
 	}
@@ -200,7 +201,7 @@ class TourViewHandlerService
 			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_ERROR_SAVING_COMPONENT_KEY')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_ERROR_SAVING_COMPONENT_KEY)
 			);
 		}
 	}
@@ -256,7 +257,7 @@ class TourViewHandlerService
 			RedirectionHelper::doRedirection(Paths::CREATE_BOOKING);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_EMPTY_DEPARTURE_CUSTOMER_DATA)
 			);
 		}
 	}
@@ -282,7 +283,7 @@ class TourViewHandlerService
 			$this->buildTourDetailsTemplateData($retrievedTourDetails);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_OR_TOUR_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_OR_TOUR_ID)
 			);
 		}
 	}
@@ -303,7 +304,7 @@ class TourViewHandlerService
 		if (!empty($bookingComponentDetails)) {
 			$this->bookingComponentData = json_decode($bookingComponentDetails, true);
 		} else {
-			$this->errorHandler->getErrorMessage('NO_AVAILABLE_COMPONENTS');
+			$this->errorHandler->getErrorMessage(ErrorCodes::NO_AVAILABLE_COMPONENTS);
 		}
 	}
 
@@ -324,7 +325,7 @@ class TourViewHandlerService
 			$this->tourCustomerDetails = json_decode($customerDetails, true);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_EMPTY_DEPARTURE_CUSTOMER_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_EMPTY_DEPARTURE_CUSTOMER_DATA)
 			);
 		}
 	}
@@ -370,7 +371,7 @@ class TourViewHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_TOUR_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_TOUR_DATA)
 			);
 		}
 	}

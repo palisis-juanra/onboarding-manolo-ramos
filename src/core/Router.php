@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Controllers\SessionHandlerController;
@@ -14,22 +15,20 @@ class Router
 	// Controller instances
 	private $sessionHandler;
 	private $errorHandler;
-	// Member variables
+
 	private $routes;
 	private $routeNames;
 	private $routeDetails;
-	
-	// Initialize the template rendering service and route collection.
+
 	public function __construct(
 		SessionHandlerController 	$sessionHandlerController,
 		ErrorHandlerController		$errorHandlerController,
 	)
 	{
-		// Get the route names for easy reference
+		// Get route names for easy reference
 		$this->routes = Routes::getRoutes();
 		$this->routeNames = Routes::getRouteNames();
-		
-		// Controller instances
+
 		$this->sessionHandler = $sessionHandlerController;
 		$this->errorHandler = $errorHandlerController;
 	}
@@ -47,7 +46,7 @@ class Router
 	{
 		// Extract the last part of the current URL
 		$currentURL = $this->parseURL($_SERVER['REQUEST_URI']);
-		// Get the HTTP method of the request (GET, POST, etc.)
+		// Get the HTTP method used in the current request
 		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
 		// TODO: future router refactor to include direct index search instead of looping through all routes.
@@ -78,10 +77,9 @@ class Router
 					}
 				}
 
-				// If no controller function or method is defined for the route, handle not found
 				if ($handlerFunction === null || $routeDefinedMethod === null) {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('MISSING_ROUTE_DATA'));
+						$this->errorHandler->getErrorMessage(ErrorCodes::MISSING_ROUTE_DATA));
 					return;
 				}
 
@@ -97,7 +95,6 @@ class Router
 			}
 		}
 
-		// Handle any unknown endpoints by redirecting to the 404 page
 		RedirectionHelper::doRedirection(Paths::ERROR);
 	}
 
@@ -143,7 +140,6 @@ class Router
 			$this->routeNames['/login/loginAction']
 		];
 
-		// Check if the route is in the list of excluded routes or if the session is active
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/']:
@@ -156,12 +152,12 @@ class Router
 					break;
 
 				case $this->routeNames['/login/loginAction']:
-					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+					if ($routeMethod === HttpRequestsHelper::POST) {
 						// TODO: handle empty for sessionHandler
 						$this->setRouteDetails($routeData);
 					} else {
 						$this->errorHandler->index(
-							$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 						);
 					}
 
@@ -178,7 +174,7 @@ class Router
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
@@ -206,11 +202,11 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -220,11 +216,11 @@ class Router
 
 				case $this->routeNames['/dashboard/pickChannel']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -234,13 +230,13 @@ class Router
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -264,11 +260,11 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/tourList']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -278,11 +274,11 @@ class Router
 
 				case $this->routeNames['/tourList/pickTour']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -292,11 +288,11 @@ class Router
 
 				case $this->routeNames['/tourList/tourView']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -306,13 +302,13 @@ class Router
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -336,11 +332,11 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/tourList/tourView']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -350,11 +346,11 @@ class Router
 
 				case $this->routeNames['/tourList/tourView/pickBookingDetails']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -364,11 +360,11 @@ class Router
 
 				case $this->routeNames['/tourList/tourView/pickDeparture']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -378,11 +374,11 @@ class Router
 
 				case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -392,13 +388,13 @@ class Router
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -420,33 +416,33 @@ class Router
 	{
 		switch ($route) {
 			case $this->routeNames['/bookings']:
-				if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+				if ($routeMethod === HttpRequestsHelper::GET) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
 				break;
 
 			case $this->routeNames['/bookings/showBooking']:
-				if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+				if ($routeMethod === HttpRequestsHelper::GET) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
 				break;
 
 			case $this->routeNames['/bookings/searchBookingByID']:
-				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+				if ($routeMethod === HttpRequestsHelper::POST) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
@@ -454,7 +450,7 @@ class Router
 
 			default:
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 				);
 				break;
 		}	
@@ -479,11 +475,11 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -493,11 +489,11 @@ class Router
 				
 				case $this->routeNames['/tourList/tourView/createBooking']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -507,11 +503,11 @@ class Router
 				
 				case $this->routeNames['/tourList/tourView/bookingConfirmation']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
 						RedirectionHelper::doRedirection(Paths::LOGIN);
@@ -521,13 +517,13 @@ class Router
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -551,22 +547,22 @@ class Router
 			case $this->routeNames['/login']:
 				if ($this->sessionHandler->checkIfSessionIsActive()) {
 					RedirectionHelper::doRedirection(Paths::DASHBOARD);
-				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+				} else if ($routeMethod === HttpRequestsHelper::GET) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
 				break;
 
 			case $this->routeNames['/login/loginAction']:
-				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+				if ($routeMethod === HttpRequestsHelper::POST) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
@@ -574,7 +570,7 @@ class Router
 
 			default:
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 				);
 				break;
 		}
@@ -597,7 +593,7 @@ class Router
 	{
 		if ($this->routeNames['/error'] == $route) {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+				$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 			);
 		}
 	}

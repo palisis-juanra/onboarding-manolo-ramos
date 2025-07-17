@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
@@ -53,7 +54,7 @@ class ChannelListHandlerService
 
 			if (!$isChannelMatched) {
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
+					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CHANNEL_ID)
 				);
 			}
 
@@ -73,7 +74,7 @@ class ChannelListHandlerService
 			RedirectionHelper::doRedirection(Paths::TOUR_LIST);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CHANNEL_ID)
 			);
 		}
 	}
@@ -107,7 +108,7 @@ class ChannelListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_CHANNEL_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_DATA)
 			);
 		}
 	}

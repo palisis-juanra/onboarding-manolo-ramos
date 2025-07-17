@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
@@ -75,7 +76,7 @@ class BookingListHandlerService
 
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_BOOKINGS_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_BOOKINGS_DATA)
 			);
 		}
 	}
@@ -106,7 +107,7 @@ class BookingListHandlerService
 			RedirectionHelper::doRedirection(Paths::BOOKINGS);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_BOOKING_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_BOOKING_ID)
 			);
 		}
 	}
@@ -126,7 +127,7 @@ class BookingListHandlerService
 			$this->buildBookingTemplateData($bookingResult);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
 			);
 		}
 	}
@@ -148,7 +149,7 @@ class BookingListHandlerService
 			];
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_BOOKINGS_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_BOOKINGS_DATA)
 			);
 		}
 	}

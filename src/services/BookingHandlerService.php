@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
@@ -60,7 +61,7 @@ class BookingHandlerService
 
 		if (empty($currentTourBookingDetails)) {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('EMPTY_TOUR_BOOKING_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::EMPTY_TOUR_BOOKING_DATA)
 		);
 
 		} else {
@@ -139,7 +140,7 @@ class BookingHandlerService
 			$this->commitBooking($tempBookingKey);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('ERROR_CREATING_TEMPORAL_BOOKING')
+				$this->errorHandler->getErrorMessage(ErrorCodes::ERROR_CREATING_TEMPORAL_BOOKING)
 			);
 		}
 	}
@@ -186,7 +187,7 @@ class BookingHandlerService
 			RedirectionHelper::doRedirection(Paths::BOOKING_CONFIRMATION);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('ERROR_COMMITTING_BOOKING')
+				$this->errorHandler->getErrorMessage(ErrorCodes::ERROR_COMMITTING_BOOKING)
 			);
 		}
 	}

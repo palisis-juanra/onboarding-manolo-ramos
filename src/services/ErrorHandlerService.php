@@ -6,8 +6,8 @@ use Helpers\ErrorHandlerHelper;
 
 class ErrorHandlerService
 {
-	private $templateRenderer;
-	private $errorMessagesList;
+	private TemplateRendererService $templateRenderer;
+	private array $errorMessagesList;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
@@ -22,7 +22,6 @@ class ErrorHandlerService
 	 */
 	public function renderNotFoundPage(string $errorMessage): void
 	{
-		// Set the error message if it is not empty
 		$templateData = [];
 
 		if (!empty($errorMessage)) {
@@ -34,7 +33,7 @@ class ErrorHandlerService
 			$templateData
 		);
 
-		http_response_code(404);
+		http_response_code(500);
 		exit;
 	}
 

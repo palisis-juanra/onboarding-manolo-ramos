@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
 use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
@@ -47,7 +48,7 @@ class TourListHandlerService
 
 		if (empty($this->toursTemplateData)) {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_CHANNEL_TOUR_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
 			);
 			return;
 		}
@@ -77,7 +78,7 @@ class TourListHandlerService
 			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_TOUR_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_TOUR_ID)
 			);
 		}
 	}
@@ -98,7 +99,7 @@ class TourListHandlerService
 		} else {
 			// TODO: automatic redirection to dashboard page
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
 			);
 		}
 	}
@@ -123,7 +124,7 @@ class TourListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_CHANNEL_TOUR_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
 			);
 		}
 	}
