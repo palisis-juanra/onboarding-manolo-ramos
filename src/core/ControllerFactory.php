@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Controllers\BookingHandlerController;
+use Controllers\BookingListController;
 use Controllers\ChannelListController;
 use Controllers\LoginHandlerController;
 use Controllers\TourListController;
@@ -9,13 +11,13 @@ use Controllers\TourViewController;
 
 class ControllerFactory 
 {
-	// Controller names 
-	public const LOGIN_HANDLER_CONTROLLER = 'loginHandler';
-	public const CHANNEL_LIST_CONTROLLER = 'channelList';
-	public const TOUR_LIST_CONTROLLER = 'tourList';
-	public const TOUR_VIEW_CONTROLLER = 'tourView';
-		
-	// Config passed on to the Controller instance
+	public const LOGIN_HANDLER_CONTROLLER = 'loginController';
+	public const CHANNEL_LIST_CONTROLLER = 'channelListController';
+	public const TOUR_LIST_CONTROLLER = 'tourListController';
+	public const TOUR_VIEW_CONTROLLER = 'tourViewController';
+	public const BOOKING_HANDLER_CONTROLLER = 'bookingController';
+	public const BOOKING_LIST_CONTROLLER = 'bookingListController';
+
 	private $controllerDependencies;
 
 	public function __construct(array $controllerDependencies) 
@@ -28,41 +30,51 @@ class ControllerFactory
 	 *
 	 * @return object an instance of the matched controller
 	 */
-	public function create(string $controllerName)
+	public function create(string $controllerName): object
 	{
-		// Return pre-instantiated controller if available
-		if (isset($this->controllerDependencies[$controllerName]) && is_object($this->controllerDependencies[$controllerName])) {
+		// Return already pre-instantiated controllers if available
+		if (
+			isset($this->controllerDependencies[$controllerName]) &&
+			is_object($this->controllerDependencies[$controllerName])
+		) {
 			return $this->controllerDependencies[$controllerName];
 		}
 
-		switch ($controllerName) {
-			case self::LOGIN_HANDLER_CONTROLLER:
-				return new LoginHandlerController(
-					$this->controllerDependencies['templateRenderer']
-				);
-			case self::CHANNEL_LIST_CONTROLLER:
-				return new ChannelListController(
-					$this->controllerDependencies['tourCMS'],
-					$this->controllerDependencies['redisClient'],
-					$this->controllerDependencies['templateRenderer'],
-					$this->controllerDependencies['errorHandler']
-				);
-			case self::TOUR_LIST_CONTROLLER:
-				return new TourListController(
-					$this->controllerDependencies['tourCMS'],
-					$this->controllerDependencies['redisClient'],
-					$this->controllerDependencies['templateRenderer'],
-					$this->controllerDependencies['errorHandler']
-				);
-			case self::TOUR_VIEW_CONTROLLER:
-				return new TourViewController(
-					$this->controllerDependencies['tourCMS'],
-					$this->controllerDependencies['redisClient'],
-					$this->controllerDependencies['templateRenderer'],
-					$this->controllerDependencies['errorHandler']
-				);
-			default:
-				throw new \Exception("Controller '$controllerName' not found.");
-		}
+		return match ($controllerName) {
+			self::LOGIN_HANDLER_CONTROLLER => new LoginHandlerController(
+				$this->controllerDependencies['templateRenderer']
+			),
+			self::CHANNEL_LIST_CONTROLLER => new ChannelListController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::TOUR_LIST_CONTROLLER => new TourListController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::TOUR_VIEW_CONTROLLER => new TourViewController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::BOOKING_HANDLER_CONTROLLER => new BookingHandlerController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::BOOKING_LIST_CONTROLLER => new BookingListController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			default => throw new \Exception("Controller '$controllerName' not found."),
+		};
 	}
 }

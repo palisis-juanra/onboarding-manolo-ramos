@@ -2,6 +2,8 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -44,8 +46,15 @@ class TourListHandlerService
 	{
 		$this->retrieveTourList();
 
+		if (empty($this->toursTemplateData)) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
+			);
+			return;
+		}
+
 		$this->templateRenderer->renderTemplate(
-			'tourList/tourListPage',
+			'tours/tourListPage',
 			[
 				'toursTemplateData' => $this->toursTemplateData,
 				'channelName' => $this->currentChannelDetails['channelName'],
@@ -66,10 +75,10 @@ class TourListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/');
+			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_TOUR_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_TOUR_ID)
 			);
 		}
 	}
@@ -78,6 +87,7 @@ class TourListHandlerService
 	{
 		$channelID = $this->currentChannelDetails['channelID'];
 
+		// TODO: better explain this asignation using variables instead of direct values
 		$queryString = $this->buildQuery(30, 1, 0, 'PT');
 
 		if ($channelID) {
@@ -89,7 +99,7 @@ class TourListHandlerService
 		} else {
 			// TODO: automatic redirection to dashboard page
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('SESS_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
 			);
 		}
 	}
@@ -114,17 +124,17 @@ class TourListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_CHANNEL_TOUR_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
 			);
 		}
 	}
 
 	// TODO: revisit this logic
 	private function buildQuery(
-		int $toursPerPage,
-		int $currentPage,
-		int  $productType,
-		string $country
+		int     $toursPerPage,
+		int     $currentPage,
+		int     $productType,
+		string  $country
 	) 
 	{
 		// Set a querystring for the search

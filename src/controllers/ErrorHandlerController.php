@@ -7,8 +7,8 @@ use Services\TemplateRendererService;
 
 class ErrorHandlerController
 {
-	private $templateRenderer;
-	private $errorHandler;
+	private TemplateRendererService $templateRenderer;
+	private ErrorHandlerService $errorHandler;
 
 	public function __construct(TemplateRendererService $templateRenderer)
 	{
@@ -24,7 +24,7 @@ class ErrorHandlerController
 		$this->errorHandler->renderNotFoundPage($errorMessage);
 	}
 
-	public function getErrorMessage(string $errorCode)
+	public function getErrorMessage(string $errorCode): string
 	{
 		return $this->errorHandler->getErrorMessage($errorCode);
 	}

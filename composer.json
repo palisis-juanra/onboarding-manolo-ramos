@@ -12,6 +12,7 @@
     "autoload": {
         "psr-4": {
             "Controllers\\": "src/controllers/",
+            "Constants\\": "src/constants/",
             "Core\\": "src/core/",
             "Helpers\\": "src/helpers/",
             "Services\\": "src/services/",

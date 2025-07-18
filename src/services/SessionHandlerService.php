@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
@@ -13,9 +14,9 @@ class SessionHandlerService
 	private $templateRenderer;
 
 	public function __construct(
-		RedisService 	$redisClient,
+		RedisService 	        $redisClient,
 		TemplateRendererService $templateRenderer,
-		array $sessionConfig
+		array                   $sessionConfig
 	)
 	{
 		$this->redisClient = $redisClient;
@@ -38,10 +39,10 @@ class SessionHandlerService
 	{
 		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			// If a session key exists, redirect to the home page or dashboard
-			RedirectionHelper::doRedirection('/dashboard/');
+			RedirectionHelper::doRedirection(Paths::DASHBOARD);
 		} else {
 			$this->createSession();
-			RedirectionHelper::doRedirection('/dashboard/');
+			RedirectionHelper::doRedirection(Paths::DASHBOARD);
 		}
 	}
 
@@ -60,9 +61,25 @@ class SessionHandlerService
 			session_unset(); // Clear session variables
 		}
 
-		// Unset the session key in Redis
+		// Purge all stored data in Redis
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
-		
+		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentBookingID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('bookingConfirmationDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('componentFetchAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('departurePickAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTemporaryBookingKey', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('customerDetailsSubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('bookingIDsubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
+
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
 	}
 
@@ -91,13 +108,14 @@ class SessionHandlerService
 	private function createSession(): void {
 		// Check if the session is still valid
 		if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < $this->SESSION_TTL) {
-			return; // Session is still valid, no need to create a new one
+			return;
 		}
 		
 		// Session expired, clear the session key
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 
 		// Store a unique session key in Redis
+		session_start();
 		$session_id = session_id();
 		$this->redisClient->storeItemInRedis('session_key', $session_id, RedisInstanceHelper::REDIS_TYPE_STRING);
 	}
