@@ -23,5 +23,5 @@ class Templates
 	public const string BOOKING_CONFIRMATION = 'bookings/bookingConfirmationPage';
 
 	// Customers
-	public const string CUSTOMERS_LIST = 'customers/customerListPage';
+	public const string CUSTOMER_LIST = 'customers/customerListPage';
 }

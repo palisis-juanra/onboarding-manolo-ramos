@@ -42,6 +42,15 @@ class BookingListHandlerService
 
 	public function renderBookingListPage(): void
 	{
+
+		if (empty($this->currentChannelDetails['channelID'])) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
+			);
+
+			exit;
+		}
+
 		// Check if the booking ID query has been submitted
 		$bookingIDsubmitted = $this->redisClient->getItemFromRedis(
 		'bookingIDsubmitted',
@@ -121,8 +130,7 @@ class BookingListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			// TODO: check if the channel ID matches the one associated to the booking, throw incorrect booking id or
-			// channelID
+			// TODO: check if the channel ID matches the one associated to the booking, throw incorrect booking id or channelID
 			$bookingResult =$this->tourCMSclient->show_booking($currentBookingID, $this->currentChannelDetails['channelID']);
 
 			$this->buildBookingTemplateData($bookingResult);
