@@ -400,6 +400,64 @@ class Router
 	}
 
 	/**
+	 * Handles requests to the Customer View Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
+	 */
+	private function customerListControllerHandler(
+		string 	$route,
+		array 	$routeData,
+		string 	$routeMethod,
+		string 	$httpRequestMethodUsed
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/customers']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+				
+					case $this->routeNames['/customers/searchByCustomerID']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}
+	}
+
+	/**
 	 * Handles requests to the Booking List Controller.
 	 *
 	 * @param string $route The URL of the route that its being accessed.
@@ -452,6 +510,7 @@ class Router
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 				);
+
 				break;
 		}	
 	}
@@ -519,6 +578,7 @@ class Router
 					$this->errorHandler->index(
 						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
+
 					break;
 			}
 		} else {
@@ -572,6 +632,7 @@ class Router
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 				);
+
 				break;
 		}
 	}

@@ -15,6 +15,7 @@ class ErrorCodes
 	public const string TOUR_START_BOOKING = 'TOUR_START_BOOKING';
 	public const string TOUR_COMMIT_BOOKING = 'TOUR_COMMIT_BOOKING';
 	public const string BOOKINGS = 'BOOKINGS';
+	public const string CUSTOMERS = 'CUSTOMERS';
 
 	// APP Error Keys
 	public const string INCORRECT_ROUTE_ACTION = 'INCORRECT_ROUTE_ACTION';
@@ -58,4 +59,7 @@ class ErrorCodes
 	// BOOKINGS Error Keys
 	public const string NO_BOOKINGS_DATA = 'NO_BOOKINGS_DATA';
 	public const string POST_NO_BOOKING_ID = 'POST_NO_BOOKING_ID';
+
+	// CUSTOMERS Error Keys
+	public const string NO_CUSTOMERS_DATA = 'NO_CUSTOMERS_DATA';
 }
