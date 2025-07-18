@@ -87,7 +87,17 @@ class TourListHandlerService
 
 	private function retrieveTourList(): void
 	{
-		$channelID = $this->currentChannelDetails['channelID'];
+		if (empty($this->currentChannelDetails['channelID'])){
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
+			);
+
+			exit;
+			
+		} else {
+			$channelID = $this->currentChannelDetails['channelID'];
+		}
+		
 
 		// TODO: better explain this asignation using variables instead of direct values
 		$queryString = $this->buildQuery(30, 1, 0, 'PT');
