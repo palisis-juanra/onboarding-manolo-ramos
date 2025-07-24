@@ -5,6 +5,7 @@ namespace Core;
 use Controllers\BookingHandlerController;
 use Controllers\BookingListController;
 use Controllers\ChannelListController;
+use Controllers\CustomerEditController;
 use Controllers\CustomerListController;
 use Controllers\CustomerViewController;
 use Controllers\LoginHandlerController;
@@ -85,6 +86,12 @@ class ControllerFactory
 				$this->controllerDependencies['errorHandler']
 			),
 			self::CUSTOMER_VIEW_CONTROLLER => new CustomerViewController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::CUSTOMER_EDIT_CONTROLLER => new CustomerEditController(
 				$this->controllerDependencies['tourCMS'],
 				$this->controllerDependencies['redisClient'],
 				$this->controllerDependencies['templateRenderer'],
