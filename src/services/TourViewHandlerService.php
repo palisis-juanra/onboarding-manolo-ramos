@@ -35,7 +35,6 @@ class TourViewHandlerService
 		$this->templateRenderer = $templateRenderer;
 		$this->errorHandler = $errorHandler;
 
-		// Retrieve current channel & current tour details
 		$this->currentChannelDetails = json_decode(
 			$this->redisClient->getItemFromRedis(
 				'currentChannelDetails', 
@@ -79,15 +78,15 @@ class TourViewHandlerService
 		$this->templateRenderer->renderTemplate(
 			'tours/tourViewPage',
 			[
-				'tourTemplateData' => $this->tourTemplateData,
-				'hasBookingComponentData' => $hasBookingComponentData,
-				'bookingComponentData' => $this->bookingComponentData ?: null,
-				'tourName' => $this->tourTemplateData['tourName'],
-				'channelName' => $this->currentChannelDetails['channelName'],
-				'channelLogo' => $this->currentChannelDetails['channelLogo'],
-				'componentFetchAttempted' => $componentFetchAttempted,
-				'departurePickAttempted' => $departurePickAttempted,
-				'customerDetailsSubmitted' => $customerDetailsSubmitted,
+				'tourTemplateData'          => $this->tourTemplateData,
+				'hasBookingComponentData'   => $hasBookingComponentData,
+				'bookingComponentData'      => $this->bookingComponentData ?: null,
+				'tourName'                  => $this->tourTemplateData['tourName'],
+				'channelName'               => $this->currentChannelDetails['channelName'],
+				'channelLogo'               => $this->currentChannelDetails['channelLogo'],
+				'componentFetchAttempted'   => $componentFetchAttempted,
+				'departurePickAttempted'    => $departurePickAttempted,
+				'customerDetailsSubmitted'  => $customerDetailsSubmitted,
 			]
 		);
 
@@ -127,8 +126,8 @@ class TourViewHandlerService
 	{
 		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
 			$currentTourBookingDetails = [
-				'tourID' => $_POST['tourID'],
-				'date' => $_POST['departure_date'],
+				'tourID'    => $_POST['tourID'],
+				'date'      => $_POST['departure_date'],
 			];
 
 			// Check if there are any rates in the POST data
@@ -149,7 +148,6 @@ class TourViewHandlerService
 			if (!$hasRates || $totalCustomers <= 0) {
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_RATES)
-
 				);
 				return;
 			}
@@ -168,6 +166,7 @@ class TourViewHandlerService
 			);
 
 			RedirectionHelper::doRedirection(Paths::CHECK_TOUR_AVAILABILITY);
+
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_DETAILS)

@@ -212,14 +212,14 @@ class BookingHandlerService
 		$customerDetails = json_decode($bookingConfirmationDetails['customerDetails'] ?? '{}', true);
 
 		$bookingConfirmationData = [
-			'bookingID' => $bookingConfirmationDetails['bookingID'] ?? '',
-			'tourID' => $tourDetails['tourID'] ?? '',
-			'tourCode' => $tourDetails['tourCode'] ?? '',
-			'tourName' => $tourDetails['tourName'] ?? '',
-			'tourImage' => $tourDetails['tourImage'] ?? '',
-			'customerData' => $customerDetails,
-			'totalCustomers' => $bookingDetails['totalCustomers'] ?? 0,
-			'departureDate' => $bookingDetails['date'] ?? '',
+			'bookingID'         => $bookingConfirmationDetails['bookingID'] ?? '',
+			'tourID'            => $tourDetails['tourID'] ?? '',
+			'tourCode'          => $tourDetails['tourCode'] ?? '',
+			'tourName'          => $tourDetails['tourName'] ?? '',
+			'tourImage'         => $tourDetails['tourImage'] ?? '',
+			'customerData'      => $customerDetails,
+			'totalCustomers'    => $bookingDetails['totalCustomers'] ?? 0,
+			'departureDate'     => $bookingDetails['date'] ?? '',
 		];
 
 		// TODO: check if storing the booking confirmation data is necessary
