@@ -3,7 +3,6 @@
 namespace Core;
 
 use Controllers\ErrorHandlerController;
-use Core\Router;
 use Controllers\SessionHandlerController;
 use Services\TourCMSClientService;
 use Services\TemplateRendererService;

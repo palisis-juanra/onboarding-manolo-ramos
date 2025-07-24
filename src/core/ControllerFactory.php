@@ -90,7 +90,7 @@ class ControllerFactory
 				$this->controllerDependencies['templateRenderer'],
 				$this->controllerDependencies['errorHandler']
 			),
-			default => throw new \Exception("Controller '$controllerName' not found."),
+			default => throw new \Exception("Controller '$controllerName' not found.")
 		};
 	}
 }
