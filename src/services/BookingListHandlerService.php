@@ -143,23 +143,26 @@ class BookingListHandlerService
 
 	private function buildBookingTemplateData(SimpleXMLElement $bookingResult): void
 	{
-		if (isset($bookingResult->booking) && $bookingResult->error == 'OK') {
-			$this->bookingTemplateData[] = [
-				'bookingID' => (string) $bookingResult->booking->booking_id ?? '',
-				'bookingName' => (string) $bookingResult->booking->booking_name ?? '',
-				'channelID' => (string) $bookingResult->booking->channel_id ?? '',
-				'channelName' => (string) $bookingResult->booking->channel_name ?? '',
-				'startDate' => (string) $bookingResult->booking->start_date ?? '',
-				'endDate' => (string) $bookingResult->booking->end_date ?? '',
-				'status' => (string) $bookingResult->booking->status ?? '',
-				'statusText' => (string) $bookingResult->booking->status_text ?? '',
-				'customerCount' => (string) $bookingResult->booking->customer_count ?? '',
-				'customerData' => $bookingResult->booking->customers ?? []
-			];
-		} else {
+		if (empty($bookingResult->booking) || $bookingResult->error != 'OK') {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_BOOKINGS_DATA)
 			);
+			return;
 		}
+
+		$booking = $bookingResult->booking;
+
+		$this->bookingTemplateData[] = [
+			'bookingID'     => (string) ($booking->booking_id ?? ''),
+			'bookingName'   => (string) ($booking->booking_name ?? ''),
+			'channelID'     => (string) ($booking->channel_id ?? ''),
+			'channelName'   => (string) ($booking->channel_name ?? ''),
+			'startDate'     => (string) ($booking->start_date ?? ''),
+			'endDate'       => (string) ($booking->end_date ?? ''),
+			'status'        => (string) ($booking->status ?? ''),
+			'statusText'    => (string) ($booking->status_text ?? ''),
+			'customerCount' => (string) ($booking->customer_count ?? ''),
+			'customerData'  => $booking->customers ?? [],
+		];
 	}
 }

@@ -8,7 +8,6 @@ use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
-use TourCMS\Utils\TourCMS;
 use SimpleXMLElement;
 
 class TourListHandlerService 
@@ -118,26 +117,26 @@ class TourListHandlerService
 
 	private function buildTourListTemplateData(SimpleXMLElement $tourList): void
 	{
-		if (isset($tourList->tour)) {
-			$this->totalTourCount = (string) $tourList->total_tour_count; 
-			foreach($tourList->tour as $tour) {
-				$this->toursTemplateData[] = [
-					'tourID' => $tour->tour_id ?? '',
-					'tourName' => $tour->tour_name ?? '',
-					'location' => $tour->location ? html_entity_decode($tour->location) : '',
-					'tourCode' => $tour->tour_code ?? '',
-					'shortDescription' => $tour->shortdesc ?? '',
-					'thumbnailImage' => $tour->thumbnail_image ?? '',
-					'hasSale' => $tour->has_sale ?? '',
-					'lastUpdated' => $tour->descriptions_last_updated ?? '',
-					'channelId' => $tour->channel_id ?? '',
-					'fromPrice' => $tour->from_price_display ?? ''
-				];
-			}
-		} else {
+		if (empty($tourList->tour)  || $tourList->error != 'OK') {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
 			);
+		}
+
+		$this->totalTourCount = (string) $tourList->total_tour_count;
+		foreach($tourList->tour as $tour) {
+			$this->toursTemplateData[] = [
+				'tourID' 	        => $tour->tour_id ?? '',
+				'tourName' 	        => $tour->tour_name ?? '',
+				'location' 	        => $tour->location ? html_entity_decode($tour->location) : '',
+				'tourCode'          => $tour->tour_code ?? '',
+				'shortDescription'  => $tour->shortdesc ?? '',
+				'thumbnailImage'    => $tour->thumbnail_image ?? '',
+				'hasSale'           => $tour->has_sale ?? '',
+				'lastUpdated'       => $tour->descriptions_last_updated ?? '',
+				'channelId'         => $tour->channel_id ?? '',
+				'fromPrice'         => $tour->from_price_display ?? ''
+			];
 		}
 	}
 

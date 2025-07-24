@@ -133,18 +133,18 @@ class CustomerListHandlerService
 
 	private function buildCustomerTemplateData(SimpleXMLElement $customerResult): void
 	{
-		if (isset($customerResult->customer) && $customerResult->error == 'OK') {
-			$this->customerTemplateData[] = [
-				'customerID' => (string) $customerResult->customer->customer_id ?? '',
-				'customerName' => (string) $customerResult->customer->firstname ?? '',
-				'customerSurname' => (string) $customerResult->customer->surname ?? '',
-				'customerEmail' => (string) $customerResult->customer->email ?? '',
-				// TODO: build the data
-			];
-		} else {
+		if(empty($customerResult->customer) || $customerResult->error != 'OK') {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CUSTOMERS_DATA)
 			);
 		}
+
+		$this->customerTemplateData[] = [
+			'customerID' 		=> (string) $customerResult->customer->customer_id ?? '',
+			'customerName' 		=> (string) $customerResult->customer->firstname ?? '',
+			'customerSurname' 	=> (string) $customerResult->customer->surname ?? '',
+			'customerEmail' 	=> (string) $customerResult->customer->email ?? '',
+			// TODO: build the data
+		];
 	}
 }
