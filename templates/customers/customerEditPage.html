@@ -2,28 +2,30 @@
 <html lang="en">
     {{> _partials/_header }}
     <body class="h-screen flex justify-center items-center bg-gray-100">
-    <main class="h-screen">
-        <div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
-            <!-- Breadcrumbs -->
-            <div class="mb-4">
-                <ul class="flex items-start justify-start gap-2">
-                    <li class="hover:underline">
-                        <a href="{{BASE_URL}}/dashboard">Channel Selection</a>
-                    </li>
-                    <li> > </li>
-                    <li class="underline">
-                        <a href="{{BASE_URL}}/customers">Customers</a>
-                    </li>
-                    <li class="underline">
-                        <a href="{{BASE_URL}}/customers/editCustomer">Edit Customer</a>
-                    </li>
-                </ul>
+        <main class="h-screen">
+            <div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
+                <!-- Breadcrumbs -->
+                <div class="mb-4">
+                    <ul class="flex items-start justify-start gap-2">
+                        <li class="hover:underline">
+                            <a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+                        </li>
+                        <li> > </li>
+                        <li class="underline">
+                            <a href="{{BASE_URL}}/customers">Customers</a>
+                        </li>
+                        <li class="underline">
+                            <a href="{{BASE_URL}}/customers/editCustomer">Edit Customer</a>
+                        </li>
+                    </ul>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
+                    Edit customer
+                </h1>
             </div>
-            <!-- Title and channel info -->
-            <h1 class="text-4xl font-bold text-gray-900 text-center mb-2">
-                Tour List
-            </h1>
-        </div>
+            {{# isCustomerEditSubmitted}}
+                <div></div>
+            {{/ isCustomerEditSubmitted}}
         </main>
         {{> _partials/_footer }}
     </body>
