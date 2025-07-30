@@ -63,12 +63,12 @@ class TourViewHandlerService
 		$hasBookingComponentData = !empty($this->bookingComponentData);
 
 		// Booking steps comprobations
-		$componentFetchAttempted = $this->redisClient->getItemFromRedis(
-			'componentFetchAttempted',
+		$isComponentFetchAttempted = $this->redisClient->getItemFromRedis(
+			'isComponentFetchAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-		$departurePickAttempted = $this->redisClient->getItemFromRedis(
-			'departurePickAttempted',
+		$isDeparturePickAttempted = $this->redisClient->getItemFromRedis(
+			'isDeparturePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$isCustomerDetailsSubmitted = $this->redisClient->getItemFromRedis(
@@ -84,8 +84,8 @@ class TourViewHandlerService
 				'tourName'                  => $this->tourTemplateData['tourName'],
 				'channelName'               => $this->currentChannelDetails['channelName'],
 				'channelLogo'               => $this->currentChannelDetails['channelLogo'],
-				'componentFetchAttempted'   => $componentFetchAttempted,
-				'departurePickAttempted'    => $departurePickAttempted,
+				'isComponentFetchAttempted'   => $isComponentFetchAttempted,
+				'isDeparturePickAttempted'    => $isDeparturePickAttempted,
 				'isCustomerDetailsSubmitted'  => $isCustomerDetailsSubmitted,
 			]
 		);
@@ -98,13 +98,13 @@ class TourViewHandlerService
 
 		// Reset the component fetch attempted flag
 		$this->redisClient->deleteItemFromRedis(
-			'componentFetchAttempted',
+			'isComponentFetchAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
 		// Reset the departure pick attempted flag
 		$this->redisClient->deleteItemFromRedis(
-			'departurePickAttempted',
+			'isDeparturePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
@@ -160,7 +160,7 @@ class TourViewHandlerService
 
 			// Save a flag to indicate that the component fetch has been attempted
 			$this->redisClient->storeItemInRedis(
-				'componentFetchAttempted',
+				'isComponentFetchAttempted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
@@ -191,7 +191,7 @@ class TourViewHandlerService
 			);
 
 			$this->redisClient->storeItemInRedis(
-				'departurePickAttempted',
+				'isDeparturePickAttempted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
@@ -222,6 +222,7 @@ class TourViewHandlerService
 				'customerName' => $_POST['customerName'],
 				'customerSurname' => $_POST['customerSurname'],
 				'customerEmail' => $_POST['customerEmail'],
+				'customerProfileImageID' => rand(1, 9)
 			];
 			
 			$totalCustomerNumber = json_decode(
@@ -237,6 +238,7 @@ class TourViewHandlerService
 					'customerName' => 'customer' . $i,
 					'customerSurname' => 'surname',
 					'customerEmail' => 'mail@tourcms.com',
+					'customerProfileImageID' => rand(1, 9)
 				];
 			}
 

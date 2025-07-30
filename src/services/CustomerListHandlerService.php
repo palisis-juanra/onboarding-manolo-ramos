@@ -134,8 +134,9 @@ class CustomerListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
+			// TODO: remove if unnecessary
 			$this->redisClient->storeItemInRedis(
-				'isEditCustomerSubmitted',
+				'isCustomerEditSubmitted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);

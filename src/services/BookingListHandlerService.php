@@ -150,6 +150,7 @@ class BookingListHandlerService
 			return;
 		}
 
+		// TODO: add random image generation
 		$booking = $bookingResult->booking;
 
 		$this->bookingTemplateData[] = [

@@ -383,16 +383,16 @@ class Router
 				
 					case $this->routeNames['/customers/searchCustomerByID']:
 					case $this->routeNames['/customers/submitCustomerEditData']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::POST ?
-							$this->setRouteDetails($routeData)
-						:
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
+						if ($this->sessionHandler->checkIfSessionIsActive()) {
+							$routeMethod === HttpRequestsHelper::POST ?
+								$this->setRouteDetails($routeData)
+							:
+								$this->errorHandler->index(
+									$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+								);
+						} else {
+							RedirectionHelper::doRedirection(Paths::LOGIN);
+						}
 
 					break;
 
@@ -469,7 +469,6 @@ class Router
 			switch ($route) {
 				case $this->routeNames['/bookings']:
 				case $this->routeNames['/bookings/showBooking']:
-				case $this->routeNames['/bookings/searchBookingByID']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData)
@@ -482,6 +481,20 @@ class Router
 					}
 
 					break;
+
+				case $this->routeNames['/bookings/searchBookingByID']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+				break;
 
 				default:
 					$this->errorHandler->index(

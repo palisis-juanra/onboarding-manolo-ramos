@@ -16,8 +16,8 @@ class CustomerEditHandlerService
 
 	private $currentChannelDetails;
 	private $currentCustomerDetails;
-	private $customerDetails;
 	private $customerTemplateData;
+	private array $tourTemplateData;
 
 	public function __construct(
 		\TourCMS\Utils\TourCMS  $tourCMSclient,
@@ -48,17 +48,17 @@ class CustomerEditHandlerService
 
 	public function renderEditCustomerPage(): void
 	{
-		$this->retrieveCustomerDetails();
+		$this->buildEditCustomerTemplateData($this->currentCustomerDetails);
 
-		$customerEditAttempted = $this->redisClient->getItemFromRedis(
-				'customerEditAttempted',
+		$isCustomerEditAttempted = $this->redisClient->getItemFromRedis(
+				'isCustomerEditAttempted',
 				RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$this->templateRenderer->renderTemplate(
 			'tours/tourViewPage',
 			[
-				'customerEditAttempt'   => $customerEditAttempted,
-				'customerFirstName'          => $this->customerTemplateData['customerFirstName'] ?? '',
+				'isCustomerEditAttempted'   => $isCustomerEditAttempted,
+				'customerName'     => $this->customerTemplateData['customerName'] ?? '',
 				'customerSurname'       => $this->customerTemplateData['customerSurname'] ?? '',
 			]
 		);
@@ -100,24 +100,15 @@ class CustomerEditHandlerService
 		}
 	}
 
-	private function retrieveCustomerDetails(): void
+	private function buildEditCustomerTemplateData(array $customerEditData): void
 	{
-
-	}
-
-	private function buildEditCustomerTemplateData(): void
-	{
-		if (empty($this->customerDetails->customer) || $this->customerDetails->error != 'OK'){
+		if (empty($customerEditData)){
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CUSTOMERS_DATA)
 			);
 		}
 
-		foreach($this->customerDetails as $details) {
-			$this->tourTemplateData = [
-				'tourID' => $details->tour_id,
-			];
-		}
+		$this->tourTemplateData = $customerEditData;
 	}
 
 	private function buildCustomerUpdateDataObject(array $customerUpdateData): SimpleXMLElement
@@ -127,7 +118,6 @@ class CustomerEditHandlerService
 		$customerUpdateDataObject->addChild('customer_id', $customerUpdateData['customerID']);
 		$customerUpdateDataObject->addChild('firstname', $customerUpdateData['customerFirstname']);
 		$customerUpdateDataObject->addChild('surname', $customerUpdateData['customerID']);
-		$customerUpdateDataObject->addChild('email', $customerUpdateData['customerID']);
 
 		return $customerUpdateDataObject;
 	}

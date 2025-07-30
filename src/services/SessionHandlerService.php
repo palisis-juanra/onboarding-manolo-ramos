@@ -62,12 +62,12 @@ class SessionHandlerService
 		// Redis session keys
 		$redisSessionDataKeys = [
 			'session_key',
-			'departurePickAttempted',
+			'isDeparturePickAttempted',
 			'currentTemporaryBookingKey',
 			'currentBookingID',
 			'isBookingIDsubmitted',
 			'currentSelectedComponentKey',
-			'componentFetchAttempted',
+			'isComponentFetchAttempted',
 			'currentBookingComponentDetails',
 			'currentBookingDetails',
 			'bookingConfirmationDetails',
@@ -80,11 +80,12 @@ class SessionHandlerService
 			'currentChannelDetails',
 			'currentChannelName',
 			'currentCustomerID',
-			'customerEditAttempted',
+			'isCustomerEditSubmitted',
+			'isCustomerEditAttempted',
 			'isCustomerIDsubmitted',
 			'currentCustomersDetails',
 			'isCustomerDetailsSubmitted',
-			'currentCustomerEditDetails',
+			'currentCustomerEditDetails'
 		];
 
 		// Purge all stored data in Redis
