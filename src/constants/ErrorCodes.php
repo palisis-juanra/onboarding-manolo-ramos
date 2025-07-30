@@ -63,4 +63,5 @@ class ErrorCodes
 	// CUSTOMERS Error Keys
 	public const string NO_CUSTOMERS_DATA = 'NO_CUSTOMERS_DATA';
 	public const string POST_ERROR_UPDATING_CUSTOMER = 'POST_ERROR_UPDATING_CUSTOMER';
+	public const string POST_NO_CUSTOMER_ID = 'POST_NO_CUSTOMER_ID';
 }

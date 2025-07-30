@@ -53,6 +53,7 @@ class ErrorHandlerHelper
 		ErrorCodes::CUSTOMERS => [
 			ErrorCodes::NO_CUSTOMERS_DATA => 'No customer data available for the selected ID',
 			ErrorCodes::POST_ERROR_UPDATING_CUSTOMER => 'There was an error updating the customer details',
+			ErrorCodes::POST_NO_CUSTOMER_ID => 'There was an error handling the selected Customer ID'
 		],
 	];
 

@@ -109,7 +109,41 @@ class CustomerListHandlerService
 			RedirectionHelper::doRedirection(Paths::CUSTOMER_LIST);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_BOOKING_ID)
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CUSTOMER_ID)
+			);
+		}
+	}
+
+	public function submitCustomerEditData(): void
+	{
+		if (
+			isset($_POST['customerEditID']) &&
+			isset($_POST['customerEditName']) &&
+			isset($_POST['customerEditSurname'])
+		) {
+
+			$customerEditData = [
+				"customerID" => $_POST['customerEditID'],
+				"customerName" => $_POST['customerEditName'],
+				"customerSurname" => $_POST['customerEditSurname'],
+			];
+
+			$this->redisClient->storeItemInRedis(
+				'currentCustomerEditDetails',
+				json_encode($customerEditData),
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			$this->redisClient->storeItemInRedis(
+				'isEditCustomerSubmitted',
+				'true',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection(Paths::CUSTOMER_EDIT);
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CUSTOMER_ID)
 			);
 		}
 	}
