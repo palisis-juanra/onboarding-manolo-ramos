@@ -71,8 +71,8 @@ class TourViewHandlerService
 			'departurePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-		$customerDetailsSubmitted = $this->redisClient->getItemFromRedis(
-			'customerDetailsSubmitted',
+		$isCustomerDetailsSubmitted = $this->redisClient->getItemFromRedis(
+			'isCustomerDetailsSubmitted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$this->templateRenderer->renderTemplate(
@@ -86,7 +86,7 @@ class TourViewHandlerService
 				'channelLogo'               => $this->currentChannelDetails['channelLogo'],
 				'componentFetchAttempted'   => $componentFetchAttempted,
 				'departurePickAttempted'    => $departurePickAttempted,
-				'customerDetailsSubmitted'  => $customerDetailsSubmitted,
+				'isCustomerDetailsSubmitted'  => $isCustomerDetailsSubmitted,
 			]
 		);
 
@@ -110,7 +110,7 @@ class TourViewHandlerService
 
 		// Reset the customer details submitted flag
 		$this->redisClient->deleteItemFromRedis(
-			'customerDetailsSubmitted',
+			'isCustomerDetailsSubmitted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 	}
@@ -247,7 +247,7 @@ class TourViewHandlerService
 			);
 
 			$this->redisClient->storeItemInRedis(
-				'customerDetailsSubmitted',
+				'isCustomerDetailsSubmitted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);

@@ -67,7 +67,7 @@ class SessionHandlerService
 			'departurePickAttempted',
 			'currentTemporaryBookingKey',
 			'currentBookingID',
-			'bookingIDsubmitted',
+			'isBookingIDsubmitted',
 			'currentSelectedComponentKey',
 			'componentFetchAttempted',
 			'currentBookingComponentDetails',
@@ -83,9 +83,9 @@ class SessionHandlerService
 			'currentChannelName',
 			'currentCustomerID',
 			'customerEditAttempted',
-			'customerIDsubmitted',
+			'isCustomerIDsubmitted',
 			'currentCustomersDetails',
-			'customerDetailsSubmitted',
+			'isCustomerDetailsSubmitted',
 			'currentCustomerEditDetails',
 		];
 

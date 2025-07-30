@@ -52,16 +52,16 @@ class BookingListHandlerService
 		}
 
 		// Check if the booking ID query has been submitted
-		$bookingIDsubmitted = $this->redisClient->getItemFromRedis(
-		'bookingIDsubmitted',
+		$isBookingIDsubmitted = $this->redisClient->getItemFromRedis(
+		'isBookingIDsubmitted',
 		RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		// Render just the search form if no data has not been submitted
-		if (!$bookingIDsubmitted) {
+		if (!$isBookingIDsubmitted) {
 			$this->templateRenderer->renderTemplate(
 				Templates::BOOKINGS_LIST,
 				[
-					'bookingIDsubmitted' => $bookingIDsubmitted
+					'isBookingIDsubmitted' => $isBookingIDsubmitted
 				]
 			);
 
@@ -75,12 +75,12 @@ class BookingListHandlerService
 				Templates::BOOKINGS_LIST,
 				[
 					'bookingTemplateData' => $this->bookingTemplateData,
-					'bookingIDsubmitted' => $bookingIDsubmitted
+					'isBookingIDsubmitted' => $isBookingIDsubmitted
 				]
 			);
 
 			$this->redisClient->deleteItemFromRedis(
-				'bookingIDsubmitted',
+				'isBookingIDsubmitted',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
@@ -109,7 +109,7 @@ class BookingListHandlerService
 
 			// Save a flag to indicate that the booking ID search has been submitted
 			$this->redisClient->storeItemInRedis(
-				'bookingIDsubmitted',
+				'isBookingIDsubmitted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);

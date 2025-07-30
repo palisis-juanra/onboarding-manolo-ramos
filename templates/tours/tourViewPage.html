@@ -24,7 +24,7 @@
 					{{^ hasBookingComponentData}}
 						{{^ componentFetchAttempted}}
 							{{^ departurePickAttempted}}
-								{{^ customerDetailsSubmitted}}
+								{{^ isCustomerDetailsSubmitted}}
 									{{# tourTemplateData}}
 										<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
 											<!-- First Side: Tour Details -->
@@ -81,10 +81,10 @@
 											</div>
 										</div>
 									{{/ tourTemplateData}}
-								{{/ customerDetailsSubmitted}}
-								{{# customerDetailsSubmitted}}
+								{{/ isCustomerDetailsSubmitted}}
+								{{# isCustomerDetailsSubmitted}}
 									<div>Customer Data / Tour Booking confirmed placeholder</div>
-								{{/ customerDetailsSubmitted}}
+								{{/ isCustomerDetailsSubmitted}}
 							{{/ departurePickAttempted}}
 							{{# departurePickAttempted}}
 								<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex items-center justify-center flex-col p-10">

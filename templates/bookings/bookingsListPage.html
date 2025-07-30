@@ -17,7 +17,7 @@
                     </ul>
                 </div>
                 <!-- Title and channel info -->
-                {{^ bookingIDsubmitted}}
+                {{^ isBookingIDsubmitted}}
                     <div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
                         <h1 class="text-4xl font-bold text-gray-900 text-center mb-10">
                            Search Bookings
@@ -39,10 +39,10 @@
                             </form>
                         </div>
                     </div>
-                {{/ bookingIDsubmitted}}
+                {{/ isBookingIDsubmitted}}
                 <!-- Booking details -->
                 <div class="flex justify-center flex-col items-center">
-                    {{# bookingIDsubmitted}}
+                    {{# isBookingIDsubmitted}}
                         {{# bookingTemplateData}}
                             <div class="bg-white shadow-lg rounded-lg p-8 max-w-xl w-full text-center flex items-center justify-center flex-col">
                                     <div class="mb-4">
@@ -81,15 +81,15 @@
                                 </div>
                             </div>
                         {{/ bookingTemplateData}}
-                    {{/ bookingIDsubmitted}}
-                    {{# bookingIDsubmitted}}
+                    {{/ isBookingIDsubmitted}}
+                    {{# isBookingIDsubmitted}}
                         {{^ bookingTemplateData}}
                         <div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
                             <p class="text-gray-600 text-center">There's no existing booking data for the selected
                                 Booking ID.</p>
                         </div>
                         {{/ bookingTemplateData}}
-                    {{/ bookingIDsubmitted}}
+                    {{/ isBookingIDsubmitted}}
                 </div>
             </div>
         </main>
