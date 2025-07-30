@@ -11,6 +11,7 @@ use Controllers\CustomerViewController;
 use Controllers\LoginHandlerController;
 use Controllers\TourListController;
 use Controllers\TourViewController;
+use Exception;
 
 class ControllerFactory 
 {
@@ -22,6 +23,7 @@ class ControllerFactory
 	public const BOOKING_LIST_CONTROLLER = 'bookingListController';
 	public const CUSTOMER_LIST_CONTROLLER = 'customerListController';
 	public const CUSTOMER_VIEW_CONTROLLER = 'customerViewController';
+	public const CUSTOMER_EDIT_CONTROLLER = 'customerEditController';
 
 	private array $controllerDependencies;
 
@@ -34,6 +36,7 @@ class ControllerFactory
 	 * Creates a controller based on the controllerName received.
 	 *
 	 * @return object an instance of the matched controller
+	 * @throws Exception
 	 */
 	public function create(string $controllerName): object
 	{
@@ -97,7 +100,7 @@ class ControllerFactory
 				$this->controllerDependencies['templateRenderer'],
 				$this->controllerDependencies['errorHandler']
 			),
-			default => throw new \Exception("Controller '$controllerName' not found.")
+			default => throw new Exception("Controller '$controllerName' not found.")
 		};
 	}
 }
