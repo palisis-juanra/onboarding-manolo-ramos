@@ -50,36 +50,31 @@ class CustomerListHandlerService
 		}
 
 		// Check if the customer ID query has been submitted
-		$customerIDsubmitted = $this->redisClient->getItemFromRedis(
-				'customerIDsubmitted',
+		$isCustomerIDsubmitted = $this->redisClient->getItemFromRedis(
+				'isCustomerIDsubmitted',
 				RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		// Render just the search form if no data has not been submitted
-		if (!$customerIDsubmitted) {
+		if (!$isCustomerIDsubmitted) {
 			$this->templateRenderer->renderTemplate(
 				Templates::CUSTOMER_LIST,
 				[
-					'customerIDsubmitted' => $customerIDsubmitted
+					'isCustomerIDsubmitted' => $isCustomerIDsubmitted
 				]
 			);
 
 			exit;
 		}
 
-		$this->retrieveCustomers();
+		$this->retrieveCustomer($isCustomerIDsubmitted);
 
 		if (!empty($this->customerTemplateData)) {
 			$this->templateRenderer->renderTemplate(
 				Templates::CUSTOMER_LIST,
 				[
 					'customerTemplateData' => $this->customerTemplateData,
-					'customerIDsubmitted' => $customerIDsubmitted
+					'isCustomerIDsubmitted' => $isCustomerIDsubmitted
 				]
-			);
-
-			$this->redisClient->deleteItemFromRedis(
-				'customerIDsubmitted',
-				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
 		} else {
@@ -87,11 +82,16 @@ class CustomerListHandlerService
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CUSTOMERS_DATA)
 			);
 		}
+
+		$this->redisClient->deleteItemFromRedis(
+			'isCustomerIDsubmitted',
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
 	}
 
 	public function submitCustomerID(): void
 	{
-		if ($_POST['customerID']) {
+		if (isset($_POST['customerID'])) {
 			$customerID = $_POST['customerID'];
 			
 			$this->redisClient->storeItemInRedis(
@@ -101,7 +101,7 @@ class CustomerListHandlerService
 			);
 
 			$this->redisClient->storeItemInRedis(
-				'customerIDsubmitted',
+				'isCustomerIDsubmitted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
@@ -113,9 +113,10 @@ class CustomerListHandlerService
 			);
 		}
 	}
-	private function retrieveCustomers(): void
+
+	private function retrieveCustomer($isCustomerIDsubmitted): void
 	{
-		if ($this->currentChannelDetails['channelID']) {
+		if ($this->currentChannelDetails['channelID'] && $isCustomerIDsubmitted) {
 			$currenCustomerID = $this->redisClient->getItemFromRedis(
 				'currentCustomerID',
 				RedisInstanceHelper::REDIS_TYPE_STRING
@@ -125,6 +126,11 @@ class CustomerListHandlerService
 
 			$this->buildCustomerTemplateData($customerResult);
 		} else {
+			$this->redisClient->deleteItemFromRedis(
+				'isCustomerIDsubmitted',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
 			);
@@ -134,6 +140,11 @@ class CustomerListHandlerService
 	private function buildCustomerTemplateData(SimpleXMLElement $customerResult): void
 	{
 		if(empty($customerResult->customer) || $customerResult->error != 'OK') {
+			$this->redisClient->deleteItemFromRedis(
+				'isCustomerIDsubmitted',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CUSTOMERS_DATA)
 			);
