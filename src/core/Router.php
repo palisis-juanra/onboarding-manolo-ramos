@@ -382,6 +382,7 @@ class Router
 					break;
 				
 					case $this->routeNames['/customers/searchCustomerByID']:
+					case $this->routeNames['/customers/submitCustomerEditData']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
@@ -423,8 +424,8 @@ class Router
 	{
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
-				case $this->routeNames['/customers/editCustomer/saveEdits']:
 				case $this->routeNames['/customers/editCustomer']:
+				case $this->routeNames['/customers/editCustomer/update']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)

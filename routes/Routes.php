@@ -194,15 +194,6 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/customer/showCustomer' => [
-			'GET' => [
-				'handler' => 'customerViewControllerHandler',
-				'controller' => 'customerViewController',
-				'method' => 'GET',
-				'action' => 'show',
-				'requiresLogIn' => true
-			]
-		],
 		'/customers/submitCustomerEditData' => [
 			'POST' => [
 				'handler' => 'customerListControllerHandler',
