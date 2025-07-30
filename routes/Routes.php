@@ -203,16 +203,25 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
+		'/customers/submitCustomerEditData' => [
+			'POST' => [
+				'handler' => 'customerListControllerHandler',
+				'controller' => 'customerListController',
+				'method' => 'POST',
+				'action' => 'submitCustomerEditData',
+				'requiresLogIn' => true
+			]
+		],
 		'/customers/editCustomer' => [
-			'GET' => [
+			'POST' => [
 				'handler' => 'customerEditControllerHandler',
 				'controller' => 'customerEditController',
-				'method' => 'GET',
+				'method' => 'POST',
 				'action' => 'edit',
 				'requiresLogIn' => true
 			]
 		],
-		'/customers/editCustomer/saveEdits' => [
+		'/customers/editCustomer/update' => [
 			'POST' => [
 				'handler' => 'customerEditControllerHandler',
 				'controller' => 'customerEditController',
