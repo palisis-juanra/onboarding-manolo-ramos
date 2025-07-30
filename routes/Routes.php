@@ -203,7 +203,7 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/customer/editCustomer' => [
+		'/customers/editCustomer' => [
 			'GET' => [
 				'handler' => 'customerEditControllerHandler',
 				'controller' => 'customerEditController',
@@ -211,7 +211,8 @@ class Routes
 				'action' => 'edit',
 				'requiresLogIn' => true
 			]
-		],'/customer/editCustomer/saveEdits' => [
+		],
+		'/customers/editCustomer/saveEdits' => [
 			'POST' => [
 				'handler' => 'customerEditControllerHandler',
 				'controller' => 'customerEditController',
