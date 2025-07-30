@@ -2,8 +2,9 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
-use Helpers\HttpRequestsHelper;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use TourCMS\Utils\TourCMS;
@@ -32,7 +33,6 @@ class ChannelListHandlerService
 		$this->templateRenderer = $templateRenderer;
 		$this->errorHandler = $errorHandler;
 
-		// Initialize channelList
 		$this->channelList = $this->tourCMSclient->list_channels();
 	}
 
@@ -52,10 +52,9 @@ class ChannelListHandlerService
 				}
 			}
 
-			// If no valid channelID is found
 			if (!$isChannelMatched) {
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
+					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CHANNEL_ID)
 				);
 			}
 
@@ -72,24 +71,22 @@ class ChannelListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/');
+			RedirectionHelper::doRedirection(Paths::TOUR_LIST);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('POST_NO_CHANNEL_ID')
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_CHANNEL_ID)
 			);
 		}
 	}
 
 	public function renderChannelListPage(): void
 	{
-		// Generate template data
 		$this->buildChannelsTemplateData($this->channelList);
 
-		// Render the template
-		$this->templateRenderer->renderTemplate('dashboard/channelListPage', ['templateData' => $this->templateData]);
+		$this->templateRenderer->renderTemplate('channels/channelListPage', ['templateData' => $this->templateData]);
 	}
 	
-	private function buildChannelsTemplateData(object $channelList): void
+	private function buildChannelsTemplateData(\SimpleXMLElement $channelList): void
 	{
 		// TODO: remove unnecesary data from the array
 		if (isset($channelList->channel)) {
@@ -111,9 +108,8 @@ class ChannelListHandlerService
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('NO_CHANNEL_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_DATA)
 			);
-			return;
 		}
 	}
 }

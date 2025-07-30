@@ -2,32 +2,59 @@
 
 namespace Helpers;
 
-class ErrorHandlerHelper 
+use Constants\ErrorCodes;
+
+class ErrorHandlerHelper
 {
-	protected static $errorMessages = [
-		'APP' => [
-			'INCORRECT_ROUTE_ACTION' => 'The defined action for the current route is not valid',
-			'LOGIN_REQUIRED' => 'You need to be logged in order to access this page'
+	protected static array $errorMessages = [
+		ErrorCodes::APP => [
+			ErrorCodes::INCORRECT_ROUTE_ACTION => 'The defined action for the current route is not valid',
+			ErrorCodes::LOGIN_REQUIRED => 'You need to be logged in order to access this page'
 		],
-		'ROUTER' => [
-			'ROUTE_NOT_FOUND' => '404 - The route being accessed does not exist',
-			'MISSING_ROUTE_DATA' => 'The route is missing its handler function or access method'
+		ErrorCodes::ROUTER => [
+			ErrorCodes::ROUTE_NOT_FOUND => '404 - The route being accessed does not exist',
+			ErrorCodes::MISSING_ROUTE_DATA => 'The route is missing its handler function or access method'
 		],
-		'CHANNELS' => [
-			'NO_CHANNEL_DATA' => 'No channel data available',
-			'SESS_NO_CHANNEL_ID' => 'No Channel ID was found in the current session',
-			'POST_NO_CHANNEL_ID' => 'There was an error handling the selected Channel ID'
+		ErrorCodes::CHANNELS => [
+			ErrorCodes::NO_CHANNEL_DATA => 'No channel data available',
+			ErrorCodes::SESS_NO_CHANNEL_ID => 'No Channel ID was found in the current session',
+			ErrorCodes::POST_NO_CHANNEL_ID => 'There was an error handling the selected Channel ID'
 		],
-		'TOUR_LIST' => [
-			'NO_CHANNEL_TOUR_DATA' => 'No tour data available for the selected channel',
-			'POST_NO_TOUR_ID' => 'There was an error handling the selected Tour ID'
+		ErrorCodes::TOUR_LIST => [
+			ErrorCodes::NO_CHANNEL_TOUR_DATA => 'No tour data available for the selected channel',
+			ErrorCodes::POST_NO_TOUR_ID => 'There was an error handling the selected Tour ID'
 		],
-		'TOUR_VIEW' => [
-			'NO_TOUR_DATA' => 'No tour data available for the selected tour',
-			'POST_NO_TOUR_ID_VIEW' => 'There was an error handling the selected Tour ID',
-			'SESS_NO_CHANNEL_OR_TOUR_ID' => 'No Channel or Tour ID was found in the current session',
-		]
+		ErrorCodes::TOUR_VIEW => [
+			ErrorCodes::NO_TOUR_DATA => 'No tour data available for the selected tour',
+			ErrorCodes::POST_NO_TOUR_ID_VIEW => 'There was an error handling the selected Tour ID',
+			ErrorCodes::POST_NO_VALID_TOUR_BOOKING_DETAILS => 'There was an error handling the selected Tour booking details',
+			ErrorCodes::POST_NO_VALID_TOUR_BOOKING_RATES => 'There was an error handling the selected Tour booking rates',
+			ErrorCodes::SESS_NO_CHANNEL_OR_TOUR_ID => 'No Channel or Tour ID was found in the current session',
+		],
+		ErrorCodes::TOUR_CHECK_AVAILABILITY => [
+			ErrorCodes::EMPTY_TOUR_BOOKING_DATA => 'The Tour booking data object is empty',
+			ErrorCodes::SESS_NO_CHANNEL_OR_TOUR_ID_CHECK_AVAILABILITY => 'No Channel or Tour ID was found in the current session',
+			ErrorCodes::NO_AVAILABLE_COMPONENTS => 'There are no available components for the selected tour',
+		],
+		ErrorCodes::TOUR_DEPARTURES => [
+			ErrorCodes::POST_EMPTY_DEPARTURE_CUSTOMER_DATA => 'The Customer data object is empty',
+			ErrorCodes::POST_ERROR_SAVING_COMPONENT_KEY => 'There has been an error processing the selected component key',
+		],
+		ErrorCodes::TOUR_START_BOOKING => [
+			ErrorCodes::ERROR_CREATING_TEMPORAL_BOOKING => 'There was an error creating the temporary booking'
+		],
+		ErrorCodes::TOUR_COMMIT_BOOKING => [
+			ErrorCodes::ERROR_COMMITTING_BOOKING => 'There was an error commiting the booking with the current temp booking key'
+		],
+		ErrorCodes::BOOKINGS => [
+			ErrorCodes::NO_BOOKINGS_DATA => 'No booking data available for the selected ID',
+			ErrorCodes::POST_NO_BOOKING_ID => 'There was an error handling the selected Booking ID'
+		],
+		ErrorCodes::CUSTOMERS => [
+			ErrorCodes::NO_CUSTOMERS_DATA => 'No customer data available for the selected ID',
+		],
 	];
+
 
 	public static function getErrorMessages(): array
 	{
