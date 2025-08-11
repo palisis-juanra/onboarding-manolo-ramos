@@ -204,11 +204,11 @@ class Routes
 			]
 		],
 		'/customers/editCustomer' => [
-			'POST' => [
+			'GET' => [
 				'handler' => 'customerEditControllerHandler',
 				'controller' => 'customerEditController',
-				'method' => 'POST',
-				'action' => 'edit',
+				'method' => 'GET',
+				'action' => 'index',
 				'requiresLogIn' => true
 			]
 		],

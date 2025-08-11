@@ -425,6 +425,19 @@ class Router
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/customers/editCustomer']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData)
+							:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
 				case $this->routeNames['/customers/editCustomer/update']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
@@ -437,7 +450,7 @@ class Router
 						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
-					break;
+				break;
 
 				default:
 					$this->errorHandler->index(
