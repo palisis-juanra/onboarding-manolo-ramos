@@ -136,7 +136,7 @@ class CustomerListHandlerService
 
 			// TODO: remove if unnecessary
 			$this->redisClient->storeItemInRedis(
-				'isCustomerEditSubmitted',
+				'isCustomerEditAttempted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
@@ -188,9 +188,7 @@ class CustomerListHandlerService
 		$this->customerTemplateData[] = [
 			'customerID' 		=> (string) $customerResult->customer->customer_id ?? '',
 			'customerName' 		=> (string) $customerResult->customer->firstname ?? '',
-			'customerSurname' 	=> (string) $customerResult->customer->surname ?? '',
-			'customerEmail' 	=> (string) $customerResult->customer->email ?? '',
-			// TODO: build the data
+			'customerSurname' 	=> (string) $customerResult->customer->surname ?? ''
 		];
 	}
 }

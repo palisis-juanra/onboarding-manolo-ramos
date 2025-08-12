@@ -80,7 +80,6 @@ class SessionHandlerService
 			'currentChannelDetails',
 			'currentChannelName',
 			'currentCustomerID',
-			'isCustomerEditSubmitted',
 			'isCustomerEditAttempted',
 			'isCustomerIDsubmitted',
 			'currentCustomersDetails',

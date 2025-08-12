@@ -24,4 +24,5 @@ class Templates
 
 	// Customers
 	public const string CUSTOMER_LIST = 'customers/customerListPage';
+	public const string CUSTOMER_EDIT = 'customers/customerEditPage';
 }
