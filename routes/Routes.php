@@ -220,6 +220,15 @@ class Routes
 				'action' => 'update',
 				'requiresLogIn' => true
 			]
+		],
+		'/customers/editCustomer/updateConfirmation' => [
+			'GET' => [
+				'handler' => 'customerEditControllerHandler',
+				'controller' => 'customerEditController',
+				'method' => 'GET',
+				'action' => 'confirmUpdate',
+				'requiresLogIn' => true
+			]
 		]
 	];
 

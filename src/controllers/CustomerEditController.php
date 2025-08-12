@@ -33,4 +33,9 @@ class CustomerEditController
 	{
 		$this->customerEditHandler->updateCustomerDetails();
 	}
+
+	public function confirmUpdate(): void
+	{
+		$this->customerEditHandler->renderCustomerUpdateConfirmation();
+	}
 }

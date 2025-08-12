@@ -4,6 +4,7 @@ namespace Services;
 
 use Constants\ErrorCodes;
 use Constants\Paths;
+use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -204,8 +205,9 @@ class BookingHandlerService
 			$this->redisClient->getItemFromRedis(
 				'bookingConfirmationDetails',
 				RedisInstanceHelper::REDIS_TYPE_STRING
-			)
-		,true);
+			),
+			true
+		);
 
 		$tourDetails = json_decode($bookingConfirmationDetails['tourDetails'] ?? '{}', true);
 		$bookingDetails = json_decode($bookingConfirmationDetails['bookingDetails'] ?? '{}', true);
@@ -230,7 +232,7 @@ class BookingHandlerService
 		);
 
 		$this->templateRenderer->renderTemplate(
-			'bookings/bookingConfirmation',
+			Templates::BOOKING_CONFIRMATION,
 			[
 				'bookingConfirmationData' => $bookingConfirmationData
 			]

@@ -425,6 +425,7 @@ class Router
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/customers/editCustomer']:
+				case $this->routeNames['/customers/editCustomer/updateConfirmation']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData)

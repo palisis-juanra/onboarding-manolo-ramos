@@ -42,7 +42,6 @@ class BookingListHandlerService
 
 	public function renderBookingListPage(): void
 	{
-
 		if (empty($this->currentChannelDetails['channelID'])) {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
@@ -89,11 +88,6 @@ class BookingListHandlerService
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_BOOKINGS_DATA)
 			);
 		}
-	}
-
-	public function deleteBooking(): void
-	{
-
 	}
 
 	public function submitBookingID(): void

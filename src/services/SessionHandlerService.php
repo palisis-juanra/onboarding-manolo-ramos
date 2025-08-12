@@ -3,6 +3,7 @@
 namespace Services;
 
 use Constants\Paths;
+use Constants\Templates;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
@@ -83,6 +84,7 @@ class SessionHandlerService
 			'isCustomerEditAttempted',
 			'isCustomerEditCompleted',
 			'isCustomerIDsubmitted',
+			'updatedCustomerData',
 			'currentCustomersDetails',
 			'isCustomerDetailsSubmitted',
 			'currentCustomerEditDetails'
@@ -93,7 +95,7 @@ class SessionHandlerService
 			$this->redisClient->deleteItemFromRedis($key, RedisInstanceHelper::REDIS_TYPE_STRING);
 		}
 
-		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
+		$this->templateRenderer->renderTemplate(Templates::LOGOUT, []);
 	}
 
 	/**

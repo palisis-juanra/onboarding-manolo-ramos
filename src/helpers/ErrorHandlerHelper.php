@@ -55,7 +55,7 @@ class ErrorHandlerHelper
 			ErrorCodes::POST_ERROR_UPDATING_CUSTOMER => 'There was an error updating the customer details',
 			ErrorCodes::POST_NO_CUSTOMER_ID => 'There was an error handling the selected Customer ID',
 			ErrorCodes::POST_NO_MATCHING_STORED_CUSTOMER_ID => 'Customer ID mismatch: posted CustomerID does not match stored CustomerID.'
-		],
+		]
 	];
 
 
