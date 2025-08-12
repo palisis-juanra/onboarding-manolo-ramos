@@ -12,7 +12,7 @@ class ErrorHandlerHelper
 			ErrorCodes::LOGIN_REQUIRED => 'You need to be logged in order to access this page'
 		],
 		ErrorCodes::ROUTER => [
-			ErrorCodes::ROUTE_NOT_FOUND => '404 - The route being accessed does not exist',
+			ErrorCodes::ROUTE_NOT_FOUND => '404 - The route being accessed does not exist or is being accesed with an incorrect HTTP method',
 			ErrorCodes::MISSING_ROUTE_DATA => 'The route is missing its handler function or access method'
 		],
 		ErrorCodes::CHANNELS => [
