@@ -39,6 +39,13 @@ class CustomerListHandlerService
 			), true);
 	}
 
+	/**
+	 * Renders the customer list page.
+	 *
+	 * This method retrieves customer data and renders the customer list page.
+	 *
+	 * @return void
+	 */
 	public function renderCustomerListPage(): void
 	{
 		if (empty($this->currentChannelDetails['channelID'])) {
@@ -54,7 +61,7 @@ class CustomerListHandlerService
 				'isCustomerIDsubmitted',
 				RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-		// Render just the search form if no data has not been submitted
+		// Render just the search form if no data has been submitted
 		if (!$isCustomerIDsubmitted) {
 			$this->templateRenderer->renderTemplate(
 				Templates::CUSTOMER_LIST,
@@ -89,11 +96,20 @@ class CustomerListHandlerService
 		);
 	}
 
+	/**
+	 * Submits the customer ID for further processing.
+	 *
+	 * This method retrieves the customer ID from the POST request and stores it in Redis.
+	 * It then redirects to the customer list page.
+	 *
+	 * @return void
+	 */
 	public function submitCustomerID(): void
 	{
 		if (isset($_POST['customerID'])) {
 			$customerID = $_POST['customerID'];
 			
+			// Store the customer ID in Redis for further processing
 			$this->redisClient->storeItemInRedis(
 				'currentCustomerID',
 				$customerID,
@@ -114,6 +130,14 @@ class CustomerListHandlerService
 		}
 	}
 
+	/**
+	 * Retrieves customer data based on the submitted customer ID.
+	 *
+	 * This method fetches customer data from the TourCMS API and builds the template data.
+	 *
+	 * @param bool $isCustomerIDsubmitted
+	 * @return void
+	 */
 	public function submitCustomerEditData(): void
 	{
 		if (
@@ -121,9 +145,22 @@ class CustomerListHandlerService
 			isset($_POST['customerEditName']) &&
 			isset($_POST['customerEditSurname'])
 		) {
+			$storedCustomerID = $this->redisClient->getItemFromRedis(
+				'currentCustomerID',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			// Check if the posted ID matches the stored ID
+			if ($storedCustomerID !== $_POST['customerEditID']) {
+				$this->errorHandler->index(
+					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_MATCHING_STORED_CUSTOMER_ID)
+				);
+				
+				exit;
+			}
 
 			$customerEditData = [
-				"customerID" => $_POST['customerEditID'],
+				"customerID" => $_POST['customerEditID'] ,
 				"customerName" => $_POST['customerEditName'],
 				"customerSurname" => $_POST['customerEditSurname'],
 			];
@@ -149,7 +186,15 @@ class CustomerListHandlerService
 		}
 	}
 
-	private function retrieveCustomer($isCustomerIDsubmitted): void
+	/**
+	 * Retrieves customer data based on the submitted customer ID.
+	 *
+	 * This method fetches customer data from the TourCMS API and builds the template data.
+	 *
+	 * @param bool $isCustomerIDsubmitted
+	 * @return void
+	 */
+	private function retrieveCustomer(bool $isCustomerIDsubmitted): void
 	{
 		if ($this->currentChannelDetails['channelID'] && $isCustomerIDsubmitted) {
 			$currenCustomerID = $this->redisClient->getItemFromRedis(
@@ -157,7 +202,10 @@ class CustomerListHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			$customerResult =$this->tourCMSclient->show_customer($currenCustomerID, $this->currentChannelDetails['channelID']);
+			$customerResult =$this->tourCMSclient->show_customer(
+				$currenCustomerID, 
+				$this->currentChannelDetails['channelID']
+			);
 
 			$this->buildCustomerTemplateData($customerResult);
 		} else {
@@ -172,6 +220,15 @@ class CustomerListHandlerService
 		}
 	}
 
+	/**
+	 * Builds the customer template data from the API response.
+	 *
+	 * This method processes the customer data retrieved from the TourCMS API
+	 * and prepares it for rendering in the template.
+	 *
+	 * @param SimpleXMLElement $customerResult
+	 * @return void
+	 */
 	private function buildCustomerTemplateData(SimpleXMLElement $customerResult): void
 	{
 		if(empty($customerResult->customer) || $customerResult->error != 'OK') {

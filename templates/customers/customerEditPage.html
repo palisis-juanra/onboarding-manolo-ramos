@@ -3,7 +3,7 @@
 	{{> _partials/_header }}
 	<body class="h-screen flex justify-center items-center bg-gray-100">
 		<main class="h-screen w-full">
-			<div style="margin-top: 100px; padding-bottom: 125px;" class="container mx-auto my-10">
+			<div style="margin-top: 100px; padding-bottom: 100px;" class="container mx-auto my-10">
 				<!-- Breadcrumbs -->
 				<div class="mb-4">
 					<ul class="flex items-start justify-start gap-2">
@@ -29,12 +29,12 @@
 					<div class="bg-white p-8 rounded-lg shadow-md w-96">
 						<form class="space-y-4" action="{{BASE_URL}}/customers/editCustomer/update" method="POST">
 							<div>
-								<label for="customerId" class="block text-sm font-medium text-gray-700">Customer ID</label>
+								<label for="customerID" class="block text-sm font-medium text-gray-700">Customer ID</label>
 								<input 
 									class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-500"
 									type="text" 
-									id="customerId" 
-									name="customerId" 
+									id="customerID" 
+									name="customerID" 
 									readonly
 									disabled
 									placeholder="{{customerID}}"
@@ -42,12 +42,12 @@
 							</div>
 
 							<div>
-								<label for="customerName" class="block text-sm font-medium text-gray-700">Customer Name</label>
+								<label for="customerNameUpdate" class="block text-sm font-medium text-gray-700">Customer Name</label>
 								<input 
 									class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
 									type="text" 
-									id="customerName" 
-									name="customerName" 
+									id="customerNameUpdate" 
+									name="customerNameUpdate" 
 									required 
 									placeholder="Enter Customer Name"
 									value="{{customerName}}"
@@ -55,12 +55,12 @@
 							</div>
 
 							<div>
-								<label for="customerSurname" class="block text-sm font-medium text-gray-700">Customer Surname</label>
+								<label for="customerSurnameUpdate" class="block text-sm font-medium text-gray-700">Customer Surname</label>
 								<input 
 									class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
 									type="text" 
-									id="customerSurname" 
-									name="customerSurname" 
+									id="customerSurnameUpdate" 
+									name="customerSurnameUpdate" 
 									required 
 									placeholder="Enter Customer Surname"
 									value="{{customerSurname}}"

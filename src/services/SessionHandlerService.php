@@ -81,6 +81,7 @@ class SessionHandlerService
 			'currentChannelName',
 			'currentCustomerID',
 			'isCustomerEditAttempted',
+			'isCustomerEditCompleted',
 			'isCustomerIDsubmitted',
 			'currentCustomersDetails',
 			'isCustomerDetailsSubmitted',
