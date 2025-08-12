@@ -2,20 +2,22 @@
 
 namespace Services;
 
+use Constants\Paths;
+use Constants\Templates;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
 class SessionHandlerService
 {
-	private $SESSION_TTL = 1800; // 30 minutes
-	protected $redisClient;
+	private int $SESSION_TTL = 1800; // 30 minutes
+	protected RedisService $redisClient;
 
-	private $templateRenderer;
+	private TemplateRendererService $templateRenderer;
 
 	public function __construct(
-		RedisService 	$redisClient,
+		RedisService 	        $redisClient,
 		TemplateRendererService $templateRenderer,
-		array $sessionConfig
+		array                   $sessionConfig
 	)
 	{
 		$this->redisClient = $redisClient;
@@ -29,20 +31,19 @@ class SessionHandlerService
 	/**
 	 * Handles the login request.
 	 *
-	 * This method processes the login request and redirects 
-	 * to the appropiate page depending on the outcome.
+	 * This method processes the login request and redirects
+	 * to the appropriate page depending on the outcome.
 	 *
-	 * @return bool
+	 * @return void
+	 * @throws RedisServiceException
 	 */
 	public function handleLogIn(): void
 	{
-		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
-			// If a session key exists, redirect to the home page or dashboard
-			RedirectionHelper::doRedirection('/dashboard/');
-		} else {
+		if (!$this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			$this->createSession();
-			RedirectionHelper::doRedirection('/dashboard/');
 		}
+
+		RedirectionHelper::doRedirection(Paths::DASHBOARD);
 	}
 
 	/**
@@ -55,15 +56,46 @@ class SessionHandlerService
 	 */
 	public function handleLogOut(): void
 	{
-		// If a PHP session is active, unset
 		if (session_status() === PHP_SESSION_ACTIVE) {
-			session_unset(); // Clear session variables
+			session_unset();
 		}
 
-		// Unset the session key in Redis
-		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
-		
-		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
+		// Redis session keys
+		$redisSessionDataKeys = [
+			'session_key',
+			'isDeparturePickAttempted',
+			'currentTemporaryBookingKey',
+			'currentBookingID',
+			'isBookingIDsubmitted',
+			'currentSelectedComponentKey',
+			'isComponentFetchAttempted',
+			'currentBookingComponentDetails',
+			'currentBookingDetails',
+			'bookingConfirmationDetails',
+			'bookingConfirmationData',
+			'currentTourBookingDetails',
+			'currentTourDetails',
+			'tourConfirmationData',
+			'currentTourID',
+			'currentChannelID',
+			'currentChannelDetails',
+			'currentChannelName',
+			'currentCustomerID',
+			'isCustomerEditAttempted',
+			'isCustomerEditCompleted',
+			'isCustomerIDsubmitted',
+			'updatedCustomerData',
+			'currentCustomersDetails',
+			'isCustomerDetailsSubmitted',
+			'currentCustomerEditDetails'
+		];
+
+		// Purge all stored data in Redis
+		foreach ($redisSessionDataKeys as $key) {
+			$this->redisClient->deleteItemFromRedis($key, RedisInstanceHelper::REDIS_TYPE_STRING);
+		}
+
+		$this->templateRenderer->renderTemplate(Templates::LOGOUT, []);
 	}
 
 	/**
@@ -91,13 +123,14 @@ class SessionHandlerService
 	private function createSession(): void {
 		// Check if the session is still valid
 		if (time() - $this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING) < $this->SESSION_TTL) {
-			return; // Session is still valid, no need to create a new one
+			return;
 		}
 		
 		// Session expired, clear the session key
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 
 		// Store a unique session key in Redis
+		session_start();
 		$session_id = session_id();
 		$this->redisClient->storeItemInRedis('session_key', $session_id, RedisInstanceHelper::REDIS_TYPE_STRING);
 	}

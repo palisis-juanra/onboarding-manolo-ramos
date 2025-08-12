@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{> _partials/_header }}
+	<body class="h-screen flex justify-center items-center bg-gray-100">
+		<main class="h-screen w-full">
+			<div style="margin-top: 100px; padding-bottom: 100px;" class="container mx-auto my-10">
+				<!-- Breadcrumbs -->
+				<div class="mb-4">
+					<ul class="flex items-start justify-start gap-2">
+						<li class="hover:underline">
+							<a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+						</li>
+						<li> > </li>
+						<li class="hover:underline">
+							<a href="{{BASE_URL}}/customers">Customers</a>
+						</li>
+						<li> > </li>
+						<li class="underline">
+							<a href="{{BASE_URL}}/customers/editCustomer">Edit Customer</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="flex justify-center flex-col items-center">
+				<h1 class="text-4xl font-bold text-gray-900 text-center mb-8">
+					Edit customer
+				</h1>
+				{{# isCustomerEditAttempted}}
+					<div class="bg-white p-8 rounded-lg shadow-md w-96">
+						<form class="space-y-4" action="{{BASE_URL}}/customers/editCustomer/update" method="POST">
+							<div>
+								<label for="customerID" class="block text-sm font-medium text-gray-700">Customer ID</label>
+								<input 
+									class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-500"
+									type="text" 
+									id="customerID" 
+									name="customerID" 
+									readonly
+									disabled
+									placeholder="{{customerID}}"
+								>
+							</div>
+
+							<div>
+								<label for="customerNameUpdate" class="block text-sm font-medium text-gray-700">Customer Name</label>
+								<input 
+									class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+									type="text" 
+									id="customerNameUpdate" 
+									name="customerNameUpdate" 
+									required 
+									placeholder="Enter Customer Name"
+									value="{{customerName}}"
+								>
+							</div>
+
+							<div>
+								<label for="customerSurnameUpdate" class="block text-sm font-medium text-gray-700">Customer Surname</label>
+								<input 
+									class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+									type="text" 
+									id="customerSurnameUpdate" 
+									name="customerSurnameUpdate" 
+									required 
+									placeholder="Enter Customer Surname"
+									value="{{customerSurname}}"
+								>
+							</div>
+
+							<div>
+								<button 
+									type="submit" 
+									class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+								>
+									Submit
+								</button>
+							</div>
+						</form>
+					</div>
+				{{/ isCustomerEditAttempted}}
+				
+				{{^ isCustomerEditAttempted}}
+				   <div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
+						<p class="text-gray-600 text-center">There's no existing customer data for the selected Customer ID.</p>
+					</div>
+				{{/ isCustomerEditAttempted}}
+			</div>
+		</main>
+		{{> _partials/_footer }}
+	</body>
+</html>
