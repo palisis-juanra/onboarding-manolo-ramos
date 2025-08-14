@@ -30,7 +30,8 @@
 									Booking ID
 								</label>
 								<input
-										class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="bookingID" type="number" name="bookingID" placeholder="Enter Booking ID">
+										class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="bookingID" type="number" name="bookingID" placeholder="Enter Booking ID"
+								>
 							</div>
 							<div class="flex items-center justify-center">
 								<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
@@ -62,7 +63,7 @@
 										{{# customerData.customer}}
 											<div class="text-center">
 												<img
-													src="https://randomuser.me/api/portraits/lego/{{profileImageID}}.jpg"
+													src="https://randomuser.me/api/portraits/lego/2.jpg"
 													alt="Lego Antonio"
 													class="w-16 h-16 rounded-full mx-auto mb-2 object-cover">
 												<p class="text-sm font-medium">{{customer_name}}</p>
@@ -73,13 +74,13 @@
 								</div>
 								<div class="border-t pt-4 flex flex-col items-center justify-center space-y-4">
 									<a href="{{BASE_URL}}/bookings"
-									   class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
+									   class="bg-blue-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed transition">
 										Edit customers
 									</a>
-									<a href="{{BASE_URL}}/bookings"
-									   class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
-										Delete booking
-									</a>
+									<form action="{{BASE_URL}}/bookings/cancelBooking" method="POST">
+										<input type="hidden" name="bookingCancellationID" value="{{bookingID}}">
+										<button class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition" type="submit">Cancel booking</button>
+									</form>
 							</div>
 						</div>
 					{{/ bookingTemplateData}}

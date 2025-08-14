@@ -40,6 +40,13 @@ class BookingListHandlerService
 			), true);
 	}
 
+	/**
+	 * Renders the booking list page.
+	 *
+	 * This method retrieves the bookings and renders the booking list page.
+	 *
+	 * @return void
+	 */
 	public function renderBookingListPage(): void
 	{
 		if (empty($this->currentChannelDetails['channelID'])) {
@@ -90,6 +97,14 @@ class BookingListHandlerService
 		}
 	}
 
+	/**
+	 * Submits the booking ID for searching.
+	 *
+	 * This method retrieves the booking ID from the POST request and stores it in Redis.
+	 * It then redirects to the bookings page.
+	 *
+	 * @return void
+	 */
 	public function submitBookingID(): void
 	{
 		if ($_POST['bookingID']) {
@@ -116,6 +131,59 @@ class BookingListHandlerService
 		}
 	}
 
+	/**
+	 * Cancels the booking by ID.
+	 *
+	 * This method retrieves the current booking ID from Redis and checks if it is valid.
+	 * If valid, it redirects to the booking cancellation page.
+	 *
+	 * @return void
+	 */
+	public function submitCancelledBookingID(): void
+	{
+		$currentBookingID = $this->redisClient->getItemFromRedis(
+			'currentBookingID',
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		if (empty($currentBookingID)) {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_BOOKING_ID)
+			);
+		}
+		
+		if (!empty($_POST['bookingCancellationID'])) {
+			if ($_POST['bookingCancellationID'] !== $currentBookingID) {
+				$this->errorHandler->index(
+					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_MATCHING_STORED_BOOKING_ID)
+				);
+
+			} else {
+				$currentBookingID = $_POST['bookingCancellationID'];
+			}
+		}
+
+		$bookingCancellationTemplateData = [
+			'bookingID' => $currentBookingID
+		];
+
+		$this->redisClient->storeItemInRedis(
+			'bookingCancellationData',
+			json_encode($bookingCancellationTemplateData),
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		RedirectionHelper::doRedirection(Paths::BOOKING_CANCELLATION);
+	}
+
+	/**
+	 * Retrieves the bookings from TourCMS.
+	 *
+	 * This method fetches the current booking ID from Redis and retrieves the booking details
+	 * from TourCMS using the channel ID stored in the session.
+	 *
+	 * @return void
+	 */
 	private function retrieveBookings(): void
 	{
 		if ($this->currentChannelDetails['channelID']) {
@@ -135,6 +203,12 @@ class BookingListHandlerService
 		}
 	}
 
+	/**
+	 * Builds the booking template data from the booking result XML.
+	 *
+	 * @param SimpleXMLElement $bookingResult The booking result XML.
+	 * @return void
+	 */
 	private function buildBookingTemplateData(SimpleXMLElement $bookingResult): void
 	{
 		if (empty($bookingResult->booking) || $bookingResult->error != 'OK') {

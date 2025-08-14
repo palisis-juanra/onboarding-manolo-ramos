@@ -35,4 +35,9 @@ class BookingListController
 	{
 		$this->bookingListHandlerService->submitBookingID();
 	}
+
+	public function submitCancelledBookingID(): void
+	{
+		$this->bookingListHandlerService->submitCancelledBookingID();
+	}
 }
