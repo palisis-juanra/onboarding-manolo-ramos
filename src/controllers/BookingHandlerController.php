@@ -40,4 +40,9 @@ class BookingHandlerController
 	{
 		$this->bookingHandler->confirmBooking();
 	}
+
+	public function cancelBooking(): void
+	{
+		$this->bookingHandler->cancelBooking();
+	}
 }
