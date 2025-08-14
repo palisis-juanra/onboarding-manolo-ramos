@@ -59,6 +59,7 @@ class ErrorCodes
 	// BOOKINGS Error Keys
 	public const string NO_BOOKINGS_DATA = 'NO_BOOKINGS_DATA';
 	public const string POST_NO_BOOKING_ID = 'POST_NO_BOOKING_ID';
+	public const string POST_NO_MATCHING_STORED_BOOKING_ID = 'POST_NO_MATCHING_STORED_BOOKING_ID';
 
 	// CUSTOMERS Error Keys
 	public const string NO_CUSTOMERS_DATA = 'NO_CUSTOMERS_DATA';

@@ -48,7 +48,8 @@ class ErrorHandlerHelper
 		],
 		ErrorCodes::BOOKINGS => [
 			ErrorCodes::NO_BOOKINGS_DATA => 'No booking data available for the selected ID',
-			ErrorCodes::POST_NO_BOOKING_ID => 'There was an error handling the selected Booking ID'
+			ErrorCodes::POST_NO_BOOKING_ID => 'There was an error handling the selected Booking ID',
+			ErrorCodes::POST_NO_MATCHING_STORED_BOOKING_ID => 'Booking ID mismatch: posted BookingID does not match stored BookingID.'
 		],
 		ErrorCodes::CUSTOMERS => [
 			ErrorCodes::NO_CUSTOMERS_DATA => 'No customer data available for the selected ID',
