@@ -2,22 +2,22 @@
 
 namespace Controllers;
 
+use Services\CustomerListHandlerService;
 use Services\RedisService;
 use Services\TemplateRendererService;
-use Services\TourListHandlerService;
 
-class TourListController 
+class CustomerListController
 {
-	protected TourListHandlerService $tourListHandler;
+	private CustomerListHandlerService $customerListHandler;
 
 	public function __construct(
 		\TourCMS\Utils\TourCMS  $tourCMSclient,
-		RedisService 			$redisClient, 
+		RedisService 			$redisClient,
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler
 	)
 	{
-		$this->tourListHandler = new TourListHandlerService(
+		$this->customerListHandler = new CustomerListHandlerService(
 			$tourCMSclient,
 			$redisClient,
 			$templateRenderer,
@@ -27,11 +27,11 @@ class TourListController
 
 	public function index(): void
 	{
-		$this->tourListHandler->renderTourListPage();
+		$this->customerListHandler->renderCustomerListPage();
 	}
 
-	public function store(): void
+	public function searchCustomerByID(): void
 	{
-		$this->tourListHandler->submitTourPick();
+		$this->customerListHandler->submitCustomerID();
 	}
 }

@@ -8,7 +8,6 @@ use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use SimpleXMLElement;
-use TourCMS\Utils\TourCMS;
 
 class TourViewHandlerService 
 {
@@ -25,7 +24,7 @@ class TourViewHandlerService
 	private $currentTourID;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
+		\TourCMS\Utils\TourCMS 	$tourCMSclient,
 		RedisService 			$redisClient, 
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler
@@ -340,39 +339,39 @@ class TourViewHandlerService
 	 */
 	private function buildTourDetailsTemplateData(SimpleXMLElement $tourDetails): void
 	{
-		if (isset($tourDetails->tour)) {
-			foreach($tourDetails->tour as $details) {
-				$this->tourTemplateData = [
-					'tourID' => $details->tour_id,
-					'tourName' => $details->tour_name,
-					'tourCode' => $details->tour_code,
-					'tourNextBookableDate' => $details->next_bookable_date,
-					'tourLastBookableDate' => $details->last_bookable_date,
-					'tourImage' => $details->images->image->url,
-					'tourStartTime' => $details->start_time,
-					'tourEndTime' => $details->end_time,
-					'tourSummary' => $details->summary,
-					'tourShortDesc' => $details->shortdesc,
-					'tourPrice' => html_entity_decode($details->from_price_display),
-					'bookingDataPeople' => $details->new_booking->people_selection->rate,
-					'bookingDataDates' => $details->new_booking->date_selection
-				];
-
-				$this->redisClient->storeItemInRedis(
-					'currentTourDetails',
-					json_encode([
-						'tourID' => (string) $details->tour_id,
-						'tourCode' => (string) $details->tour_code,
-						'tourName' => (string) $details->tour_name,
-						'tourImage' => (string) $details->images->image->url,
-					]),
-					RedisInstanceHelper::REDIS_TYPE_STRING
-				);
-			}
-		} else {
+		if (empty($tourDetails->tour) || $tourDetails->error != 'OK'){
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_TOUR_DATA)
 			);
 		}
+
+		foreach($tourDetails->tour as $details) {
+			$this->tourTemplateData = [
+				'tourID'                => $details->tour_id,
+				'tourName'              => $details->tour_name,
+				'tourCode'              => $details->tour_code,
+				'tourNextBookableDate'  => $details->next_bookable_date,
+				'tourLastBookableDate'  => $details->last_bookable_date,
+				'tourImage'             => $details->images->image->url,
+				'tourStartTime'         => $details->start_time,
+				'tourEndTime'           => $details->end_time,
+				'tourSummary'           => $details->summary,
+				'tourShortDesc'         => $details->shortdesc,
+				'tourPrice'             => html_entity_decode($details->from_price_display),
+				'bookingDataPeople'     => $details->new_booking->people_selection->rate,
+				'bookingDataDates'      => $details->new_booking->date_selection
+			];
+		}
+
+		$this->redisClient->storeItemInRedis(
+			'currentTourDetails',
+			json_encode([
+				'tourID' => (string) $details->tour_id,
+				'tourCode' => (string) $details->tour_code,
+				'tourName' => (string) $details->tour_name,
+				'tourImage' => (string) $details->images->image->url,
+			]),
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
 	}
 }

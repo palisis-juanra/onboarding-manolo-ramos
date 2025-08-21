@@ -61,24 +61,36 @@ class SessionHandlerService
 			session_unset(); // Clear session variables
 		}
 
-		// Purge all stored data in Redis
-		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentTourDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentBookingID', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('bookingConfirmationDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('componentFetchAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('departurePickAttempted', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('currentTemporaryBookingKey', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('customerDetailsSubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
-		$this->redisClient->deleteItemFromRedis('bookingIDsubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		// Redis session keys
+		$redisSessionDataKeys = [
+			'session_key',
+			'currentChannelDetails',
+			'currentTourDetails',
+			'currentChannelID',
+			'currentChannelName',
+			'currentBookingComponentDetails',
+			'currentBookingDetails',
+			'currentBookingID',
+			'bookingConfirmationDetails',
+			'bookingConfirmationData',
+			'tourConfirmationData',
+			'currentTourID',
+			'currentTourBookingDetails',
+			'currentSelectedComponentKey',
+			'componentFetchAttempted',
+			'departurePickAttempted',
+			'currentCustomerID',
+			'customerIDsubmitted',
+			'currentCustomersDetails',
+			'customerDetailsSubmitted',
+			'currentTemporaryBookingKey',
+			'bookingIDsubmitted'
+		];
+
+		// Purge all stored data in Redis for each session key
+		foreach ($redisSessionDataKeys as $key) {
+			$this->redisClient->deleteItemFromRedis($key, RedisInstanceHelper::REDIS_TYPE_STRING);
+		}
 
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
 	}

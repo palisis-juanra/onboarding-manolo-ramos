@@ -5,6 +5,8 @@ namespace Core;
 use Controllers\BookingHandlerController;
 use Controllers\BookingListController;
 use Controllers\ChannelListController;
+use Controllers\CustomerListController;
+use Controllers\CustomerViewController;
 use Controllers\LoginHandlerController;
 use Controllers\TourListController;
 use Controllers\TourViewController;
@@ -17,8 +19,10 @@ class ControllerFactory
 	public const TOUR_VIEW_CONTROLLER = 'tourViewController';
 	public const BOOKING_HANDLER_CONTROLLER = 'bookingController';
 	public const BOOKING_LIST_CONTROLLER = 'bookingListController';
+	public const CUSTOMER_LIST_CONTROLLER = 'customerListController';
+	public const CUSTOMER_VIEW_CONTROLLER = 'customerViewController';
 
-	private $controllerDependencies;
+	private array $controllerDependencies;
 
 	public function __construct(array $controllerDependencies) 
 	{
@@ -74,7 +78,19 @@ class ControllerFactory
 				$this->controllerDependencies['templateRenderer'],
 				$this->controllerDependencies['errorHandler']
 			),
-			default => throw new \Exception("Controller '$controllerName' not found."),
+			self::CUSTOMER_LIST_CONTROLLER => new CustomerListController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			self::CUSTOMER_VIEW_CONTROLLER => new CustomerViewController(
+				$this->controllerDependencies['tourCMS'],
+				$this->controllerDependencies['redisClient'],
+				$this->controllerDependencies['templateRenderer'],
+				$this->controllerDependencies['errorHandler']
+			),
+			default => throw new \Exception("Controller '$controllerName' not found.")
 		};
 	}
 }

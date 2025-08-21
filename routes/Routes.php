@@ -176,6 +176,33 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
+		'/customers' => [
+			'GET' => [
+				'handler' => 'customerListControllerHandler',
+				'controller' => 'customerListController',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => true
+			]
+		],
+		'/customers/searchCustomerByID' => [
+			'POST' => [
+				'handler' => 'customerListControllerHandler',
+				'controller' => 'customerListController',
+				'method' => 'POST',
+				'action' => 'searchCustomerByID',
+				'requiresLogIn' => true
+			]
+		],
+		'/customer/showCustomer' => [
+			'GET' => [
+				'handler' => 'customerViewControllerHandler',
+				'controller' => 'customerViewController',
+				'method' => 'GET',
+				'action' => 'show',
+				'requiresLogIn' => true
+			]
+		],
 	];
 
 	/**

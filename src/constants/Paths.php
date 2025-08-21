@@ -18,4 +18,7 @@ class Paths
 	// Booking process paths
 	public const string CREATE_BOOKING = '/tourList/tourView/createBooking/';
 	public const string BOOKING_CONFIRMATION = '/tourList/tourView/bookingConfirmation/';
+	
+	// Customer paths
+	public const string CUSTOMER_LIST = '/customers/';
 }

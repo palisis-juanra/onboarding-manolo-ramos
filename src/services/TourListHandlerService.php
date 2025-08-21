@@ -4,10 +4,11 @@ namespace Services;
 
 use Constants\ErrorCodes;
 use Constants\Paths;
+use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
-use TourCMS\Utils\TourCMS;
+use SimpleXMLElement;
 
 class TourListHandlerService 
 {
@@ -23,7 +24,7 @@ class TourListHandlerService
 	private $totalTourCount;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
+		\TourCMS\Utils\TourCMS 	$tourCMSclient,
 		RedisService 			$redisClient, 
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler
@@ -54,7 +55,7 @@ class TourListHandlerService
 		}
 
 		$this->templateRenderer->renderTemplate(
-			'tours/tourListPage',
+			Templates::TOUR_LIST_PAGE,
 			[
 				'toursTemplateData' => $this->toursTemplateData,
 				'channelName' => $this->currentChannelDetails['channelName'],
@@ -85,7 +86,17 @@ class TourListHandlerService
 
 	private function retrieveTourList(): void
 	{
-		$channelID = $this->currentChannelDetails['channelID'];
+		if (empty($this->currentChannelDetails['channelID'])){
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::SESS_NO_CHANNEL_ID)
+			);
+
+			exit;
+			
+		} else {
+			$channelID = $this->currentChannelDetails['channelID'];
+		}
+		
 
 		// TODO: better explain this asignation using variables instead of direct values
 		$queryString = $this->buildQuery(30, 1, 0, 'PT');
@@ -104,28 +115,28 @@ class TourListHandlerService
 		}
 	}
 
-	private function buildTourListTemplateData(object $tourList): void
+	private function buildTourListTemplateData(SimpleXMLElement $tourList): void
 	{
-		if (isset($tourList->tour)) {
-			$this->totalTourCount = (string) $tourList->total_tour_count; 
-			foreach($tourList->tour as $tour) {
-				$this->toursTemplateData[] = [
-					'tourID' => $tour->tour_id ?? '',
-					'tourName' => $tour->tour_name ?? '',
-					'location' => $tour->location ? html_entity_decode($tour->location) : '',
-					'tourCode' => $tour->tour_code ?? '',
-					'shortDescription' => $tour->shortdesc ?? '',
-					'thumbnailImage' => $tour->thumbnail_image ?? '',
-					'hasSale' => $tour->has_sale ?? '',
-					'lastUpdated' => $tour->descriptions_last_updated ?? '',
-					'channelId' => $tour->channel_id ?? '',
-					'fromPrice' => $tour->from_price_display ?? ''
-				];
-			}
-		} else {
+		if (empty($tourList->tour)  || $tourList->error != 'OK') {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::NO_CHANNEL_TOUR_DATA)
 			);
+		}
+
+		$this->totalTourCount = (string) $tourList->total_tour_count;
+		foreach($tourList->tour as $tour) {
+			$this->toursTemplateData[] = [
+				'tourID' 	        => $tour->tour_id ?? '',
+				'tourName' 	        => $tour->tour_name ?? '',
+				'location' 	        => $tour->location ? html_entity_decode($tour->location) : '',
+				'tourCode'          => $tour->tour_code ?? '',
+				'shortDescription'  => $tour->shortdesc ?? '',
+				'thumbnailImage'    => $tour->thumbnail_image ?? '',
+				'hasSale'           => $tour->has_sale ?? '',
+				'lastUpdated'       => $tour->descriptions_last_updated ?? '',
+				'channelId'         => $tour->channel_id ?? '',
+				'fromPrice'         => $tour->from_price_display ?? ''
+			];
 		}
 	}
 
