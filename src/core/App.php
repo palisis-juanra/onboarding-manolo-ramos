@@ -34,14 +34,12 @@ class App
 		$this->templateRenderer = TemplateRendererService::getInstance($envConfig['project']);
 		$this->redisClient = RedisInstanceHelper::getInstance($envConfig['redis']);
 
-		// Initialize Session Handler
 		$this->sessionHandlerController = new SessionHandlerController(
 			$this->redisClient,
 			$this->templateRenderer,
 			$envConfig['session']
 		);
 
-		// Initialize Error Handler
 		$this->errorHandlerController = new ErrorHandlerController(
 			$this->templateRenderer
 		);
@@ -55,24 +53,20 @@ class App
 			'redisClient' => $this->redisClient
 		];
 
-		// Pass on the controller dependencies to the controller factory 
 		$this->controllerFactory = new ControllerFactory($this->controllerDependencies);
 
-		// Initialize Router
 		$this->router = new Router(
 			$this->sessionHandlerController,
 			$this->errorHandlerController
 		);
 	}
 
-	// Serves as the main entrypoint for the application
 	public function run()
 	{
 		// Evaluate the route that is currently being accessed and retrieve its details
 		$this->router->dispatch();
 		$routeInfo = $this->router->getRouteDetails();
-		
-		// If routeInfo is provided as empty or there's no valid controller reference, show the error page
+
 		if (empty($routeInfo) || empty($routeInfo['controller'])){
 			return;
 		}

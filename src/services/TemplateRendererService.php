@@ -67,7 +67,7 @@ class TemplateRendererService
 		try {
 			echo $this->mustache->render($templateName, $templateData);
 		} catch (Mustache_Exception_UnknownTemplateException $e) {
-			echo $this->mustache->render('common/404', $data);
+			echo $this->mustache->render('_common/error/errorPage', $data);
 		}
 	}
 

@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Constants\Paths;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
@@ -38,10 +39,10 @@ class SessionHandlerService
 	{
 		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			// If a session key exists, redirect to the home page or dashboard
-			RedirectionHelper::doRedirection('/dashboard/');
+			RedirectionHelper::doRedirection(Paths::DASHBOARD);
 		} else {
 			$this->createSession();
-			RedirectionHelper::doRedirection('/dashboard/');
+			RedirectionHelper::doRedirection(Paths::DASHBOARD);
 		}
 	}
 
@@ -63,9 +64,12 @@ class SessionHandlerService
 		// Purge all stored data in Redis
 		$this->redisClient->deleteItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentTourDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelID', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentChannelName', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentBookingComponentDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('currentBookingID', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('bookingConfirmationDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentTourID', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentTourBookingDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentSelectedComponentKey', RedisInstanceHelper::REDIS_TYPE_STRING);
@@ -74,6 +78,7 @@ class SessionHandlerService
 		$this->redisClient->deleteItemFromRedis('currentCustomersDetails', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('currentTemporaryBookingKey', RedisInstanceHelper::REDIS_TYPE_STRING);
 		$this->redisClient->deleteItemFromRedis('customerDetailsSubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
+		$this->redisClient->deleteItemFromRedis('bookingIDsubmitted', RedisInstanceHelper::REDIS_TYPE_STRING);
 
 		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
 	}

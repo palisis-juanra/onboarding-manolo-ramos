@@ -50,10 +50,37 @@ class Routes
 				'requiresLogIn' => false
 			]
 		],
+		'/bookings' => [
+			'GET' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => true
+			]
+		],
+		'/bookings/searchBookingByID' => [
+			'POST' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'POST',
+				'action' => 'searchBookingByID',
+				'requiresLogIn' => true
+			]
+		],
+		'/bookings/showBooking' => [
+			'GET' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'GET',
+				'action' => 'show',
+				'requiresLogIn' => true
+			]
+		],
 		'/dashboard' => [
 			'GET' => [
 				'handler' => 'handleChannelListController',
-				'controller' => 'channelList',
+				'controller' => 'channelListController',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => true
@@ -62,7 +89,7 @@ class Routes
 		'/dashboard/pickChannel' => [
 			'POST' => [
 				'handler' => 'handleChannelListController',
-				'controller' => 'channelList',
+				'controller' => 'channelListController',
 				'method' => 'POST',
 				'action' => 'store',
 				'requiresLogIn' => true
@@ -71,7 +98,7 @@ class Routes
 		'/tourList' => [
 			'GET' => [
 				'handler' => 'handleTourListController',
-				'controller' => 'tourList',
+				'controller' => 'tourListController',
 				'method' => 'GET',
 				'action' => 'index',
 				'requiresLogIn' => true
@@ -80,7 +107,7 @@ class Routes
 		'/tourList/pickTour' => [
 			'POST' => [
 				'handler' => 'handleTourListController',
-				'controller' => 'tourList',
+				'controller' => 'tourListController',
 				'method' => 'POST',
 				'action' => 'store',
 				'requiresLogIn' => true
@@ -89,7 +116,7 @@ class Routes
 		'/tourList/tourView' => [
 			'GET' => [
 				'handler' => 'handleTourViewController',
-				'controller' => 'tourView',
+				'controller' => 'tourViewController',
 				'method' => 'GET',
 				'action' => 'show',
 				'requiresLogIn' => true
@@ -98,9 +125,27 @@ class Routes
 		'/tourList/tourView/pickBookingDetails' => [
 			'POST' => [
 				'handler' => 'handleTourViewController',
-				'controller' => 'tourView',
+				'controller' => 'tourViewController',
 				'method' => 'POST',
 				'action' => 'storeBookingDetails',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView/pickDeparture' => [
+			'POST' => [
+				'handler' => 'handleTourViewController',
+				'controller' => 'tourViewController',
+				'method' => 'POST',
+				'action' => 'storeDepartureDetails',
+				'requiresLogIn' => true
+			]
+		],
+		'/tourList/tourView/submitCustomerDetails' => [
+			'POST' => [
+				'handler' => 'handleTourViewController',
+				'controller' => 'tourViewController',
+				'method' => 'POST',
+				'action' => 'storeCustomerDetails',
 				'requiresLogIn' => true
 			]
 		],
@@ -110,24 +155,6 @@ class Routes
 				'controller' => 'bookingController',
 				'method' => 'GET',
 				'action' => 'checkTourAvailability',
-				'requiresLogIn' => true
-			]
-		],
-		'/tourList/tourView/pickDeparture' => [
-			'POST' => [
-				'handler' => 'handleTourViewController',
-				'controller' => 'tourView',
-				'method' => 'POST',
-				'action' => 'storeDepartureDetails',
-				'requiresLogIn' => true
-			]
-		],
-		'/tourList/tourView/submitCustomerDetails' => [
-			'POST' => [
-				'handler' => 'handleTourViewController',
-				'controller' => 'tourView',
-				'method' => 'POST',
-				'action' => 'storeCustomerDetails',
 				'requiresLogIn' => true
 			]
 		],
@@ -145,7 +172,7 @@ class Routes
 				'handler' => 'handleBookingHandlerController',
 				'controller' => 'bookingController',
 				'method' => 'GET',
-				'action' => 'commitBooking',
+				'action' => 'confirmBooking',
 				'requiresLogIn' => true
 			]
 		],

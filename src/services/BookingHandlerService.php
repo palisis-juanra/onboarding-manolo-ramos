@@ -2,11 +2,13 @@
 
 namespace Services;
 
+use Constants\ErrorCodes;
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 use SimpleXMLElement;
-use SimpleXMLObject;
+
 use TourCMS\Utils\TourCMS;
 
 class BookingHandlerService 
@@ -50,7 +52,6 @@ class BookingHandlerService
 	 */
 	public function checkTourAvailability(): void
 	{
-		
 		$currentTourBookingDetails = json_decode(
 			$this->redisClient->getItemFromRedis(
 				'currentTourBookingDetails', 
@@ -60,7 +61,7 @@ class BookingHandlerService
 
 		if (empty($currentTourBookingDetails)) {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('EMPTY_TOUR_BOOKING_DATA')
+				$this->errorHandler->getErrorMessage(ErrorCodes::EMPTY_TOUR_BOOKING_DATA)
 		);
 
 		} else {
@@ -78,22 +79,19 @@ class BookingHandlerService
 				count($availabilityQueryResult->available_components->component) > 0
 			) {
 				$retrievedBookingComponents = [];
-
-				foreach ($availabilityQueryResult->available_components->component as $component)
-				{
+				foreach ($availabilityQueryResult->available_components->component as $component) {
 					$retrievedBookingComponents = [
 						'componentKey' => (string) $component->component_key,
 						'dateCode' => (string) $component->date_code,
 						'startDate' => (string) $component->start_date,
 						'endDate' => (string) $component->end_date,
-						'dateType' => (string) ucfirst($component->date_type),
-						'note' => (string) ucfirst($component->note),
-						'totalPrice' => (string) html_entity_decode($component->total_price_display)
+						'dateType' => ucfirst($component->date_type),
+						'note' => ucfirst($component->note),
+						'totalPrice' => html_entity_decode($component->total_price_display)
 					];
 				}
 
 			} else {
-				
 				$retrievedBookingComponents = [];
 			}
 
@@ -103,7 +101,7 @@ class BookingHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/');
+			RedirectionHelper::doRedirection(Paths::TOUR_VIEW);
 		}
 	}
 
@@ -132,10 +130,6 @@ class BookingHandlerService
 
 		if ($bookingResult->error == "OK") {
 			$tempBookingKey = (string) $bookingResult->booking->booking_id;
-			//$b = (string) $bookingResult->booking->available_component_count;
-			//$c = (string) $bookingResult->booking->unavailable_component_count;
-			$this->commitBooking($tempBookingKey);
-
 			// Store the temporary booking key in Redis
 			$this->redisClient->storeItemInRedis(
 				'currentTemporaryBookingKey', 
@@ -143,27 +137,104 @@ class BookingHandlerService
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
-			RedirectionHelper::doRedirection('/tourList/tourView/bookingConfirmation');
+			$this->commitBooking($tempBookingKey);
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('ERROR_CREATING_TEMPORAL_BOOKING')
+				$this->errorHandler->getErrorMessage(ErrorCodes::ERROR_CREATING_TEMPORAL_BOOKING)
 			);
 		}
 	}
 
-	public function commitBooking(string $tempBookingKey): void
+	/**
+	 * Commits the booking using the temporary booking key.
+	 *
+	 * @param string $tempBookingKey The temporary booking key to commit.
+	 * @return void
+	 */
+	private function commitBooking(string $tempBookingKey): void
 	{
 		$booking = new SimpleXMLElement('<booking />');
 		$booking->addChild('booking_id', $tempBookingKey);
 
-		$result = $tourcms->commit_new_booking($booking, $this->currentChannelDetails['channelID']);
+		$result = $this->tourCMSclient->commit_new_booking($booking, $this->currentChannelDetails['channelID']);
 
 		if($result->error == "OK") {
-			// Redirect to confirmation template
-			$result->booking->booking_id;
+			$this->redisClient->deleteItemFromRedis(
+				'currentTemporaryBookingKey', 
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			$this->redisClient->storeItemInRedis(
+				'bookingConfirmationDetails', 
+				json_encode([
+					'bookingID' => (string) $result->booking->booking_id,
+					'tourDetails' => $this->redisClient->getItemFromRedis(
+						'currentTourDetails',
+						RedisInstanceHelper::REDIS_TYPE_STRING
+					),
+					'bookingDetails' => $this->redisClient->getItemFromRedis(
+						'currentTourBookingDetails',
+						RedisInstanceHelper::REDIS_TYPE_STRING
+					),
+					'customerDetails' => $this->redisClient->getItemFromRedis(
+						'currentCustomersDetails',
+						RedisInstanceHelper::REDIS_TYPE_STRING
+					)
+				]),
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			);
+
+			RedirectionHelper::doRedirection(Paths::BOOKING_CONFIRMATION);
 		} else {
-			print "Sorry, there was a problem: " . $result->error;
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::ERROR_COMMITTING_BOOKING)
+			);
 		}
+	}
+
+	/**
+	 * Confirms the booking by retrieving the current tour details and customer data,
+	 * and preparing the confirmation data for rendering.
+	 *
+	 * @return void
+	 */
+	public function confirmBooking(): void
+	{
+		$bookingConfirmationDetails = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'bookingConfirmationDetails',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			)
+		,true);
+
+		$tourDetails = json_decode($bookingConfirmationDetails['tourDetails'] ?? '{}', true);
+		$bookingDetails = json_decode($bookingConfirmationDetails['bookingDetails'] ?? '{}', true);
+		$customerDetails = json_decode($bookingConfirmationDetails['customerDetails'] ?? '{}', true);
+
+		$bookingConfirmationData = [
+			'bookingID' => $bookingConfirmationDetails['bookingID'] ?? '',
+			'tourID' => $tourDetails['tourID'] ?? '',
+			'tourCode' => $tourDetails['tourCode'] ?? '',
+			'tourName' => $tourDetails['tourName'] ?? '',
+			'tourImage' => $tourDetails['tourImage'] ?? '',
+			'customerData' => $customerDetails,
+			'totalCustomers' => $bookingDetails['totalCustomers'] ?? 0,
+			'departureDate' => $bookingDetails['date'] ?? '',
+		];
+
+		// TODO: check if storing the booking confirmation data is necessary
+		$this->redisClient->storeItemInRedis(
+			'bookingConfirmationData',
+			json_encode($bookingConfirmationData),
+			RedisInstanceHelper::REDIS_TYPE_STRING
+		);
+
+		$this->templateRenderer->renderTemplate(
+			'bookings/bookingConfirmation',
+			[
+				'bookingConfirmationData' => $bookingConfirmationData
+			]
+		);
 	}
 
 	/**
@@ -175,32 +246,28 @@ class BookingHandlerService
 	 */
 	private function buildBookingDataObject(array $customerData, string $componentKey): SimpleXMLElement
 	{
-
 		$bookingDataObject = new SimpleXMLElement('<booking />');
 
 		// Add total customers
-
 		$bookingDataObject->addChild('total_customers', count($customerData));
 
 		// Append a container for the components to be booked
 		$components = $bookingDataObject->addChild('components');
 
-		// TODO: Loop through component data
 		// Add a component node for each item to add to the booking
 		$component = $components->addChild('component');
 
 		// "Component key" obtained via call to "Check availability"
 		$component->addChild('component_key', $componentKey);
 
-
 		// Add customer details
 		$customers = $bookingDataObject->addChild('customers');
 
 		foreach ($customerData as $customer) {
-			$customer = $customers->addChild('customer');
-			$customer->addChild('firstname', $customer['customerName']);
-			$customer->addChild('surname', $customer['customerSurname']);
-			$customer->addChild('email', $customer['customerEmail']);
+			$customerNode = $customers->addChild('customer');
+			$customerNode->addChild('firstname', $customer['customerName']);
+			$customerNode->addChild('surname', $customer['customerSurname']);
+			$customerNode->addChild('customer_email', $customer['customerEmail']);
 		}
 
 		return $bookingDataObject;
