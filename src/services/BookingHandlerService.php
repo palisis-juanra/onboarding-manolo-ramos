@@ -4,6 +4,7 @@ namespace Services;
 
 use Constants\ErrorCodes;
 use Constants\Paths;
+use Constants\Templates;
 use Controllers\ErrorHandlerController;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
@@ -204,22 +205,23 @@ class BookingHandlerService
 			$this->redisClient->getItemFromRedis(
 				'bookingConfirmationDetails',
 				RedisInstanceHelper::REDIS_TYPE_STRING
-			)
-		,true);
+			),
+			true
+		);
 
 		$tourDetails = json_decode($bookingConfirmationDetails['tourDetails'] ?? '{}', true);
 		$bookingDetails = json_decode($bookingConfirmationDetails['bookingDetails'] ?? '{}', true);
 		$customerDetails = json_decode($bookingConfirmationDetails['customerDetails'] ?? '{}', true);
 
 		$bookingConfirmationData = [
-			'bookingID' => $bookingConfirmationDetails['bookingID'] ?? '',
-			'tourID' => $tourDetails['tourID'] ?? '',
-			'tourCode' => $tourDetails['tourCode'] ?? '',
-			'tourName' => $tourDetails['tourName'] ?? '',
-			'tourImage' => $tourDetails['tourImage'] ?? '',
-			'customerData' => $customerDetails,
-			'totalCustomers' => $bookingDetails['totalCustomers'] ?? 0,
-			'departureDate' => $bookingDetails['date'] ?? '',
+			'bookingID'         => $bookingConfirmationDetails['bookingID'] ?? '',
+			'tourID'            => $tourDetails['tourID'] ?? '',
+			'tourCode'          => $tourDetails['tourCode'] ?? '',
+			'tourName'          => $tourDetails['tourName'] ?? '',
+			'tourImage'         => $tourDetails['tourImage'] ?? '',
+			'customerData'      => $customerDetails,
+			'totalCustomers'    => $bookingDetails['totalCustomers'] ?? 0,
+			'departureDate'     => $bookingDetails['date'] ?? '',
 		];
 
 		// TODO: check if storing the booking confirmation data is necessary
@@ -230,7 +232,7 @@ class BookingHandlerService
 		);
 
 		$this->templateRenderer->renderTemplate(
-			'bookings/bookingConfirmation',
+			Templates::BOOKING_CONFIRMATION,
 			[
 				'bookingConfirmationData' => $bookingConfirmationData
 			]

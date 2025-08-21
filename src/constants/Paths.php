@@ -21,4 +21,6 @@ class Paths
 	
 	// Customer paths
 	public const string CUSTOMER_LIST = '/customers/';
+	public const string CUSTOMER_EDIT = '/customers/editCustomer/';
+	public const string CUSTOMER_UPDATE_CONFIRMATION = '/customers/editCustomer/updateConfirmation/';
 }

@@ -35,7 +35,6 @@ class TourViewHandlerService
 		$this->templateRenderer = $templateRenderer;
 		$this->errorHandler = $errorHandler;
 
-		// Retrieve current channel & current tour details
 		$this->currentChannelDetails = json_decode(
 			$this->redisClient->getItemFromRedis(
 				'currentChannelDetails', 
@@ -64,30 +63,30 @@ class TourViewHandlerService
 		$hasBookingComponentData = !empty($this->bookingComponentData);
 
 		// Booking steps comprobations
-		$componentFetchAttempted = $this->redisClient->getItemFromRedis(
-			'componentFetchAttempted',
+		$isComponentFetchAttempted = $this->redisClient->getItemFromRedis(
+			'isComponentFetchAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-		$departurePickAttempted = $this->redisClient->getItemFromRedis(
-			'departurePickAttempted',
+		$isDeparturePickAttempted = $this->redisClient->getItemFromRedis(
+			'isDeparturePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
-		$customerDetailsSubmitted = $this->redisClient->getItemFromRedis(
-			'customerDetailsSubmitted',
+		$isCustomerDetailsSubmitted = $this->redisClient->getItemFromRedis(
+			'isCustomerDetailsSubmitted',
 			RedisInstanceHelper::REDIS_TYPE_STRING) === 'true';
 
 		$this->templateRenderer->renderTemplate(
 			'tours/tourViewPage',
 			[
-				'tourTemplateData' => $this->tourTemplateData,
-				'hasBookingComponentData' => $hasBookingComponentData,
-				'bookingComponentData' => $this->bookingComponentData ?: null,
-				'tourName' => $this->tourTemplateData['tourName'],
-				'channelName' => $this->currentChannelDetails['channelName'],
-				'channelLogo' => $this->currentChannelDetails['channelLogo'],
-				'componentFetchAttempted' => $componentFetchAttempted,
-				'departurePickAttempted' => $departurePickAttempted,
-				'customerDetailsSubmitted' => $customerDetailsSubmitted,
+				'tourTemplateData'          => $this->tourTemplateData,
+				'hasBookingComponentData'   => $hasBookingComponentData,
+				'bookingComponentData'      => $this->bookingComponentData ?: null,
+				'tourName'                  => $this->tourTemplateData['tourName'],
+				'channelName'               => $this->currentChannelDetails['channelName'],
+				'channelLogo'               => $this->currentChannelDetails['channelLogo'],
+				'isComponentFetchAttempted'   => $isComponentFetchAttempted,
+				'isDeparturePickAttempted'    => $isDeparturePickAttempted,
+				'isCustomerDetailsSubmitted'  => $isCustomerDetailsSubmitted,
 			]
 		);
 
@@ -99,19 +98,19 @@ class TourViewHandlerService
 
 		// Reset the component fetch attempted flag
 		$this->redisClient->deleteItemFromRedis(
-			'componentFetchAttempted',
+			'isComponentFetchAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
 		// Reset the departure pick attempted flag
 		$this->redisClient->deleteItemFromRedis(
-			'departurePickAttempted',
+			'isDeparturePickAttempted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 
 		// Reset the customer details submitted flag
 		$this->redisClient->deleteItemFromRedis(
-			'customerDetailsSubmitted',
+			'isCustomerDetailsSubmitted',
 			RedisInstanceHelper::REDIS_TYPE_STRING
 		);
 	}
@@ -127,8 +126,8 @@ class TourViewHandlerService
 	{
 		if (!empty($_POST['tourID']) || !empty($_POST['departure_date'])) {
 			$currentTourBookingDetails = [
-				'tourID' => $_POST['tourID'],
-				'date' => $_POST['departure_date'],
+				'tourID'    => $_POST['tourID'],
+				'date'      => $_POST['departure_date'],
 			];
 
 			// Check if there are any rates in the POST data
@@ -149,7 +148,6 @@ class TourViewHandlerService
 			if (!$hasRates || $totalCustomers <= 0) {
 				$this->errorHandler->index(
 					$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_RATES)
-
 				);
 				return;
 			}
@@ -162,12 +160,13 @@ class TourViewHandlerService
 
 			// Save a flag to indicate that the component fetch has been attempted
 			$this->redisClient->storeItemInRedis(
-				'componentFetchAttempted',
+				'isComponentFetchAttempted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
 
 			RedirectionHelper::doRedirection(Paths::CHECK_TOUR_AVAILABILITY);
+
 		} else {
 			$this->errorHandler->index(
 				$this->errorHandler->getErrorMessage(ErrorCodes::POST_NO_VALID_TOUR_BOOKING_DETAILS)
@@ -192,7 +191,7 @@ class TourViewHandlerService
 			);
 
 			$this->redisClient->storeItemInRedis(
-				'departurePickAttempted',
+				'isDeparturePickAttempted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);
@@ -223,6 +222,7 @@ class TourViewHandlerService
 				'customerName' => $_POST['customerName'],
 				'customerSurname' => $_POST['customerSurname'],
 				'customerEmail' => $_POST['customerEmail'],
+				'customerProfileImageID' => rand(1, 9)
 			];
 			
 			$totalCustomerNumber = json_decode(
@@ -238,6 +238,7 @@ class TourViewHandlerService
 					'customerName' => 'customer' . $i,
 					'customerSurname' => 'surname',
 					'customerEmail' => 'mail@tourcms.com',
+					'customerProfileImageID' => rand(1, 9)
 				];
 			}
 
@@ -248,7 +249,7 @@ class TourViewHandlerService
 			);
 
 			$this->redisClient->storeItemInRedis(
-				'customerDetailsSubmitted',
+				'isCustomerDetailsSubmitted',
 				'true',
 				RedisInstanceHelper::REDIS_TYPE_STRING
 			);

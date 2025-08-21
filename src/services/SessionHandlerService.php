@@ -3,15 +3,16 @@
 namespace Services;
 
 use Constants\Paths;
+use Constants\Templates;
 use Helpers\RedirectionHelper;
 use Helpers\RedisInstanceHelper;
 
 class SessionHandlerService
 {
-	private $SESSION_TTL = 1800; // 30 minutes
-	protected $redisClient;
+	private int $SESSION_TTL = 1800; // 30 minutes
+	protected RedisService $redisClient;
 
-	private $templateRenderer;
+	private TemplateRendererService $templateRenderer;
 
 	public function __construct(
 		RedisService 	        $redisClient,
@@ -30,20 +31,19 @@ class SessionHandlerService
 	/**
 	 * Handles the login request.
 	 *
-	 * This method processes the login request and redirects 
-	 * to the appropiate page depending on the outcome.
+	 * This method processes the login request and redirects
+	 * to the appropriate page depending on the outcome.
 	 *
-	 * @return bool
+	 * @return void
+	 * @throws RedisServiceException
 	 */
 	public function handleLogIn(): void
 	{
-		if ($this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
-			// If a session key exists, redirect to the home page or dashboard
-			RedirectionHelper::doRedirection(Paths::DASHBOARD);
-		} else {
+		if (!$this->redisClient->getItemFromRedis('session_key', RedisInstanceHelper::REDIS_TYPE_STRING)) {
 			$this->createSession();
-			RedirectionHelper::doRedirection(Paths::DASHBOARD);
 		}
+
+		RedirectionHelper::doRedirection(Paths::DASHBOARD);
 	}
 
 	/**
@@ -56,43 +56,46 @@ class SessionHandlerService
 	 */
 	public function handleLogOut(): void
 	{
-		// If a PHP session is active, unset
 		if (session_status() === PHP_SESSION_ACTIVE) {
-			session_unset(); // Clear session variables
+			session_unset();
 		}
 
 		// Redis session keys
 		$redisSessionDataKeys = [
 			'session_key',
-			'currentChannelDetails',
-			'currentTourDetails',
-			'currentChannelID',
-			'currentChannelName',
+			'isDeparturePickAttempted',
+			'currentTemporaryBookingKey',
+			'currentBookingID',
+			'isBookingIDsubmitted',
+			'currentSelectedComponentKey',
+			'isComponentFetchAttempted',
 			'currentBookingComponentDetails',
 			'currentBookingDetails',
-			'currentBookingID',
 			'bookingConfirmationDetails',
 			'bookingConfirmationData',
+			'currentTourBookingDetails',
+			'currentTourDetails',
 			'tourConfirmationData',
 			'currentTourID',
-			'currentTourBookingDetails',
-			'currentSelectedComponentKey',
-			'componentFetchAttempted',
-			'departurePickAttempted',
+			'currentChannelID',
+			'currentChannelDetails',
+			'currentChannelName',
 			'currentCustomerID',
-			'customerIDsubmitted',
+			'isCustomerEditAttempted',
+			'isCustomerEditCompleted',
+			'isCustomerIDsubmitted',
+			'updatedCustomerData',
 			'currentCustomersDetails',
-			'customerDetailsSubmitted',
-			'currentTemporaryBookingKey',
-			'bookingIDsubmitted'
+			'isCustomerDetailsSubmitted',
+			'currentCustomerEditDetails'
 		];
 
-		// Purge all stored data in Redis for each session key
+		// Purge all stored data in Redis
 		foreach ($redisSessionDataKeys as $key) {
 			$this->redisClient->deleteItemFromRedis($key, RedisInstanceHelper::REDIS_TYPE_STRING);
 		}
 
-		$this->templateRenderer->renderTemplate('_common/logoutPage', []);
+		$this->templateRenderer->renderTemplate(Templates::LOGOUT, []);
 	}
 
 	/**

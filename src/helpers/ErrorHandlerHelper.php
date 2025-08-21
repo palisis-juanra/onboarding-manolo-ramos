@@ -12,7 +12,7 @@ class ErrorHandlerHelper
 			ErrorCodes::LOGIN_REQUIRED => 'You need to be logged in order to access this page'
 		],
 		ErrorCodes::ROUTER => [
-			ErrorCodes::ROUTE_NOT_FOUND => '404 - The route being accessed does not exist',
+			ErrorCodes::ROUTE_NOT_FOUND => '404 - The route being accessed does not exist or is being accesed with an incorrect HTTP method',
 			ErrorCodes::MISSING_ROUTE_DATA => 'The route is missing its handler function or access method'
 		],
 		ErrorCodes::CHANNELS => [
@@ -52,7 +52,10 @@ class ErrorHandlerHelper
 		],
 		ErrorCodes::CUSTOMERS => [
 			ErrorCodes::NO_CUSTOMERS_DATA => 'No customer data available for the selected ID',
-		],
+			ErrorCodes::POST_ERROR_UPDATING_CUSTOMER => 'There was an error updating the customer details',
+			ErrorCodes::POST_NO_CUSTOMER_ID => 'There was an error handling the selected Customer ID',
+			ErrorCodes::POST_NO_MATCHING_STORED_CUSTOMER_ID => 'Customer ID mismatch: posted CustomerID does not match stored CustomerID.'
+		]
 	];
 
 

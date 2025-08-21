@@ -34,4 +34,9 @@ class CustomerListController
 	{
 		$this->customerListHandler->submitCustomerID();
 	}
+
+	public function submitCustomerEditData(): void
+	{
+		$this->customerListHandler->submitCustomerEditData();
+	}
 }

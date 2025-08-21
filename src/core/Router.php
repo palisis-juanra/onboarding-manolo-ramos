@@ -13,12 +13,12 @@ use Routes\Routes;
 class Router
 {
 	// Controller instances
-	private $sessionHandler;
-	private $errorHandler;
+	private SessionHandlerController $sessionHandler;
+	private ErrorHandlerController $errorHandler;
 
-	private $routes;
-	private $routeNames;
-	private $routeDetails;
+	private array $routes;
+	private array $routeNames;
+	private array $routeDetails;
 
 	public function __construct(
 		SessionHandlerController 	$sessionHandlerController,
@@ -87,8 +87,7 @@ class Router
 				$this->$handlerFunction(
 					$route, 
 					$currentRouteDetails,
-					$routeDefinedMethod,
-					$httpRequestMethodUsed
+					$routeDefinedMethod
 				);
 
 				return;
@@ -106,13 +105,14 @@ class Router
 	 */
 	public function getRouteDetails(): array
 	{
-		return isset($this->routeDetails) ? $this->routeDetails : [];
+		return $this->routeDetails ?? [];
 	}
 
 	/**
-	 * Stores route details for the current accessed endpoint. 
+	 * Stores route details for the current accessed endpoint.
 	 *
-	 * @return array routeInfo
+	 * @param array $routeData
+	 * @return void
 	 */
 	private function setRouteDetails(array $routeData): void
 	{
@@ -125,13 +125,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleSessionHandlerController(
 		string 	$route, 
 		array 	$routeData,
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed,
+		string 	$routeMethod
 	): void
 	{
 		// Routes that don't require session verification
@@ -189,13 +187,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleChannelListController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
@@ -247,18 +243,17 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleTourListController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/tourList']:
+				case $this->routeNames['/tourList/tourView']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
@@ -275,20 +270,6 @@ class Router
 				case $this->routeNames['/tourList/pickTour']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
-							$this->setRouteDetails($routeData)
-						:
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-
-				case $this->routeNames['/tourList/tourView']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
@@ -319,13 +300,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleTourViewController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
@@ -344,39 +323,13 @@ class Router
 
 					break;
 
+				case $this->routeNames['/tourList/tourView/pickDeparture']:
 				case $this->routeNames['/tourList/tourView/pickBookingDetails']:
+				case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData) 
 						: 
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-
-				case $this->routeNames['/tourList/tourView/pickDeparture']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::POST ?
-							$this->setRouteDetails($routeData)
-						:
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-
-				case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::POST ?
-							$this->setRouteDetails($routeData)
-						:
 							$this->errorHandler->index(
 								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
@@ -405,13 +358,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function customerListControllerHandler(
 		string 	$route,
 		array 	$routeData,
-		string 	$routeMethod,
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
@@ -431,10 +382,54 @@ class Router
 					break;
 				
 					case $this->routeNames['/customers/searchCustomerByID']:
+					case $this->routeNames['/customers/submitCustomerEditData']:
+						if ($this->sessionHandler->checkIfSessionIsActive()) {
+							$routeMethod === HttpRequestsHelper::POST ?
+								$this->setRouteDetails($routeData)
+							:
+								$this->errorHandler->index(
+									$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+								);
+						} else {
+							RedirectionHelper::doRedirection(Paths::LOGIN);
+						}
+
+					break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}
+	}
+
+	/**
+	 * Handles requests to the Customer Edit Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 */
+	private function customerEditControllerHandler(
+		string 	$route,
+		array 	$routeData,
+		string 	$routeMethod
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/customers/editCustomer']:
+				case $this->routeNames['/customers/editCustomer/updateConfirmation']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::POST ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData)
-						:
+							:
 							$this->errorHandler->index(
 								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
@@ -443,6 +438,20 @@ class Router
 					}
 
 					break;
+
+				case $this->routeNames['/customers/editCustomer/update']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData)
+							:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+				break;
 
 				default:
 					$this->errorHandler->index(
@@ -463,31 +472,16 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleBookingListController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{			
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/bookings']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::GET ?
-							$this->setRouteDetails($routeData)
-						:
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-				
 				case $this->routeNames['/bookings/showBooking']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
@@ -501,10 +495,10 @@ class Router
 					}
 
 					break;
-				
+
 				case $this->routeNames['/bookings/searchBookingByID']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::GET ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
@@ -514,7 +508,7 @@ class Router
 						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
-					break;
+				break;
 
 				default:
 					$this->errorHandler->index(
@@ -535,46 +529,18 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleBookingHandlerController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
-				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::GET ?
-							$this->setRouteDetails($routeData) 
-						: 
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-				
 				case $this->routeNames['/tourList/tourView/createBooking']:
-					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::GET ?
-							$this->setRouteDetails($routeData) 
-						: 
-							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
-							);
-					} else {
-						RedirectionHelper::doRedirection(Paths::LOGIN);
-					}
-
-					break;
-				
 				case $this->routeNames['/tourList/tourView/bookingConfirmation']:
+				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
@@ -608,13 +574,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleLoginHandlerController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		switch ($route) {
@@ -657,13 +621,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleErrorHandlerController(
-		string 	$route, 
+		string 	$route,
 		array 	$routeData,
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed,
+		string 	$routeMethod
 	): void
 	{
 		if ($this->routeNames['/error'] == $route) {
@@ -676,7 +638,7 @@ class Router
 	/**
 	 * Parses the URL to determine the complete request path.
 	 *
-	 * @param string $url The URL to parse.
+	 * @param string $currentURL The URL to parse.
 	 * @return string The complete endpoint path.
 	 */
 	private function parseURL(string $currentURL): string
@@ -691,8 +653,6 @@ class Router
 		$pathSegments = array_slice($pathSegments, 1);
 
 		// Build the path before returning it
-		$requestPath = '/' . implode('/', $pathSegments);
-
-		return $requestPath;
+		return '/' . implode('/', $pathSegments);
 	}
 }

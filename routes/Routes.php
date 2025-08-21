@@ -194,15 +194,42 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
-		'/customer/showCustomer' => [
-			'GET' => [
-				'handler' => 'customerViewControllerHandler',
-				'controller' => 'customerViewController',
-				'method' => 'GET',
-				'action' => 'show',
+		'/customers/submitCustomerEditData' => [
+			'POST' => [
+				'handler' => 'customerListControllerHandler',
+				'controller' => 'customerListController',
+				'method' => 'POST',
+				'action' => 'submitCustomerEditData',
 				'requiresLogIn' => true
 			]
 		],
+		'/customers/editCustomer' => [
+			'GET' => [
+				'handler' => 'customerEditControllerHandler',
+				'controller' => 'customerEditController',
+				'method' => 'GET',
+				'action' => 'index',
+				'requiresLogIn' => true
+			]
+		],
+		'/customers/editCustomer/update' => [
+			'POST' => [
+				'handler' => 'customerEditControllerHandler',
+				'controller' => 'customerEditController',
+				'method' => 'POST',
+				'action' => 'update',
+				'requiresLogIn' => true
+			]
+		],
+		'/customers/editCustomer/updateConfirmation' => [
+			'GET' => [
+				'handler' => 'customerEditControllerHandler',
+				'controller' => 'customerEditController',
+				'method' => 'GET',
+				'action' => 'confirmUpdate',
+				'requiresLogIn' => true
+			]
+		]
 	];
 
 	/**

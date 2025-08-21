@@ -22,9 +22,9 @@
 				</div>
 				<div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
 					{{^ hasBookingComponentData}}
-						{{^ componentFetchAttempted}}
-							{{^ departurePickAttempted}}
-								{{^ customerDetailsSubmitted}}
+						{{^ isComponentFetchAttempted}}
+							{{^ isDeparturePickAttempted}}
+								{{^ isCustomerDetailsSubmitted}}
 									{{# tourTemplateData}}
 										<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex">
 											<!-- First Side: Tour Details -->
@@ -81,12 +81,12 @@
 											</div>
 										</div>
 									{{/ tourTemplateData}}
-								{{/ customerDetailsSubmitted}}
-								{{# customerDetailsSubmitted}}
+								{{/ isCustomerDetailsSubmitted}}
+								{{# isCustomerDetailsSubmitted}}
 									<div>Customer Data / Tour Booking confirmed placeholder</div>
-								{{/ customerDetailsSubmitted}}
-							{{/ departurePickAttempted}}
-							{{# departurePickAttempted}}
+								{{/ isCustomerDetailsSubmitted}}
+							{{/ isDeparturePickAttempted}}
+							{{# isDeparturePickAttempted}}
 								<div class="bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-4xl flex items-center justify-center flex-col p-10">
 									<h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Customer details</h2>
 									<div class="max-w-md w-full mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
@@ -146,13 +146,13 @@
 										</form>
 									</div>
 								</div>
-							{{/ departurePickAttempted}}
-						{{/ componentFetchAttempted}}
-						{{# componentFetchAttempted}}
+							{{/ isDeparturePickAttempted}}
+						{{/ isComponentFetchAttempted}}
+						{{# isComponentFetchAttempted}}
 							<div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
 								<p class="text-gray-600 text-center">No available components found for this tour.</p>
 							</div>
-						{{/ componentFetchAttempted}}
+						{{/ isComponentFetchAttempted}}
 					{{/ hasBookingComponentData}}
 
 					{{# hasBookingComponentData}}

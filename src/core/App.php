@@ -7,6 +7,8 @@ use Controllers\SessionHandlerController;
 use Services\TourCMSClientService;
 use Services\TemplateRendererService;
 use Helpers\RedisInstanceHelper;
+use Exception;
+
 class App
 {
 	// Core
@@ -60,7 +62,7 @@ class App
 		);
 	}
 
-	public function run()
+	public function run(): void
 	{
 		// Evaluate the route that is currently being accessed and retrieve its details
 		$this->router->dispatch();
@@ -71,21 +73,21 @@ class App
 		}
 
 		try {
-			// Generate an instance of the controller associated to that route
+			// Generate an instance of the controller associated to the current route
 			$this->controllerInstance = $this->controllerFactory->create($routeInfo['controller']);
 
 			if (
 				isset($routeInfo['action']) &&
 				method_exists($this->controllerInstance, $routeInfo['action'])
 			) {
-				// Run the associated function 
+				// Run the associated route function
 				$this->controllerInstance->{$routeInfo['action']}();
 			} else {
 				$this->errorHandlerController->index(
 					$this->errorHandlerController->getErrorMessage('INCORRECT_ROUTE_ACTION')
 				);
 			}
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->errorHandlerController->index($e);
 		}
 	}
