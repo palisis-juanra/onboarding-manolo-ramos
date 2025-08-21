@@ -21,6 +21,7 @@ class Templates
 	// Bookings
 	public const string BOOKINGS_LIST = 'bookings/bookingsListPage';
 	public const string BOOKING_CONFIRMATION = 'bookings/bookingConfirmation';
+	public const string BOOKING_CANCELLATION = 'bookings/bookingCancellation';
 
 	// Customers
 	public const string CUSTOMER_LIST = 'customers/customerListPage';

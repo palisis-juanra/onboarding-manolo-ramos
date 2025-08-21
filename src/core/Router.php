@@ -69,7 +69,7 @@ class Router
 				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
 				foreach ($routeData as $method => $details) {
 					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
-					if (HttpRequestsHelper::compareRouteHttpMethodUsed( $method, $httpRequestMethodUsed)) {
+					if (HttpRequestsHelper::compareRouteHttpMethodUsed($method, $httpRequestMethodUsed)) {
 						$handlerFunction = $details['handler'];
 						$routeDefinedMethod = $details['method'];
 						$currentRouteDetails = $details;
@@ -497,6 +497,7 @@ class Router
 					break;
 
 				case $this->routeNames['/bookings/searchBookingByID']:
+				case $this->routeNames['/bookings/submitCancelledBookingID']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
@@ -543,6 +544,20 @@ class Router
 				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				case $this->routeNames['/bookings/cancelBooking']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(

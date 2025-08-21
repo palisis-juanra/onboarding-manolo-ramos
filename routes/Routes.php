@@ -68,6 +68,15 @@ class Routes
 				'requiresLogIn' => true
 			]
 		],
+		'/bookings/submitCancelledBookingID' => [
+			'POST' => [
+				'handler' => 'handleBookingListController',
+				'controller' => 'bookingListController',
+				'method' => 'POST',
+				'action' => 'submitCancelledBookingID',
+				'requiresLogIn' => true
+			]
+		],
 		'/bookings/showBooking' => [
 			'GET' => [
 				'handler' => 'handleBookingListController',
@@ -173,6 +182,15 @@ class Routes
 				'controller' => 'bookingController',
 				'method' => 'GET',
 				'action' => 'confirmBooking',
+				'requiresLogIn' => true
+			]
+		],
+		'/bookings/cancelBooking' => [
+			'POST' => [
+				'handler' => 'handleBookingHandlerController',
+				'controller' => 'bookingController',
+				'method' => 'POST',
+				'action' => 'cancelBooking',
 				'requiresLogIn' => true
 			]
 		],

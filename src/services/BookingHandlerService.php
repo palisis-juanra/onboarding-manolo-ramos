@@ -221,7 +221,7 @@ class BookingHandlerService
 			'tourImage'         => $tourDetails['tourImage'] ?? '',
 			'customerData'      => $customerDetails,
 			'totalCustomers'    => $bookingDetails['totalCustomers'] ?? 0,
-			'departureDate'     => $bookingDetails['date'] ?? '',
+			'departureDate'     => $bookingDetails['date'] ?? ''
 		];
 
 		// TODO: check if storing the booking confirmation data is necessary
@@ -237,6 +237,49 @@ class BookingHandlerService
 				'bookingConfirmationData' => $bookingConfirmationData
 			]
 		);
+	}
+
+	/**
+	 * Cancels the booking by retrieving the booking cancellation details from Redis
+	 * and rendering the cancellation confirmation page.
+	 *
+	 * @return void
+	 */
+	public function cancelBooking(): void
+	{
+		$bookingCancellationData = json_decode(
+			$this->redisClient->getItemFromRedis(
+				'bookingCancellationData',
+				RedisInstanceHelper::REDIS_TYPE_STRING
+			),
+			true
+		);
+
+		$bookingConfirmationData = [
+			'bookingID'         => $bookingCancellationData['bookingID'] ?? '',
+			'tourID'            => $bookingCancellationData['tourID'] ?? ''
+		];
+
+		$this->templateRenderer->renderTemplate(
+			Templates::BOOKING_CANCELLATION,
+			[
+				'bookingConfirmationData' => $bookingConfirmationData
+			]
+		);
+	}
+
+	private function buildCancelBookingDataObject(array $bookingCancellationData): SimpleXMLElement
+	{
+		$bookingCancellationDataObject = new SimpleXMLElement('<booking />');
+
+		// Add booking ID
+		$bookingCancellationDataObject->addChild('booking_id', $bookingCancellationData['bookingID']);
+
+		// Add tour ID
+		$bookingCancellationDataObject->addChild('note', 'Booking created accidentally');
+		$bookingCancellationDataObject->addChild('tour_id', $bookingCancellationData['tourID']);
+
+		return $bookingCancellationDataObject;
 	}
 
 	/**
