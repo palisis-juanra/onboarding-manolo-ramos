@@ -5,14 +5,13 @@ namespace Controllers;
 use Services\RedisService;
 use Services\TemplateRendererService;
 use Services\TourListHandlerService;
-use TourCMS\Utils\TourCMS;
 
 class TourListController 
 {
-	protected $tourListHandler;
+	protected TourListHandlerService $tourListHandler;
 
 	public function __construct(
-		TourCMS 				$tourCMSclient, 
+		\TourCMS\Utils\TourCMS  $tourCMSclient,
 		RedisService 			$redisClient, 
 		TemplateRendererService $templateRenderer,
 		ErrorHandlerController 	$errorHandler

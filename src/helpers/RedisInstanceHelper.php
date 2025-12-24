@@ -3,19 +3,24 @@
 namespace Helpers;
 
 use Services\RedisService;
+use Services\RedisServiceException;
 
 class RedisInstanceHelper extends RedisService
 {
 	protected $redis;
-	private static $instance;
+	private static ?RedisInstanceHelper $instance = null;
 
-	private function __construct(array $redisConfig) 
+	/**
+	 * @throws RedisServiceException
+	 */
+	private function __construct(array $redisConfig)
 	{
 		parent::__construct(
 			$redisConfig['REDIS_HOST'],
 			$redisConfig['REDIS_PORT'],
 			$redisConfig['REDIS_PASSWORD']
 		);
+
 		$this->redis = new RedisService(
 			$redisConfig['REDIS_HOST'],
 			$redisConfig['REDIS_PORT'],
@@ -25,13 +30,12 @@ class RedisInstanceHelper extends RedisService
 
 	/**
 	 * Get an instance of the Redis Service (singleton pattern)
+	 * @throws RedisServiceException
 	 */
-	public static function getInstance(array $redisConfig) 
+	public static function getInstance(array $redisConfig): RedisService
 	{
 		if (self::$instance === null) {
-			self::$instance = new self(
-				$redisConfig
-			);
+			self::$instance = new self($redisConfig);
 		}
 
 		return self::$instance->redis;

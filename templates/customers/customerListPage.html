@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{> _partials/_header }}
+	<body class="h-screen flex justify-center items-center bg-gray-100">
+		<main class="h-screen w-full">
+			<div style="margin-top: 100px; padding-bottom: 100px;" class="container mx-auto my-10">
+				<!-- Breadcrumbs -->
+				<div class="mb-4">
+					<ul class="flex items-start justify-start gap-2">
+						<li class="hover:underline">
+							<a href="{{BASE_URL}}/dashboard">Channel Selection</a>
+						</li>
+						<li> > </li>
+						<li class="underline">
+							<a href="{{BASE_URL}}/customers">Customers</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- Title and channel info -->
+				{{^ isCustomerIDsubmitted}}
+					<div style="margin-top: 5%;" class="flex justify-center flex-col items-center">
+						<h1 class="text-4xl font-bold text-gray-900 text-center mb-10">
+							Search Customers
+						</h1>
+						<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+							<form action="{{BASE_URL}}/customers/searchCustomerByID" method="POST">
+								<div class="mb-4">
+									<label class="block text-gray-700 font-bold mb-2" for="customerID">
+										Customer ID
+									</label>
+									<input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="customerID" type="number" name="customerID" placeholder="Enter Customer ID">
+								</div>
+								<div class="flex items-center justify-center">
+									<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+										Submit
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				{{/ isCustomerIDsubmitted}}
+				<!-- Customer details -->
+				<div class="flex justify-center flex-col items-center">
+					{{# isCustomerIDsubmitted}}
+						{{# customerTemplateData}}
+							<div class="bg-white shadow-lg rounded-lg p-8 max-w-xl w-full text-center flex items-center justify-center flex-col">
+								<div class="mb-4">
+									<h2 class="text-xl font-semibold text-gray-800">Name: {{customerName}}</h2>
+									<h2 class="text-xl font-semibold text-gray-800">Surname: {{customerSurname}}</h2>
+								</div>
+								<div class="mb-6">
+									<pre class="text-lg font-medium text-gray-700">ID: {{customerID}}</pre>
+								</div>
+								<div class="border-t pt-4 flex flex-col items-center justify-center space-y-4">
+									<form action="{{BASE_URL}}/customers/submitCustomerEditData" method="POST">
+										<input type="hidden" name="customerEditID" value="{{customerID}}">
+										<input type="hidden" name="customerEditName" value="{{customerName}}">
+										<input type="hidden" name="customerEditSurname" value="{{customerSurname}}">
+										<button class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition" type="submit">Edit customer</button>
+									</form>
+									<a href="{{BASE_URL}}/customers" class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
+										Delete customer
+									</a>
+								</div>
+							</div>
+						{{/ customerTemplateData}}
+					{{/ isCustomerIDsubmitted}}
+				{{# isCustomerIDsubmitted}}
+					{{^ customerTemplateData}}
+						<div class="bg-white shadow-md rounded-lg p-6 hover:bg-blue-50 cursor-pointer transition duration-300">
+							<p class="text-gray-600 text-center">There's no existing customer data for the selected Customer ID.</p>
+						</div>
+					{{/ customerTemplateData}}
+				{{/ isCustomerIDsubmitted}}
+				</div>
+		</main>
+		{{> _partials/_footer }}
+	</body>
+</html>

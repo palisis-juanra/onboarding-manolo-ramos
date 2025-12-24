@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Constants\ErrorCodes;
+use Constants\Paths;
 use Controllers\ErrorHandlerController;
 use Controllers\SessionHandlerController;
 use Helpers\HttpRequestsHelper;
@@ -11,25 +13,22 @@ use Routes\Routes;
 class Router
 {
 	// Controller instances
-	private $sessionHandler;
-	private $errorHandler;
-	
-	// Member variables
-	private $routes;
-	private $routeNames;
-	private $routeDetails;
-	
-	// Initialize the template rendering service and route collection.
+	private SessionHandlerController $sessionHandler;
+	private ErrorHandlerController $errorHandler;
+
+	private array $routes;
+	private array $routeNames;
+	private array $routeDetails;
+
 	public function __construct(
 		SessionHandlerController 	$sessionHandlerController,
 		ErrorHandlerController		$errorHandlerController,
 	)
 	{
-		// Get the route names for easy reference
+		// Get route names for easy reference
 		$this->routes = Routes::getRoutes();
 		$this->routeNames = Routes::getRouteNames();
-		
-		// Controller instances
+
 		$this->sessionHandler = $sessionHandlerController;
 		$this->errorHandler = $errorHandlerController;
 	}
@@ -47,7 +46,7 @@ class Router
 	{
 		// Extract the last part of the current URL
 		$currentURL = $this->parseURL($_SERVER['REQUEST_URI']);
-		// Get the HTTP method of the request (GET, POST, etc.)
+		// Get the HTTP method used in the current request
 		$httpRequestMethodUsed = $_SERVER['REQUEST_METHOD'];
 
 		// TODO: future router refactor to include direct index search instead of looping through all routes.
@@ -70,7 +69,7 @@ class Router
 				// Loop through the methods defined for the current route and find the matching one. Then, initialize the controller function name and the HTTP method used for the route
 				foreach ($routeData as $method => $details) {
 					// Make sure that the method that is defined in the route, matches the HTTP method used in the request
-					if (HttpRequestsHelper::compareRouteHttpMethodUsed( $method, $httpRequestMethodUsed)) {
+					if (HttpRequestsHelper::compareRouteHttpMethodUsed($method, $httpRequestMethodUsed)) {
 						$handlerFunction = $details['handler'];
 						$routeDefinedMethod = $details['method'];
 						$currentRouteDetails = $details;
@@ -78,10 +77,9 @@ class Router
 					}
 				}
 
-				// If no controller function or method is defined for the route, handle not found
 				if ($handlerFunction === null || $routeDefinedMethod === null) {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('MISSING_ROUTE_DATA'));
+						$this->errorHandler->getErrorMessage(ErrorCodes::MISSING_ROUTE_DATA));
 					return;
 				}
 
@@ -89,16 +87,14 @@ class Router
 				$this->$handlerFunction(
 					$route, 
 					$currentRouteDetails,
-					$routeDefinedMethod,
-					$httpRequestMethodUsed
+					$routeDefinedMethod
 				);
 
 				return;
 			}
 		}
 
-		// Handle any unknown endpoints by redirecting to the 404 page
-		RedirectionHelper::doRedirection('/error/');
+		RedirectionHelper::doRedirection(Paths::ERROR);
 	}
 
 	/**
@@ -109,13 +105,14 @@ class Router
 	 */
 	public function getRouteDetails(): array
 	{
-		return isset($this->routeDetails) ? $this->routeDetails : [];
+		return $this->routeDetails ?? [];
 	}
 
 	/**
-	 * Stores route details for the current accessed endpoint. 
+	 * Stores route details for the current accessed endpoint.
 	 *
-	 * @return array routeInfo
+	 * @param array $routeData
+	 * @return void
 	 */
 	private function setRouteDetails(array $routeData): void
 	{
@@ -128,13 +125,11 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleSessionHandlerController(
 		string 	$route, 
 		array 	$routeData,
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed,
+		string 	$routeMethod
 	): void
 	{
 		// Routes that don't require session verification
@@ -143,25 +138,24 @@ class Router
 			$this->routeNames['/login/loginAction']
 		];
 
-		// Check if the route is in the list of excluded routes or if the session is active
 		if (in_array($route, $routesWithoutSessionCheck) || $this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						RedirectionHelper::doRedirection('/dashboard/');
+						RedirectionHelper::doRedirection(Paths::DASHBOARD);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
 				case $this->routeNames['/login/loginAction']:
-					if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+					if ($routeMethod === HttpRequestsHelper::POST) {
 						// TODO: handle empty for sessionHandler
 						$this->setRouteDetails($routeData);
 					} else {
 						$this->errorHandler->index(
-							$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+							$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 						);
 					}
 
@@ -171,19 +165,19 @@ class Router
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
 						$this->setRouteDetails($routeData);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 					
 					break;
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
-			RedirectionHelper::doRedirection('/login/');
+			RedirectionHelper::doRedirection(Paths::LOGIN);
 		}
 	}
 
@@ -193,54 +187,52 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleChannelListController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/dashboard']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
 				case $this->routeNames['/dashboard/pickChannel']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -251,69 +243,53 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleTourListController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/tourList']:
+				case $this->routeNames['/tourList/tourView']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
 				case $this->routeNames['/tourList/pickTour']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('POST') ?
+						$routeMethod === HttpRequestsHelper::POST ?
 							$this->setRouteDetails($routeData)
 						:
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
-				// TODO: move this case to the tourViewController handle
-				case $this->routeNames['/tourList/tourView']:
-				if ($this->sessionHandler->checkIfSessionIsActive()) {
-					$routeMethod === HttpRequestsHelper::getVerb('GET') ?
-						$this->setRouteDetails($routeData) 
-					: 
-						$this->errorHandler->index(
-							$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
-						);
-				} else {
-					RedirectionHelper::doRedirection('/login/');
-				}
-
-				break;
-
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -324,40 +300,285 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleTourViewController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{
 		if ($this->sessionHandler->checkIfSessionIsActive()) {
 			switch ($route) {
 				case $this->routeNames['/tourList/tourView']:
 					if ($this->sessionHandler->checkIfSessionIsActive()) {
-						$routeMethod === HttpRequestsHelper::getVerb('GET') ?
+						$routeMethod === HttpRequestsHelper::GET ?
 							$this->setRouteDetails($routeData) 
 						: 
 							$this->errorHandler->index(
-								$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 							);
 					} else {
-						RedirectionHelper::doRedirection('/login/');
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				case $this->routeNames['/tourList/tourView/pickDeparture']:
+				case $this->routeNames['/tourList/tourView/pickBookingDetails']:
+				case $this->routeNames['/tourList/tourView/submitCustomerDetails']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
 					}
 
 					break;
 
 				default:
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 					break;
 			}
 		} else {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('LOGIN_REQUIRED')
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}
+	}
+
+	/**
+	 * Handles requests to the Customer View Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 */
+	private function customerListControllerHandler(
+		string 	$route,
+		array 	$routeData,
+		string 	$routeMethod
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/customers']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+				
+					case $this->routeNames['/customers/searchCustomerByID']:
+					case $this->routeNames['/customers/submitCustomerEditData']:
+						if ($this->sessionHandler->checkIfSessionIsActive()) {
+							$routeMethod === HttpRequestsHelper::POST ?
+								$this->setRouteDetails($routeData)
+							:
+								$this->errorHandler->index(
+									$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+								);
+						} else {
+							RedirectionHelper::doRedirection(Paths::LOGIN);
+						}
+
+					break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}
+	}
+
+	/**
+	 * Handles requests to the Customer Edit Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 */
+	private function customerEditControllerHandler(
+		string 	$route,
+		array 	$routeData,
+		string 	$routeMethod
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/customers/editCustomer']:
+				case $this->routeNames['/customers/editCustomer/updateConfirmation']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData)
+							:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				case $this->routeNames['/customers/editCustomer/update']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData)
+							:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+				break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}
+	}
+
+	/**
+	 * Handles requests to the Booking List Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 */
+	private function handleBookingListController(
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod
+	): void
+	{			
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/bookings']:
+				case $this->routeNames['/bookings/showBooking']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				case $this->routeNames['/bookings/searchBookingByID']:
+				case $this->routeNames['/bookings/submitCancelledBookingID']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData)
+						:
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+				break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
+			);
+		}	
+	}
+
+	/**
+	 * Handles requests to the Booking Handler Controller.
+	 *
+	 * @param string $route The URL of the route that its being accessed.
+	 * @param array $routeData The parameters data associated to the route.
+	 * @param string $routeMethod The HTTP method configured for the route.
+	 */
+	private function handleBookingHandlerController(
+		string 	$route,
+		array 	$routeData, 
+		string 	$routeMethod
+	): void
+	{
+		if ($this->sessionHandler->checkIfSessionIsActive()) {
+			switch ($route) {
+				case $this->routeNames['/tourList/tourView/createBooking']:
+				case $this->routeNames['/tourList/tourView/bookingConfirmation']:
+				case $this->routeNames['/tourList/tourView/checkTourAvailability']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::GET ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				case $this->routeNames['/bookings/cancelBooking']:
+					if ($this->sessionHandler->checkIfSessionIsActive()) {
+						$routeMethod === HttpRequestsHelper::POST ?
+							$this->setRouteDetails($routeData) 
+						: 
+							$this->errorHandler->index(
+								$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+							);
+					} else {
+						RedirectionHelper::doRedirection(Paths::LOGIN);
+					}
+
+					break;
+
+				default:
+					$this->errorHandler->index(
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
+					);
+
+					break;
+			}
+		} else {
+			$this->errorHandler->index(
+				$this->errorHandler->getErrorMessage(ErrorCodes::LOGIN_REQUIRED)
 			);
 		}
 	}
@@ -368,35 +589,33 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
-	private function handleLoginController(
+	private function handleLoginHandlerController(
 		string 	$route,
 		array 	$routeData, 
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed
+		string 	$routeMethod
 	): void
 	{	
 		switch ($route) {
 			case $this->routeNames['/login']:
 				if ($this->sessionHandler->checkIfSessionIsActive()) {
-					RedirectionHelper::doRedirection('/dashboard/');
-				} else if ($routeMethod === HttpRequestsHelper::getVerb('GET')) {
+					RedirectionHelper::doRedirection(Paths::DASHBOARD);
+				} else if ($routeMethod === HttpRequestsHelper::GET) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
 				break;
 
 			case $this->routeNames['/login/loginAction']:
-				if ($routeMethod === HttpRequestsHelper::getVerb('POST')) {
+				if ($routeMethod === HttpRequestsHelper::POST) {
 					$this->setRouteDetails($routeData);
 				} else {
 					$this->errorHandler->index(
-						$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+						$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 					);
 				}
 
@@ -404,8 +623,9 @@ class Router
 
 			default:
 				$this->errorHandler->index(
-					$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+					$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 				);
+
 				break;
 		}
 	}
@@ -416,18 +636,16 @@ class Router
 	 * @param string $route The URL of the route that its being accessed.
 	 * @param array $routeData The parameters data associated to the route.
 	 * @param string $routeMethod The HTTP method configured for the route.
-	 * @param string $httpRequestMethodUsed The HTTP method that is beign used to access the route.
 	 */
 	private function handleErrorHandlerController(
-		string 	$route, 
+		string 	$route,
 		array 	$routeData,
-		string 	$routeMethod, 
-		string 	$httpRequestMethodUsed,
+		string 	$routeMethod
 	): void
 	{
 		if ($this->routeNames['/error'] == $route) {
 			$this->errorHandler->index(
-				$this->errorHandler->getErrorMessage('ROUTE_NOT_FOUND')
+				$this->errorHandler->getErrorMessage(ErrorCodes::ROUTE_NOT_FOUND)
 			);
 		}
 	}
@@ -435,7 +653,7 @@ class Router
 	/**
 	 * Parses the URL to determine the complete request path.
 	 *
-	 * @param string $url The URL to parse.
+	 * @param string $currentURL The URL to parse.
 	 * @return string The complete endpoint path.
 	 */
 	private function parseURL(string $currentURL): string
@@ -450,8 +668,6 @@ class Router
 		$pathSegments = array_slice($pathSegments, 1);
 
 		// Build the path before returning it
-		$requestPath = '/' . implode('/', $pathSegments);
-
-		return $requestPath;
+		return '/' . implode('/', $pathSegments);
 	}
 }
